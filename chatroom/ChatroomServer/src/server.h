@@ -1,15 +1,13 @@
 #pragma once
-#include "../res/socket/Socket.h"
+#include "epoll.h"
+#include "threadpool.h"
+#include "socket.h"
 
-
-class Server: public SocketServer {
-public:
-    Server(const int port, const int maxnum);
-    ~Server();
-    Server(const Server&) = delete;
-    Server& operator = (const Server&) = delete;
-    void accept();
-    
-    static unsigned __stdcall Answer(void* x);
-    static dboperator db;
-};
+class Server{
+    public:
+        Server();
+        Server(int port,int max_connections);
+        Epoll epoll;
+        Thread_pool threadpool;
+        Socket socket;
+}
