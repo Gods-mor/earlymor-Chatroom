@@ -1,4 +1,5 @@
 #include "threadpool.h"
-Threadpool::Threadpool(){
+
+ThreadPool::ThreadPool(int threadnumbers){
     
 }
