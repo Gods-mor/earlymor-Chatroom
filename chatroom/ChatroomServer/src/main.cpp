@@ -1,18 +1,18 @@
 #include <iostream>
 #include <string>
-#include "server.h"
 #include "../config/server_config.h"
 #include<unistd.h>
 #include<sys/epoll.h>
 #include<arpa/inet.h>
+#include "../include/Server.h"
 
 using namespace std;
 
 int main(){
     try {
         // 创建服务器对象
-        Server server(PORT,MAX_CONNECTIONS);
-        server.run();
+        Server* server = new Server(PORT,MAX_CONNECTIONS);
+        server->run();
 
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
