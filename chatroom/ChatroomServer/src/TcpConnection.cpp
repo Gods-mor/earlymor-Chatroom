@@ -1,9 +1,15 @@
 #include "TcpConnection.h"
 #include "ChatService.h"
+#include "json.hpp"
 #include "log.h"
-TcpConnection::TcpConnection(int fd, EventLoop *evloop) {
+#include "server_config.h"
+using json = nlohmann::json;
+
+TcpConnection::TcpConnection(int fd, EventLoop *evloop,
+                             std::shared_ptr<sw::redis::Redis> redis) {
   // 并没有创建evloop，当前的TcpConnect都是在子线程中完成的
   m_evLoop = evloop;
+  m_redis = redis;
   m_readBuf = new Buffer(10240); // 10K
   m_writeBuf = new Buffer(10240);
   // 初始化
@@ -25,6 +31,9 @@ TcpConnection::~TcpConnection() {
     delete m_writeBuf;
     delete m_readBuf;
     delete m_chatservice;
+    delete m_userservice;
+    delete m_friendservice;
+    delete m_groupservice;
     m_evLoop->freeChannel(m_channel);
   }
 
@@ -48,8 +57,7 @@ int TcpConnection::processRead(void *arg) {
     //  MODIFY修改检测读写事件
     conn->m_evLoop->AddTask(conn->m_channel, ElemType::MODIFY);
 #endif
-    bool flag = conn->m_chatservice->parseClientRequest(
-        conn->m_readBuf, conn->m_writeBuf, socket);
+    bool flag = conn->parseClientRequest(conn->m_readBuf);
     if (!flag) {
       // 解析失败，回复一个简单的HTML
       string errMsg = "Client/1.1 400 Bad Request\r\n\r\n";
@@ -98,4 +106,92 @@ int TcpConnection::destory(void *arg) {
     delete conn;
   }
   return 0;
+}
+bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
+  string requestData = m_readBuf->data();
+  try {
+    json requestDataJson;
+    requestDataJson.parse(requestData);
+    // 从JSON数据中获取请求类型
+    int requestType = requestDataJson["type"];
+    // 根据请求类型执行不同的操作
+    if (requestType == LOGIN_TYPE) {
+      std::string account = requestDataJson["account"];
+      std::string password = requestDataJson["password"];
+
+      // 处理登录请求
+      int loginstatus = m_userservice->checkLogin(account, password);
+
+      // 构建登录响应JSON
+      json responseJson;
+      responseJson["type"] = "login";
+      switch (loginstatus) {
+      case NOT_REGISTERED:
+
+        responseJson["status"] = "not_registered";
+
+        break;
+      case IS_ONLINE:
+        responseJson["status"] = "is_online";
+        break;
+      case WRONG_PASSWD:
+        responseJson["status"] = "wrong_password";
+        break;
+      case PASS:
+        responseJson["status"] = "success";
+        break;
+      default:
+        responseJson["status"] = "error";
+      }
+
+      // 将响应JSON数据添加到m_writeBuf中
+      m_writeBuf->appendString(responseJson.dump());
+
+      // 添加检测写事件
+      m_channel->writeEventEnable(true);
+      m_evLoop->AddTask(m_channel, ElemType::MODIFY);
+
+    } else if (requestType == REG_TYPE) {
+      // 处理注册请求
+      std::string account = requestDataJson["account"];
+      std::string password = requestDataJson["password"];
+      std::string username = requestDataJson["username"];
+      int registerStatus =
+          m_userservice->registerUser(account, password, username);
+      // 构建注册响应JSON
+      json responseJson;
+      responseJson["type"] = "register";
+      switch (registerStatus) {
+      case REGISTER_SUCCESS:
+        responseJson["status"] = "success";
+        break;
+      case REGISTER_FAIL:
+        responseJson["status"] = "fail";
+        break;
+      case ACCOUNT_EXIST:
+        responseJson["status"] = "account_exist";
+        break;
+      }
+
+      // 将响应JSON数据添加到m_writeBuf中
+      m_writeBuf->appendString(responseJson.dump());
+
+      // 添加检测写事件
+      m_channel->writeEventEnable(true);
+      m_evLoop->AddTask(m_channel, ElemType::MODIFY);
+    } else if (requestType == CHAT_TYPE) {
+      // 处理聊天消息请求
+      // ...
+
+    } else {
+      // 未知的请求类型
+      return false; // 返回解析失败标志
+    }
+
+  } catch (const std::exception &e) {
+    // JSON解析错误
+    return false; // 返回解析失败标志
+  }
+
+  return true; // 解析成功
 }

@@ -4,9 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "log.h"
-TcpServer::TcpServer(unsigned short port, int threadNum)
+TcpServer::TcpServer(unsigned short port, int threadNum,std::shared_ptr<sw::redis::Redis> redis)
 {
 	m_port = port;
+	m_redis = redis;
 	m_mainLoop = new EventLoop;
 	m_threadNum = threadNum;
 	m_threadPool = new ThreadPool(m_mainLoop, threadNum);
@@ -74,6 +75,6 @@ int TcpServer::acceptConnection(void* arg)
 	EventLoop* evLoop = server->m_threadPool->takeWorkerEventLoop();
 	// 将cfd放到TcpConnection处理 evLoop放到子线程 建立连接在主线程，和客户端通信都在子线程中运行
 	// 匿名对象
-	new TcpConnection(cfd, evLoop);
+	new TcpConnection(cfd, evLoop,server->m_redis);
 	return 0;
 }

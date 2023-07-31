@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
       cin.getline(pwd, 50);
 
       json js;
-      js["msgid"] = LOGIN_TYPE;
+      js["type"] = LOGIN_TYPE;
       js["account"] = account;
       js["password"] = pwd;
       string request = js.dump(); // 序列化
@@ -110,8 +110,8 @@ int main(int argc, char **argv) {
       cin.getline(pwd, 50);
 
       json js;
-      js["msgid"] = REG_TYPE;
-      js["name"] = name;
+      js["type"] = REG_TYPE;
+      js["username"] = name;
       js["account"] = account;
       string request = js.dump(); // 转为字符串
 
