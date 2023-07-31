@@ -19,12 +19,13 @@ enum Loginstatus {
   NOT_REGISTERED, // 帐号未注册
   IS_ONLINE,      // 在线
   WRONG_PASSWD,   // 密码错误
-  PASS            // 成功登录
+  PASS,           // 成功登录
+  ERROR           // 出错异常
 };
-enum Registerstatus{
+enum Registerstatus {
   REGISTER_SUCCESS, // 注册成功
-  REGISTER_FAIL ,// 注册失败
-  ACCOUNT_EXIST // 帐号已注册
+  REGISTER_FAILED,    // 注册失败
+  ACCOUNT_EXIST     // 帐号已注册
 };
 class UserService {
 public:

@@ -1,6 +1,6 @@
 #include "../config/server_config.h"
 #include "TcpServer.h"
-#include "sw/redis++/redis++.h"
+#include <sw/redis++/redis++.h>
 #include <stdlib.h>
 #include <unistd.h>
 // 初始化监听的套接字

@@ -10,7 +10,7 @@ int UserService::checkLogin(string account, string password) {
   } catch (const std::exception &ex) {
     std::cerr << "Error while getting password from Redis: " << ex.what()
               << std::endl;
-    return false;
+    return ERROR;
   }
 
   if (storedPassword.empty()) { // 帐号未注册
@@ -36,6 +36,25 @@ bool UserService::isLogin(const std::string &account) {
     return false;
   }
 }
-int UserService::registerUser(string account, string password, string username){
+int UserService::registerUser(string account, string password,
+                              string username) {
+  std::string storedPassword;
 
+  try {
+    storedPassword = m_redis->get(account);
+
+    if (!storedPassword.empty()) { // 帐号已注册
+      return ACCOUNT_EXIST;
+    }
+    // 注册新用户，将帐号和密码存储到 Redis 数据库中
+    m_redis->set(account, password);
+    // 将用户名存储到 Redis 数据库中
+    m_redis->hset("users", account, username);
+    // 注册成功
+    return REGISTER_SUCCESS;
+  } catch (const std::exception &ex) {
+    std::cerr << "Error while registering user: " << ex.what() << std::endl;
+    // 注册失败
+    return REGISTER_FAILED;
+  }
 }

@@ -165,7 +165,7 @@ bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
       case REGISTER_SUCCESS:
         responseJson["status"] = "success";
         break;
-      case REGISTER_FAIL:
+      case REGISTER_FAILED:
         responseJson["status"] = "fail";
         break;
       case ACCOUNT_EXIST:

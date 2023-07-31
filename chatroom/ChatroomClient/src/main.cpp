@@ -1,5 +1,5 @@
-#include "client_config.h"
-#include "json.hpp"
+#include "../config/client_config.h"
+#include <nlohmann/json.hpp>
 #include <arpa/inet.h>
 #include <atomic>
 #include <iostream>
