@@ -39,4 +39,5 @@ void* WorkerThread::Running()
 	m_cond.notify_one(); //唤醒一个主线程的条件变量等待解除阻塞
 	// 启动反应堆模型
 	m_evLoop->Run();
+	return this;
 }

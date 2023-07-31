@@ -1,8 +1,0 @@
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles/edit_cache.dir
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles/rebuild_cache.dir
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient/CMakeFiles/ChatroomClient.dir
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient/CMakeFiles/edit_cache.dir
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient/CMakeFiles/rebuild_cache.dir
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomServer/CMakeFiles/ChatroomServer.dir
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomServer/CMakeFiles/edit_cache.dir
-/home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomServer/CMakeFiles/rebuild_cache.dir

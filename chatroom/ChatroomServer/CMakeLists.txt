@@ -9,7 +9,12 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/config
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+# 添加链接的库，例如 Redis++ 库
+# find_package(SWRedis++ REQUIRED)
+# target_link_libraries(MyExecutable ${SWRedis++_LIBRARIES})
 
+# 添加头文件的搜索路径，例如 Redis++ 头文件路径
+# include_directories(${SWRedis++_INCLUDE_DIRS})
 # 添加 ChatroomServer 可执行文件的源文件
 add_executable(ChatroomServer
 src/Buffer.cpp

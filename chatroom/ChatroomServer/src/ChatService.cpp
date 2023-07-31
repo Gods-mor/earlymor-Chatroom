@@ -5,4 +5,4 @@ ChatService::ChatService() {
 }
 ChatService::~ChatService() {}
 bool ChatService::parseClientRequest(Buffer *readbuf, Buffer *writebuf,
-                                     int socket) {}
+                                     int socket) {return false;}
