@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/ChatroomClient.dir/src/main.cpp.o -o ChatroomClient  -lredis++ 
