@@ -1,9 +1,9 @@
-#include "TcpServer.h"
+#include "../include/TcpServer.h"
 #include <arpa/inet.h>
-#include "TcpConnection.h"
+#include "../include/TcpConnection.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "log.h"
+#include "../include/log.h"
 TcpServer::TcpServer(unsigned short port, int threadNum,std::shared_ptr<sw::redis::Redis> redis)
 {
 	m_port = port;
@@ -71,6 +71,7 @@ int TcpServer::acceptConnection(void* arg)
 	TcpServer* server = static_cast<TcpServer*>(arg);
 	// 和客户端建立连接
 	int cfd = accept(server->m_lfd, NULL, NULL);
+	Debug("与客户端%d建立连接....",cfd);
 	// 取出子线程反应堆实例，处理cfd
 	EventLoop* evLoop = server->m_threadPool->takeWorkerEventLoop();
 	// 将cfd放到TcpConnection处理 evLoop放到子线程 建立连接在主线程，和客户端通信都在子线程中运行

@@ -1,4 +1,4 @@
-#include "WorkerThread.h"
+#include "../include/WorkerThread.h"
 WorkerThread::WorkerThread(int index)
 {
 	m_evLoop = nullptr;

@@ -1,8 +1,8 @@
-#include "TcpConnection.h"
-#include "ChatService.h"
+#include "../include/TcpConnection.h"
+#include "../config/server_config.h"
+#include "../include/ChatService.h"
+#include "../include/log.h"
 #include <nlohmann/json.hpp>
-#include "log.h"
-#include "server_config.h"
 using json = nlohmann::json;
 
 TcpConnection::TcpConnection(int fd, EventLoop *evloop,
@@ -17,9 +17,10 @@ TcpConnection::TcpConnection(int fd, EventLoop *evloop,
 
   m_name = "Connection-" + to_string(fd);
 
-  // 服务器最迫切想知道的时候，客户端有没有数据到达
+  // 服务器最迫切想知道的，客户端有没有数据到达
   m_channel = new Channel(fd, FDEvent::ReadEvent, processRead, processWrite,
                           destory, this);
+  Debug("Channel初始化成功....");
   // 把channel放到任务循环的任务队列里面
   evloop->AddTask(m_channel, ElemType::ADD);
 }
@@ -108,20 +109,25 @@ int TcpConnection::destory(void *arg) {
   return 0;
 }
 bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
+  Debug("解析客户请求....");
   string requestData = m_readBuf->data();
+  Debug("解析requestData....");
+  cout << requestData << endl;
   try {
-    json requestDataJson;
-    requestDataJson.parse(requestData);
+    json requestDataJson = json::parse(requestData);
+    Debug("json反序列化....");
     // 从JSON数据中获取请求类型
     int requestType = requestDataJson["type"];
+    Debug("requestType:%d", requestType);
     // 根据请求类型执行不同的操作
-    if (requestType == LOGIN_TYPE) {
+    if (requestType == LOGIN_MSG_TYPE) {
       std::string account = requestDataJson["account"];
       std::string password = requestDataJson["password"];
-
+      cout << "get account:" << account << endl;
+      cout << "get password:" << password << endl;
       // 处理登录请求
       int loginstatus = m_userservice->checkLogin(account, password);
-
+      cout << "get loginstatus" << endl;
       // 构建登录响应JSON
       json responseJson;
       responseJson["type"] = "login";
@@ -150,26 +156,33 @@ bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
       // 添加检测写事件
       m_channel->writeEventEnable(true);
       m_evLoop->AddTask(m_channel, ElemType::MODIFY);
-
-    } else if (requestType == REG_TYPE) {
+    }
+    if (requestType == 2) {
       // 处理注册请求
       std::string account = requestDataJson["account"];
       std::string password = requestDataJson["password"];
       std::string username = requestDataJson["username"];
+      cout << "get account:" << account << endl;
+      cout << "get password:" << password << endl;
+      cout << "get username:" << username << endl;
       int registerStatus =
           m_userservice->registerUser(account, password, username);
+      cout << "get registerStatus:" << registerStatus << endl;
       // 构建注册响应JSON
       json responseJson;
-      responseJson["type"] = "register";
+      responseJson["type"] = REG_MSG_TYPE;
       switch (registerStatus) {
       case REGISTER_SUCCESS:
-        responseJson["status"] = "success";
+        responseJson["status"] = REG_SUCCESS;
+        responseJson["errno"] = 0;
         break;
       case REGISTER_FAILED:
-        responseJson["status"] = "fail";
+        responseJson["status"] = REG_FAIL;
+        responseJson["errno"] = 1;
         break;
       case ACCOUNT_EXIST:
-        responseJson["status"] = "account_exist";
+        responseJson["status"] = REG_REPEAT;
+        responseJson["errno"] = 2;
         break;
       }
 
@@ -179,7 +192,7 @@ bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
       // 添加检测写事件
       m_channel->writeEventEnable(true);
       m_evLoop->AddTask(m_channel, ElemType::MODIFY);
-    } else if (requestType == CHAT_TYPE) {
+    } else if (requestType == ONE_CHAT_MSG) {
       // 处理聊天消息请求
       // ...
 

@@ -51,6 +51,7 @@ EventLoop::~EventLoop()
 
 int EventLoop::Run()
 {
+    Debug("反应堆已经启动....");
     m_isQuit = false; //不退出
     //比较线程ID，当前线程ID与我们保存的线程ID是否相等
     if (m_threadID != this_thread::get_id())
@@ -101,6 +102,7 @@ int EventLoop::AddTask(Channel* channel, ElemType type)
     node->type = type;
     m_taskQ.push(node);
     m_mutex.unlock();
+    Debug("添加channel任务节点....");
     // 处理节点
     /*
     * 如当前EventLoop反应堆属于子线程
@@ -176,6 +178,7 @@ int EventLoop::Add(Channel* channel)
         m_channelmap.insert(make_pair(fd, channel)); //将当前fd和channel添加到map
         m_dispatcher->setChannel(channel); //设置当前channel
         int ret = m_dispatcher->add();  //加入
+        Debug("将channel加入事件检测....");
         return ret;
     }
     return -1;
@@ -194,6 +197,7 @@ int EventLoop::Remove(Channel* channel)
     //从检测集合中删除 封装了poll,epoll select
     m_dispatcher->setChannel(channel);
     int ret = m_dispatcher->remove();
+    Debug("将channel移除事件检测....");
     return ret;
 }
 
@@ -209,6 +213,7 @@ int EventLoop::Modify(Channel* channel)
     //从检测集合中删除
     m_dispatcher->setChannel(channel);
     int ret = m_dispatcher->modify();
+    Debug("修改channel对应的事件检测....");
     return ret;
 
 }
@@ -223,6 +228,7 @@ int EventLoop::freeChannel(Channel* channel)
         // 关闭fd
         close(channel->getSocket());
         delete channel;
+        Debug("删除channel....");
     }
     return 0;
 }

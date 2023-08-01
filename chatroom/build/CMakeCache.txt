@@ -242,15 +242,6 @@ Chatroom_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 Chatroom_SOURCE_DIR:STATIC=/home/earlymor/文档/earlymor-Chatroom/chatroom
 
-//Path to a library.
-LINK_LIBRARIES:FILEPATH=LINK_LIBRARIES-NOTFOUND
-
-//The directory containing a CMake configuration file for hiredis.
-hiredis_DIR:PATH=hiredis_DIR-NOTFOUND
-
-//The directory containing a CMake configuration file for redis++.
-redis++_DIR:PATH=/usr/share/cmake/redis++
-
 
 ########################
 # INTERNAL cache entries

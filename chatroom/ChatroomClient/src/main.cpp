@@ -1,8 +1,8 @@
 #include "../config/client_config.h"
-#include <nlohmann/json.hpp>
 #include <arpa/inet.h>
 #include <atomic>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <semaphore.h>
 #include <string>
 #include <sys/socket.h>
@@ -20,6 +20,10 @@ atomic_bool is_LoginSuccess{false}; // 原子类型，不需要加锁，用于�
 void welcomeMenu();
 // 子线程用于读数据
 void readTaskHandler(int cfd);
+void handleOneChatMessage(const json &message);
+void handleGroupChatMessage(const json &message);
+void handleLoginResponse(const json &message);
+void handleRegisterResponse(const json &message);
 // 主菜单
 void mainMenu();
 // 处理登录的响应逻辑
@@ -82,7 +86,7 @@ int main(int argc, char **argv) {
       cin.getline(pwd, 50);
 
       json js;
-      js["type"] = LOGIN_TYPE;
+      js["type"] = LOGIN_MSG_TYPE;
       js["account"] = account;
       js["password"] = pwd;
       string request = js.dump(); // 序列化
@@ -96,8 +100,8 @@ int main(int argc, char **argv) {
         // 进入主菜单
         mainMenu();
       }
-
-    } break;
+      break;
+    }
     case REGISTER: {
       char name[50] = {0};
       char pwd[50] = {0};
@@ -110,9 +114,11 @@ int main(int argc, char **argv) {
       cin.getline(pwd, 50);
 
       json js;
-      js["type"] = REG_TYPE;
+      js["type"] = REG_MSG_TYPE;
       js["username"] = name;
       js["account"] = account;
+      js["password"] = pwd;
+
       string request = js.dump(); // 转为字符串
 
       int len = send(clientfd, request.c_str(), strlen(request.c_str()) + 1, 0);
@@ -121,8 +127,9 @@ int main(int argc, char **argv) {
       }
 
       sem_wait(&rwsem); // 等待信号量，子线程处理完注册消息会通知
-
-    } break;
+      cout << "pthread work successfully" << endl;
+      break;
+    }
     case QUIT: {
       close(clientfd);
       sem_destroy(&rwsem);
@@ -145,44 +152,46 @@ void welcomeMenu() {
 }
 void readTaskHandler(int cfd) {
   // 死循环接收消息
+  cout << "pthread start" << endl;
   for (;;) {
     char buffer[CLIENT_BUFSIZE] = {0}; // 默认1024字符的缓冲区，可能需要扩容
+    cout << "recv:" << endl;
     int len = recv(cfd, buffer, CLIENT_BUFSIZE, 0);
     if (-1 == len || 0 == len) {
       close(cfd);
       exit(-1);
     }
     // 接收ChatServer转发的数据，反序列化生成json数据对象
-    json js = json::parse(buffer);
-    int msgtype = js["msgid"].get<int>();
-    // msgtype分为四类：私聊，群聊，登录，注册。
-    if (ONE_CHAT_MSG == msgtype) { // 私聊
-      cout << js["time"].get<string>() << " [" << js["id"] << "]"
-           << js["name"].get<string>() << " said: " << js["msg"].get<string>()
-           << endl;
-      continue;
-    }
-
-    if (GROUP_CHAT_MSG == msgtype) { // 群聊
-      cout << "群消息[" << js["groupid"] << "]:" << js["time"].get<string>()
-           << " [" << js["id"] << "]" << js["name"].get<string>()
-           << " said: " << js["msg"].get<string>() << endl;
-      continue;
-    }
-
-    if (LOGIN_MSG_ACK == msgtype) { // 登录
-      doLoginResponse(js);          // 处理登录响应的业务逻辑
-      sem_post(&rwsem); // 通知主线程，登录结果处理完成
-      continue;
-    }
-
-    if (REG_MSG_ACK == msgtype) { // 注册
-      doRegResponse(js);
-      sem_post(&rwsem); // 通知主线程，注册结果处理完成
-      continue;
+    try {
+      json js = json::parse(buffer);
+      int type = js["type"].get<int>();
+      switch (type) {
+      case ONE_CHAT_MSG:
+        handleOneChatMessage(js);
+        break;
+      case GROUP_CHAT_MSG:
+        handleGroupChatMessage(js);
+        break;
+      case LOGIN_MSG_ACK:
+        handleLoginResponse(js);
+        sem_post(
+            &rwsem); // Notify the main thread that login response is handled
+        break;
+      case REG_MSG_ACK:
+        handleRegisterResponse(js);
+        sem_post(
+            &rwsem); // Notify the main thread that register response is handled
+        break;
+      default:
+        cerr << "Invalid message type received: " << type << endl;
+        break;
+      }
+    } catch (const json::exception &e) {
+      cerr << "Error: Failed to parse JSON data: " << e.what() << endl;
     }
   }
 }
+
 void doLoginResponse(json &responsejs) {
   if (0 != responsejs["errno"].get<int>()) // 登录失败
   {
@@ -214,4 +223,39 @@ void mainMenu() {
   cout << "this is your information!" << endl;
   sleep(1);
   exit(0);
+}
+void handleOneChatMessage(const json &message) {
+  cout << message["time"].get<string>() << " [" << message["id"] << "] "
+       << message["name"].get<string>()
+       << " said: " << message["msg"].get<string>() << endl;
+}
+
+void handleGroupChatMessage(const json &message) {
+  cout << "Group message [" << message["groupid"]
+       << "]: " << message["time"].get<string>() << " [" << message["id"]
+       << "] " << message["name"].get<string>()
+       << " said: " << message["msg"].get<string>() << endl;
+}
+
+void handleLoginResponse(const json &message) {
+  if (0 != message["errno"].get<int>()) {
+    cerr << message["errmsg"] << endl;
+    is_LoginSuccess = false;
+  } else {
+    cout << "Login successful" << endl;
+    // TODO: Handle user information, friend list, group information, etc.
+  }
+}
+
+void handleRegisterResponse(const json &message) {
+  int err = message["errno"].get<int>();
+  if (0 == err) {
+    cout << "User account register success, user account is "
+         << message["account"] << ", do not forget it!" << endl;
+
+  } else if (1 == err) {
+    cout << "made mistakes! register fail!" << endl;
+  } else {
+    cerr << "User account is already exist, register error!" << endl;
+  }
 }

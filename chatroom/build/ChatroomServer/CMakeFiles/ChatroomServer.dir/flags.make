@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/include/hiredis -I/include
+CXX_INCLUDES = -I/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include -I/usr/include/hiredis -I/usr/share/cmake/redis++ -I/usr
 
 CXX_FLAGS = -std=gnu++17
 

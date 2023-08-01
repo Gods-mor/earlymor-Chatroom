@@ -1,12 +1,14 @@
 #pragma once
-#define LOGIN 1
-#define REGISTER 2
-#define QUIT 3
-#define LOGIN_TYPE 1
-#define REG_TYPE 2
-#define CHAT_TYPE 3
 #define CLIENT_BUFSIZE 1024
-#define ONE_CHAT_MSG 1
-#define GROUP_CHAT_MSG 2
-#define LOGIN_MSG_ACK 3
-#define REG_MSG_ACK 4
+//菜单选项
+constexpr int LOGIN = 1;
+constexpr int REGISTER = 2;
+constexpr int QUIT = 3;
+
+//发送信息到服务器
+constexpr int LOGIN_MSG_TYPE = 1;
+constexpr int REG_MSG_TYPE = 2;
+constexpr int ONE_CHAT_MSG = 3;
+constexpr int GROUP_CHAT_MSG = 4;
+constexpr int LOGIN_MSG_ACK = 5;
+constexpr int REG_MSG_ACK = 6;

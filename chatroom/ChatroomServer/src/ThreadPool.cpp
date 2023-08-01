@@ -1,7 +1,7 @@
-#include "ThreadPool.h"
+#include "../include/ThreadPool.h"
 #include <assert.h>
 #include <stdlib.h>
-
+#include "log.h"
 ThreadPool::ThreadPool(EventLoop* mainLoop, int count)
 {
 	m_index = 0;
@@ -22,6 +22,7 @@ ThreadPool::~ThreadPool()
 
 void ThreadPool::Run()
 {
+	Debug("线程池已经启动....");
 	assert(!m_isStart); //运行期间此条件不能错
 	//判断是不是主线程
 	if(m_mainLoop->getTHreadID() != this_thread::get_id())
@@ -59,5 +60,6 @@ EventLoop* ThreadPool::takeWorkerEventLoop()
 		//雨露均沾，不能一直是一个pool->index线程
 		m_index = ++m_index % m_threadNum;
 	}
+	Debug("成功取出线程反应堆....");
 	return evLoop;
 }
