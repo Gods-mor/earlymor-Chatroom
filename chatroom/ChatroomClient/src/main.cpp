@@ -26,10 +26,6 @@ void handleLoginResponse(const json &message);
 void handleRegisterResponse(const json &message);
 // 主菜单
 void mainMenu();
-// 处理登录的响应逻辑
-void doLoginResponse(json &responsejs);
-// 处理注册的响应逻辑
-void doRegResponse(json &responsejs);
 
 int main(int argc, char **argv) {
   if (argc < 3) {
@@ -103,16 +99,31 @@ int main(int argc, char **argv) {
       break;
     }
     case REGISTER: {
-      char name[50] = {0};
-      char pwd[50] = {0};
-      char account[12] = {0};
-      cout << "username(50字符以内):";
-      cin.getline(name, 50);
+      std::string account;
+      std::string name;
+      std::string pwd;
+      cout << "不支持输入空格" << endl;
       cout << "account(11位以内):";
-      cin.getline(account, 12);
-      cout << "userpassword(50字符以内):";
-      cin.getline(pwd, 50);
-
+      cin >> account;
+      if (account.length() > 11) {
+        std::cout << "Input exceeded the maximum allowed length. Truncating..."
+                  << std::endl;
+        account = account.substr(0, 11); // Truncate the input to 10 characters
+      }
+      cout << "username(20字符以内):";
+      cin >> name;
+      if (name.length() > 20) {
+        std::cout << "Input exceeded the maximum allowed length. Truncating..."
+                  << std::endl;
+        account = account.substr(0, 20); // Truncate the input to 10 characters
+      }
+      cout << "userpassword(20字符以内):";
+      cin >> pwd;
+      if (pwd.length() > 20) {
+        std::cout << "Input exceeded the maximum allowed length. Truncating..."
+                  << std::endl;
+        account = account.substr(0, 20); // Truncate the input to 10 characters
+      }
       json js;
       js["type"] = REG_MSG_TYPE;
       js["username"] = name;
@@ -127,6 +138,7 @@ int main(int argc, char **argv) {
       }
 
       sem_wait(&rwsem); // 等待信号量，子线程处理完注册消息会通知
+
       cout << "pthread work successfully" << endl;
       break;
     }
@@ -158,13 +170,16 @@ void readTaskHandler(int cfd) {
     cout << "recv:" << endl;
     int len = recv(cfd, buffer, CLIENT_BUFSIZE, 0);
     if (-1 == len || 0 == len) {
+      cout << "error close cfd " << endl;
       close(cfd);
+      sem_post(&rwsem);
       exit(-1);
     }
     // 接收ChatServer转发的数据，反序列化生成json数据对象
     try {
       json js = json::parse(buffer);
       int type = js["type"].get<int>();
+      cout << "get type:" << type << endl;
       switch (type) {
       case ONE_CHAT_MSG:
         handleOneChatMessage(js);
@@ -192,33 +207,6 @@ void readTaskHandler(int cfd) {
   }
 }
 
-void doLoginResponse(json &responsejs) {
-  if (0 != responsejs["errno"].get<int>()) // 登录失败
-  {
-    cerr << responsejs["errmsg"] << endl;
-    is_LoginSuccess = false;
-  } else // 登录成功
-  {
-    cout << "登录成功" << endl;
-    // 显示用户信息
-
-    // 加载好友列表
-
-    // 加载群组信息
-
-    // ...
-  }
-}
-void doRegResponse(json &responsejs) {
-  if (0 != responsejs["errno"].get<int>()) // 注册失败
-  {
-    cerr << "user account is already exist, register error!" << endl;
-  } else // 注册成功
-  {
-    cout << "user account register success, user account is "
-         << responsejs["account"] << ", do not forget it!" << endl;
-  }
-}
 void mainMenu() {
   cout << "this is your information!" << endl;
   sleep(1);
@@ -237,6 +225,7 @@ void handleGroupChatMessage(const json &message) {
        << " said: " << message["msg"].get<string>() << endl;
 }
 
+// 处理登录回应
 void handleLoginResponse(const json &message) {
   if (0 != message["errno"].get<int>()) {
     cerr << message["errmsg"] << endl;
@@ -249,6 +238,7 @@ void handleLoginResponse(const json &message) {
 
 void handleRegisterResponse(const json &message) {
   int err = message["errno"].get<int>();
+  cout << "err:" << err << endl;
   if (0 == err) {
     cout << "User account register success, user account is "
          << message["account"] << ", do not forget it!" << endl;

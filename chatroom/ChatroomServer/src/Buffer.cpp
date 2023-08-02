@@ -9,7 +9,8 @@
 #include <sys/sendfile.h>
 #include <ctype.h>
 #include <errno.h>
-
+#include "log.h"
+#include <iostream>
 
 Buffer::Buffer(int size) :m_capacity(size)
 {
@@ -64,6 +65,7 @@ void Buffer::extendRoom(int size)
 
 int Buffer::appendString(const char* data, int size)
 {
+	Debug("appendString(const char* data, int size)");
 	//判断buffer和data是不是指向的有效内存
 	if (data == nullptr || size <= 0)
 	{
@@ -74,11 +76,13 @@ int Buffer::appendString(const char* data, int size)
 	// 数据拷贝 buffer->data + buffer->writePos可写的区域
 	memcpy(m_data + m_writePos, data, size);
 	m_writePos += size;
+	std::cout << "m_writebuf" << data <<std::endl;
 	return 0;
 }
 
 int Buffer::appendString(const char* data)
 {
+	Debug("appendString(const char* data)");
 	int size = strlen(data);
 	int ret = appendString(data, size);
 	return ret;
@@ -86,6 +90,7 @@ int Buffer::appendString(const char* data)
 
 int Buffer::appendString(const string data)
 {
+	Debug("appendString(const string data)");
 	int ret = appendString(data.data());
 	return ret;
 }

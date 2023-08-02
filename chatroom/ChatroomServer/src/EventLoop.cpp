@@ -131,6 +131,7 @@ int EventLoop::AddTask(Channel* channel, ElemType type)
 
 int EventLoop::ProcessTaskQ()
 {
+
     //遍历链表
     while (!m_taskQ.empty())
     {
@@ -152,7 +153,7 @@ int EventLoop::ProcessTaskQ()
         }
         else if (node->type == ElemType::DELETE)
         {
-            //Debug("断开了连接");
+            Debug("断开了连接");
             //删除
             Remove(channel);
             // 需要资源释放channel 关掉文件描述符，地址堆内存释放，channel和dispatcher的关系需要删除

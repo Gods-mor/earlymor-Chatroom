@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/config -I/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/../../third_party/nlohmann/detail -I/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/../../third_party/nlohmann -I/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/../../third_party
+CXX_INCLUDES = 
 
 CXX_FLAGS = -std=gnu++17
 

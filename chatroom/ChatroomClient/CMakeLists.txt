@@ -5,12 +5,6 @@ project(ChatroomClient)
 set(CMAKE_CXX_STANDARD 17)
 
 # 包含目录
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/config
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/nlohmann/detail
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/nlohmann
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party
-)
 
 # 添加 ChatroomClient 可执行文件的源文件
 add_executable(ChatroomClient

@@ -10,12 +10,13 @@ TcpConnection::TcpConnection(int fd, EventLoop *evloop,
   // 并没有创建evloop，当前的TcpConnect都是在子线程中完成的
   m_evLoop = evloop;
   m_redis = redis;
+  
   m_readBuf = new Buffer(10240); // 10K
   m_writeBuf = new Buffer(10240);
   // 初始化
-  m_chatservice = new ChatService;
-
-  m_name = "Connection-" + to_string(fd);
+  // m_chatservice = new ChatService;
+  m_userservice = new UserService(redis);
+  m_name =  "Connection-" + to_string(fd);
 
   // 服务器最迫切想知道的，客户端有没有数据到达
   m_channel = new Channel(fd, FDEvent::ReadEvent, processRead, processWrite,
@@ -38,7 +39,7 @@ TcpConnection::~TcpConnection() {
     m_evLoop->freeChannel(m_channel);
   }
 
-  Debug("连接断开，释放资源, connName： %s", m_name);
+  Debug("连接断开，释放资源, connName： %s", m_name.c_str());
 }
 
 int TcpConnection::processRead(void *arg) {
@@ -73,7 +74,7 @@ int TcpConnection::processRead(void *arg) {
   }
   // 断开连接 完全写入缓存区再发送不能立即关闭，还没有发送
 #ifndef MSG_SEND_AUTO // 如果没有被定义，
-  conn->m_evLoop->AddTask(conn->m_channel, ElemType::DELETE);
+  // conn->m_evLoop->AddTask(conn->m_channel, ElemType::DELETE);
 #endif
   return 0;
 }
@@ -94,7 +95,7 @@ int TcpConnection::processWrite(void *arg) {
       // 修改dispatcher中检测的集合，往enentLoop反映模型认为队列节点标记为modify
       conn->m_evLoop->AddTask(conn->m_channel, ElemType::MODIFY);
       // 3，若不通信，删除这个节点
-      conn->m_evLoop->AddTask(conn->m_channel, ElemType::DELETE);
+      // conn->m_evLoop->AddTask(conn->m_channel, ElemType::DELETE);
     }
   }
   return 0;
@@ -117,7 +118,7 @@ bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
     json requestDataJson = json::parse(requestData);
     Debug("json反序列化....");
     // 从JSON数据中获取请求类型
-    int requestType = requestDataJson["type"];
+    int requestType = requestDataJson["type"].get<int>();
     Debug("requestType:%d", requestType);
     // 根据请求类型执行不同的操作
     if (requestType == LOGIN_MSG_TYPE) {
@@ -130,7 +131,7 @@ bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
       cout << "get loginstatus" << endl;
       // 构建登录响应JSON
       json responseJson;
-      responseJson["type"] = "login";
+      responseJson["type"] = LOGIN_MSG_TYPE;
       switch (loginstatus) {
       case NOT_REGISTERED:
 
@@ -157,8 +158,9 @@ bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
       m_channel->writeEventEnable(true);
       m_evLoop->AddTask(m_channel, ElemType::MODIFY);
     }
-    if (requestType == 2) {
+    if (requestType ==REG_MSG_TYPE) {
       // 处理注册请求
+      Debug("处理注册请求");
       std::string account = requestDataJson["account"];
       std::string password = requestDataJson["password"];
       std::string username = requestDataJson["username"];
@@ -170,11 +172,12 @@ bool TcpConnection::parseClientRequest(Buffer *m_readBuf) {
       cout << "get registerStatus:" << registerStatus << endl;
       // 构建注册响应JSON
       json responseJson;
-      responseJson["type"] = REG_MSG_TYPE;
+      responseJson["type"] = REG_MSG_ACK;
       switch (registerStatus) {
       case REGISTER_SUCCESS:
         responseJson["status"] = REG_SUCCESS;
         responseJson["errno"] = 0;
+        responseJson["account"] = account;
         break;
       case REGISTER_FAILED:
         responseJson["status"] = REG_FAIL;
