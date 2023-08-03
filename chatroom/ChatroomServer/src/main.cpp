@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   // 连接到Redis数据库
   auto redis = std::make_shared<sw::redis::Redis>("tcp://localhost:6379");
   // 创建服务器实例
-  TcpServer *server = new TcpServer(PORT, 4,redis);
+  TcpServer *server = new TcpServer(PORT, THREAD_NUMBERS,redis);
   // 服务器运行 -
   // 启动线程池-对监听的套接字进行封装，并放到主线程的任务队列，启动反应堆模型
   // 底层的epoll也运行起来，
