@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/TcpClient.cpp" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o" "gcc" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o.d"
   "/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/main.cpp" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o" "gcc" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o.d"
   )
 

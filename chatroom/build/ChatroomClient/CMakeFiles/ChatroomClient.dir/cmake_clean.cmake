@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o"
+  "CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o.d"
   "CMakeFiles/ChatroomClient.dir/src/main.cpp.o"
   "CMakeFiles/ChatroomClient.dir/src/main.cpp.o.d"
   "ChatroomClient"

@@ -114,12 +114,12 @@ ChatroomServer/clean: ChatroomServer/CMakeFiles/ChatroomServer.dir/clean
 ChatroomClient/CMakeFiles/ChatroomClient.dir/all:
 	$(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/depend
 	$(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=1,2 "Built target ChatroomClient"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=1,2,3 "Built target ChatroomClient"
 .PHONY : ChatroomClient/CMakeFiles/ChatroomClient.dir/all
 
 # Build rule for subdir invocation for target.
 ChatroomClient/CMakeFiles/ChatroomClient.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ChatroomClient/CMakeFiles/ChatroomClient.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles 0
 .PHONY : ChatroomClient/CMakeFiles/ChatroomClient.dir/rule
@@ -140,7 +140,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/clean:
 ChatroomServer/CMakeFiles/ChatroomServer.dir/all:
 	$(MAKE) $(MAKESILENT) -f ChatroomServer/CMakeFiles/ChatroomServer.dir/build.make ChatroomServer/CMakeFiles/ChatroomServer.dir/depend
 	$(MAKE) $(MAKESILENT) -f ChatroomServer/CMakeFiles/ChatroomServer.dir/build.make ChatroomServer/CMakeFiles/ChatroomServer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 "Built target ChatroomServer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 "Built target ChatroomServer"
 .PHONY : ChatroomServer/CMakeFiles/ChatroomServer.dir/all
 
 # Build rule for subdir invocation for target.
