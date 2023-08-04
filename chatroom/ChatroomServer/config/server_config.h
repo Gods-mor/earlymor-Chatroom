@@ -8,6 +8,7 @@ const int FIXEDWIDTH = 4;
 // 客户端选项请求
 constexpr int LOGIN_MSG_TYPE = 1;
 constexpr int REG_MSG_TYPE = 2;
+constexpr int FRIEND_GET_LIST = 3;
 
 // 服务器回应信息
 constexpr int ONE_CHAT_MSG = 1;
@@ -21,7 +22,7 @@ constexpr int REG_REPEAT = 3;
 // 登录状态
 constexpr int OFFLINE = 0;
 constexpr int ONLINE = 1;
-//
+// 登录状态回应
 constexpr int NOT_REGISTERED = 0;
 constexpr int WRONG_PASSWD = 1;
 constexpr int IS_ONLINE = 2;
