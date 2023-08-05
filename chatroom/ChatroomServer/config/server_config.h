@@ -8,13 +8,15 @@ const int FIXEDWIDTH = 4;
 // 客户端选项请求
 constexpr int LOGIN_MSG_TYPE = 1;
 constexpr int REG_MSG_TYPE = 2;
-constexpr int FRIEND_GET_LIST = 3;
+constexpr int GET_INFO_TYPE = 3;
+constexpr int FRIEND_GET_LIST = 4;
 
 // 服务器回应信息
 constexpr int ONE_CHAT_MSG = 1;
 constexpr int GROUP_CHAT_MSG = 2;
 constexpr int LOGIN_MSG_ACK = 3;
 constexpr int REG_MSG_ACK = 4;
+constexpr int FRIEND_LIST_ACK = 5;
 // 注册状态回应
 constexpr int REG_SUCCESS = 1;
 constexpr int REG_FAIL = 2;

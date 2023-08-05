@@ -1,17 +1,19 @@
 #include "../include/TcpConnection.h"
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include "../config/server_config.h"
 #include "../include/ChatService.h"
 #include "../include/log.h"
-#include <iostream>
+#include "OnlineUsers.h"
+
 using json = nlohmann::json;
 
 TcpConnection::TcpConnection(int fd,
                              EventLoop* evloop,
-                             std::shared_ptr<sw::redis::Redis> redis) {
+                             std::shared_ptr<sw::redis::Redis> redis,
+                             std::shared_ptr<OnlineUsers> onlineUsersPtr_)
+    : m_evLoop(evloop), m_redis(redis), m_onlineUsersPtr_(onlineUsersPtr_) {
     // 并没有创建evloop，当前的TcpConnect都是在子线程中完成的
-    m_evLoop = evloop;
-    m_redis = redis;
 
     m_readBuf = new Buffer(10240);  // 10K
     m_writeBuf = new Buffer(10240);
@@ -19,6 +21,8 @@ TcpConnection::TcpConnection(int fd,
     // m_chatservice = new ChatService;
     m_userservice = new UserService(redis);
     m_name = "Connection-" + to_string(fd);
+
+    m_friendservice = new FriendService(redis);
 
     // 服务器最迫切想知道的，客户端有没有数据到达
     m_channel = new Channel(fd, FDEvent::ReadEvent, processRead, processWrite,
@@ -115,12 +119,12 @@ int TcpConnection::destory(void* arg) {
 bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
     Debug("解析客户请求....");
     string requestData = m_readBuf->data();
-    
+
     Debug("解析requestData....");
     cout << requestData << endl;
     try {
         json requestDataJson = json::parse(requestData);
-        
+
         Debug("json反序列化....");
         // 从JSON数据中获取请求类型
         string lenString = requestDataJson["datalen"];
@@ -129,7 +133,7 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         //     // sleep(1);
         //     // 处理
         // }
-        m_readBuf->readPosIncrease(len+1);
+        m_readBuf->readPosIncrease(len + 1);
         int requestType = requestDataJson["type"].get<int>();
         Debug("requestType:%d", requestType);
         // 根据请求类型执行不同的操作
@@ -144,6 +148,13 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             // 处理登录请求
             int loginstatus = m_userservice->checkLogin(account, password);
             cout << "get loginstatus" << endl;
+
+            // 登录成功则记录账号信息
+            if (loginstatus == PASS) {
+                m_account = account;
+                setOnline();
+            }
+
             // 构建登录响应JSON
             json responseJson;
             responseJson["type"] = LOGIN_MSG_ACK;
@@ -158,8 +169,7 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         }
 
         // “注册”
-        if (requestType == REG_MSG_TYPE) {
-            
+        else if (requestType == REG_MSG_TYPE) {
             Debug("处理注册请求");
             std::string account = requestDataJson["account"];
             std::string password = requestDataJson["password"];
@@ -195,9 +205,16 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             // 添加检测写事件
             m_channel->writeEventEnable(true);
             m_evLoop->AddTask(m_channel, ElemType::MODIFY);
-        } else if (requestType == ONE_CHAT_MSG) {
-            // 处理聊天消息请求
-            // ...
+        }
+
+        // 登录初始化
+        else if (requestType == GET_INFO_TYPE) {
+            getInfo();
+
+        }
+        //
+        else if (requestType == FRIEND_GET_LIST) {
+            // 计算在线好友。
 
         } else {
             // 未知的请求类型
@@ -211,4 +228,25 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
     }
 
     return true;  // 解析成功
+}
+
+// 获取登录信息
+void TcpConnection::getInfo() {
+    m_friendservice->getAccount(m_account);
+    // 获取用户名
+    string field = "username";
+    auto storedUsernameOpt = m_redis->hget(m_account, field);
+    m_username = storedUsernameOpt.value();
+}
+
+// 设置上线状态
+void TcpConnection::setOnline() {
+    m_redis->hset(m_account, "status", "online");
+    // 添加进入总在线用户集合
+    // 将当前用户添加到总在线用户集合
+    if (m_onlineUsersPtr_) {
+        m_onlineUsersPtr_->addOnlineUser(m_account);
+    } else {
+        std::cerr << "Error: m_onlineUsersPtr_ is nullptr" << std::endl;
+    }
 }

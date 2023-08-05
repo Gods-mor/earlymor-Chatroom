@@ -10,6 +10,7 @@
 #include <thread>
 #include <vector>
 #include "../config/client_config.h"
+#include "FriendManager.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -29,13 +30,18 @@ class TcpClient {
     void handleGroupChatMessage(const json& message);
     void handleLoginResponse(const json& message);
     void handleRegisterResponse(const json& message);
-
+    void handleFriendListResponse(const json& message);
     void addDataLen(json& js);
+
+    void getInfo(string account);
 
    private:
     int m_fd;
     sem_t m_rwsem;  // 用于读写线程间的通信
     atomic_bool is_LoginSuccess{
         false};  // 原子类型，不需要加锁，用于记录登录状态
+    string m_account;
+    string m_username;
     thread* m_readTask;
+    FriendManager* m_friendmanager;
 };

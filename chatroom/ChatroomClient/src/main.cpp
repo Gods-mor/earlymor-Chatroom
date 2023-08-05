@@ -1,14 +1,4 @@
-#include <arpa/inet.h>
-#include <semaphore.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <atomic>
 #include <iostream>
-#include <nlohmann/json.hpp>
-#include <string>
-#include <thread>
-#include <vector>
-#include "../config/client_config.h"
 #include "TcpClient.h"
 
 using namespace std;

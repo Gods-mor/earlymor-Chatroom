@@ -10,6 +10,7 @@ TcpClient::TcpClient() {
     }
     // 初始化信号量
     sem_init(&m_rwsem, 0, 0);
+    m_friendmanager = new FriendManager(m_fd);
 }
 
 // 析构回收资源
@@ -73,8 +74,24 @@ void TcpClient::run() {
                 sem_wait(
                     &m_rwsem);  // 等待信号量，由子线程处理完登录的响应消息后，通知这里
                 if (is_LoginSuccess) {
+                    // 初始化个人信息
+                    getInfo(account);
                     // 进入主菜单
                     mainMenu();
+                    int choice;
+                    cin >> choice;
+                    switch(choice){
+                        case 1:
+                            m_friendmanager->fiendMenu();
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                        default:
+                    }
                 }
                 break;
             }
@@ -178,6 +195,8 @@ void TcpClient::readTaskHandler(int cfd) {
                     sem_post(&m_rwsem);  // Notify the main thread that register
                                          // response is handled
                     break;
+                case FRIEND_LIST_ACK :
+                    handleFriendListResponse(js);
                 default:
                     cerr << "Invalid message type received: " << type << endl;
                     break;
@@ -246,14 +265,33 @@ void TcpClient::welcomeMenu() {
 
 // 主菜单
 void TcpClient::mainMenu() {
-    cout << "this is your information!" << endl;
-    sleep(1);
-    exit(0);
+    cout << "               #####################################" << endl;
+    cout << "                           1.好友" << endl;
+    cout << "                           2.群" << endl;
+    cout << "                           3.个人信息 " << endl;
+    cout << "                           4.退出" << endl;
+    cout << "               #####################################" << endl;
 }
 
 void TcpClient::handleOneChatMessage(const json& message) {
     ;
 }
+
 void TcpClient::handleGroupChatMessage(const json& message) {
     ;
+}
+
+void TcpClient::handleFriendListResponse(const json& message){
+
+}
+
+void TcpClient::getInfo(string account){
+    json js;
+    js["type"] = GET_INFO_TYPE;
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if(0==len || -1==len){
+        cerr << "getInfo send error:" << request << endl;
+    }
+
 }

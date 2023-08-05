@@ -27,17 +27,11 @@ class UserService {
 
     ~UserService();
 
-    // 是否已注册
-    bool isRegistered(string account);
-
     // 是否已登录
     bool isLogin(const std::string& account);
 
     // 用户注册登记
     int registerUser(string account, string password, string username);
-
-    // 用户注册成功，向数据库插入数据
-    bool saveUser(string account, string username, string password);
 
     // 登录逻辑处理
     int checkLogin(string account, string password);

@@ -18,12 +18,14 @@ class TcpConnection {
    public:
     TcpConnection(int fd,
                   EventLoop* evloop,
-                  std::shared_ptr<sw::redis::Redis> redis);
+                  std::shared_ptr<sw::redis::Redis> redis,std::shared_ptr<OnlineUsers> onlineUsersPtr_);
     ~TcpConnection();
     static int processRead(void* arg);   // 读回调
     static int processWrite(void* arg);  // 写回调
     static int destory(void* arg);       // 销毁回调
     bool parseClientRequest(Buffer* m_readBuf);
+    void getInfo();
+    void setOnline();
 
    private:
     string m_name;
@@ -32,9 +34,12 @@ class TcpConnection {
     Buffer* m_readBuf;   // 读缓存区
     Buffer* m_writeBuf;  // 写缓存区
     // Client协议
+    string m_username;
+    string m_account;
     ChatService* m_chatservice;
     UserService* m_userservice;
     FriendService* m_friendservice;
     GroupService* m_groupservice;
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
+    std::shared_ptr<OnlineUsers> m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
 };
