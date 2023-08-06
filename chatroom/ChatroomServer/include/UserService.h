@@ -15,12 +15,10 @@ struct User {
     std::string username;  // 用户名
     std::string password;  // 用户密码
 };
+constexpr int REGISTER_SUCCESS = 0;  // 注册成功
+constexpr int REGISTER_FAILED = 1;   // 注册失败
+constexpr int ACCOUNT_EXIST = 2;     // 帐号已注册
 
-enum Registerstatus {
-    REGISTER_SUCCESS,  // 注册成功
-    REGISTER_FAILED,   // 注册失败
-    ACCOUNT_EXIST      // 帐号已注册
-};
 class UserService {
    public:
     UserService(std::shared_ptr<sw::redis::Redis> redis);

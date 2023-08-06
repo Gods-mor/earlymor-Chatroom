@@ -1,17 +1,24 @@
 #pragma once
+#include <semaphore.h>
 #include <iostream>
 #include <set>
-
 class FriendManager {
    public:
-    FriendManager(int fd);
+    FriendManager(int fd, sem_t rwsem);
     ~FriendManager();
-    void fiendMenu();      // 好友功能菜单
+    void fiendMenu();      // 好友功能主菜单
+    void showFriendFunctionMenu();
+    void addFriend();
+    void deleteFriend();
+    void queryFriend();
+    void chatWithFriend();
+    void blockFriend();
     void getFriendList();  // 获取好友列表
+    unordered_map<string, string> onlineFriends;   // 得到的在线列表
+    unordered_map<string, string> offlineFriends;  // 得到的离线列表
+    int m_onlineNumber;                            // 在线人数
    private:
-    int m_fd;                     // 通信fd
-    int m_onlineNumber;           // 在线人数
-    set<string> onlineFriends;    // 得到的在线列表
-    set<string> offlineFriends;   // 得到的离线列表
-    vector<string> userAFriends;  // 用户的所有好友列表
+    int m_fd;  // 通信fd
+    sem_t m_rwsem;
+    vector<string> userFriends;  // 用户的所有好友列表
 };

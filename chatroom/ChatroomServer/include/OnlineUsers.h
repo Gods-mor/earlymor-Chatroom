@@ -10,6 +10,7 @@ class OnlineUsers {
         m_onlineUsers.insert(userId);
     }
 
+    std::unordered_set<std::string> m_onlineUsers;  // 存储总在线用户的集合
    private:
     // 私有构造函数，确保只能通过 create() 函数创建 OnlineUsers 对象
     OnlineUsers() {}
@@ -17,6 +18,5 @@ class OnlineUsers {
     static std::shared_ptr<OnlineUsers> create() {
         return std::shared_ptr<OnlineUsers>(new OnlineUsers());
     }
-    std::unordered_set<std::string> m_onlineUsers;  // 存储总在线用户的集合
     std::mutex m_mutex;  // 用于保护对 m_onlineUsers 的并发访问
 };

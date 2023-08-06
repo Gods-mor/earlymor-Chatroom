@@ -10,7 +10,7 @@ TcpClient::TcpClient() {
     }
     // 初始化信号量
     sem_init(&m_rwsem, 0, 0);
-    m_friendmanager = new FriendManager(m_fd);
+    m_friendmanager = new FriendManager(m_fd, m_rwsem);
 }
 
 // 析构回收资源
@@ -78,9 +78,9 @@ void TcpClient::run() {
                     getInfo(account);
                     // 进入主菜单
                     mainMenu();
-                    int choice;
-                    cin >> choice;
-                    switch(choice){
+                    int mainMenuChoice;
+                    cin >> mainMenuChoice;
+                    switch (mainMenuChoice) {
                         case 1:
                             m_friendmanager->fiendMenu();
                             break;
@@ -107,7 +107,7 @@ void TcpClient::run() {
                                  "Truncating..."
                               << std::endl;
                     account = account.substr(
-                        0, 11);  // Truncate the input to 10 characters
+                        0, 11);  // Truncate the input to 11 characters
                 }
                 cout << "username(20字符以内):";
                 cin >> name;
@@ -178,13 +178,8 @@ void TcpClient::readTaskHandler(int cfd) {
             json js = json::parse(buffer);
             int type = js["type"].get<int>();
             cout << "get type:" << type << endl;
+            js.erase("type");  // 剔除type字段，只保留数据
             switch (type) {
-                case ONE_CHAT_MSG:
-                    handleOneChatMessage(js);
-                    break;
-                case GROUP_CHAT_MSG:
-                    handleGroupChatMessage(js);
-                    break;
                 case LOGIN_MSG_ACK:
                     handleLoginResponse(js);
                     sem_post(&m_rwsem);  // Notify the main thread that login
@@ -195,8 +190,13 @@ void TcpClient::readTaskHandler(int cfd) {
                     sem_post(&m_rwsem);  // Notify the main thread that register
                                          // response is handled
                     break;
-                case FRIEND_LIST_ACK :
+                case FRIEND_LIST_ACK:
                     handleFriendListResponse(js);
+                    sem_post(&m_rwsem);
+        
+                case FRIEND_ACK:
+
+                case GET_INFO_SUCCESS:
                 default:
                     cerr << "Invalid message type received: " << type << endl;
                     break;
@@ -213,17 +213,17 @@ void TcpClient::handleLoginResponse(const json& message) {
     is_LoginSuccess = false;
     if (NOT_REGISTERED == loginstatus) {
         cout << "account didn't registered!" << endl;
-    } else if (1 == loginstatus) {
+    } else if (WRONG_PASSWD == loginstatus) {
         cout << "wrong password!" << endl;
         // TODO: Handle user information, friend list, group information, etc.
-    } else if (2 == loginstatus) {
+    } else if (IS_ONLINE == loginstatus) {
         cout << "account online" << endl;
         // TODO: Handle user information, friend list, group information, etc.
-    } else if (3 == loginstatus) {
+    } else if (PASS == loginstatus) {
         cout << "Login successful" << endl;
         is_LoginSuccess = true;
         // TODO: Handle user information, friend list, group information, etc.
-    } else if (4 == loginstatus) {
+    } else if (ERR == loginstatus) {
         cout << "make mistakes!" << endl;
     }
 }
@@ -232,14 +232,15 @@ void TcpClient::handleLoginResponse(const json& message) {
 void TcpClient::handleRegisterResponse(const json& message) {
     int err = message["errno"].get<int>();
     cout << "err:" << err << endl;
-    if (0 == err) {
+    if (REGISTER_SUCCESS == err) {
         cout << "User account register success, user account is "
              << message["account"] << ", do not forget it!" << endl;
 
-    } else if (1 == err) {
-        cout << "made mistakes! register fail!" << endl;
-    } else {
+    } else if (ACCOUNT_EXIST == err) {
         cerr << "User account is already exist, register error!" << endl;
+
+    } else {
+        cout << "made mistakes! register fail!" << endl;
     }
 }
 
@@ -281,17 +282,22 @@ void TcpClient::handleGroupChatMessage(const json& message) {
     ;
 }
 
-void TcpClient::handleFriendListResponse(const json& message){
-
+void TcpClient::handleFriendListResponse(const json& message) {
+    try {
+        m_friendmanager->onlineFriends = message["online_friends"];
+        m_friendmanager->offlineFriends = message["offline_friends"];
+    } catch (const exception& e) {
+        cout << "handleFriendListResponse error :" << e.what() << endl;
+    }
+    
 }
 
-void TcpClient::getInfo(string account){
+void TcpClient::getInfo(string account) {
     json js;
     js["type"] = GET_INFO_TYPE;
     string request = js.dump();
     int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
-    if(0==len || -1==len){
+    if (0 == len || -1 == len) {
         cerr << "getInfo send error:" << request << endl;
     }
-
 }

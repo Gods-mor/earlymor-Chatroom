@@ -28,6 +28,10 @@ class TcpConnection {
     void setOnline();
 
    private:
+    ChatService* m_chatservice;
+    UserService* m_userservice;
+    FriendService* m_friendservice;
+    GroupService* m_groupservice;
     string m_name;
     EventLoop* m_evLoop;
     Channel* m_channel;
@@ -36,10 +40,6 @@ class TcpConnection {
     // Client协议
     string m_username;
     string m_account;
-    ChatService* m_chatservice;
-    UserService* m_userservice;
-    FriendService* m_friendservice;
-    GroupService* m_groupservice;
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
     std::shared_ptr<OnlineUsers> m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
 };

@@ -31,7 +31,7 @@ class TcpClient {
     void handleLoginResponse(const json& message);
     void handleRegisterResponse(const json& message);
     void handleFriendListResponse(const json& message);
-    void addDataLen(json& js);
+    void static addDataLen(json& js);
 
     void getInfo(string account);
 

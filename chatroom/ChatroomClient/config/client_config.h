@@ -12,19 +12,40 @@ constexpr int LOGIN_MSG_TYPE = 1;
 constexpr int REG_MSG_TYPE = 2;
 constexpr int GET_INFO_TYPE = 3;
 constexpr int FRIEND_GET_LIST = 4;
+// 好友功能请求
+constexpr int FRIEND_ADD = 5;
+constexpr int FRIEND_DELETE = 6;
+constexpr int FRIEND_REQUIRY = 7;
+constexpr int FRIEND_CHAT = 8;
+constexpr int FRIEND_BLOCK = 9;
 // 接受消息
-constexpr int ONE_CHAT_MSG = 1;
-constexpr int GROUP_CHAT_MSG = 2;
-constexpr int LOGIN_MSG_ACK = 3;
-constexpr int REG_MSG_ACK = 4;
-constexpr int FRIEND_LIST_ACK = 5;
-
-// 登录状态
+constexpr int LOGIN_MSG_ACK = 1;
+constexpr int REG_MSG_ACK = 2;
+constexpr int FRIEND_LIST_ACK = 3;
+constexpr int FRIEND_ACK = 4;
+constexpr int GET_INFO = 5;
+// 
+constexpr int GET_INFO_SUCCESS = 0;
+// 在线状态
 constexpr int OFFLINE = 0;
 constexpr int ONLINE = 1;
-
+// 登录状态回应
 constexpr int NOT_REGISTERED = 0;
 constexpr int WRONG_PASSWD = 1;
 constexpr int IS_ONLINE = 2;
 constexpr int PASS = 3;
 constexpr int ERR = 4;
+
+// 注册状态回应
+constexpr int REGISTER_SUCCESS = 0;  // 注册成功
+constexpr int REGISTER_FAILED = 1;   // 注册失败
+constexpr int ACCOUNT_EXIST = 2;     // 帐号已注册
+
+// 定义颜色宏
+#define RESET_COLOR "\033[0m"     // 恢复默认颜色
+#define RED_COLOR "\033[31m"      // 红色
+#define GREEN_COLOR "\033[32m"    // 绿色
+#define YELLOW_COLOR "\033[33m"   // 黄色
+#define BLUE_COLOR "\033[34m"     // 蓝色
+#define MAGENTA_COLOR "\033[35m"  // 洋红色
+#define CYAN_COLOR "\033[36m"     // 青色

@@ -22,7 +22,7 @@ TcpConnection::TcpConnection(int fd,
     m_userservice = new UserService(redis);
     m_name = "Connection-" + to_string(fd);
 
-    m_friendservice = new FriendService(redis);
+    m_friendservice = new FriendService(redis, onlineUsersPtr_);
 
     // 服务器最迫切想知道的，客户端有没有数据到达
     m_channel = new Channel(fd, FDEvent::ReadEvent, processRead, processWrite,
@@ -137,7 +137,7 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         int requestType = requestDataJson["type"].get<int>();
         Debug("requestType:%d", requestType);
         // 根据请求类型执行不同的操作
-
+        json responseJson;
         // "登录"
         if (requestType == LOGIN_MSG_TYPE) {
             // 从JSON数据中获取输入信息（账号密码）
@@ -156,16 +156,8 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             }
 
             // 构建登录响应JSON
-            json responseJson;
             responseJson["type"] = LOGIN_MSG_ACK;
             responseJson["loginstatus"] = loginstatus;
-
-            // 将响应JSON数据添加到m_writeBuf中
-            m_writeBuf->appendString(responseJson.dump());
-
-            // 添加检测写事件
-            m_channel->writeEventEnable(true);
-            m_evLoop->AddTask(m_channel, ElemType::MODIFY);
         }
 
         // “注册”
@@ -181,7 +173,7 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
                 m_userservice->registerUser(account, password, username);
             cout << "get registerStatus:" << registerStatus << endl;
             // 构建注册响应JSON
-            json responseJson;
+
             responseJson["type"] = REG_MSG_ACK;
             switch (registerStatus) {
                 case REGISTER_SUCCESS:
@@ -198,28 +190,49 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
                     responseJson["errno"] = 2;
                     break;
             }
-
-            // 将响应JSON数据添加到m_writeBuf中
-            m_writeBuf->appendString(responseJson.dump());
-
-            // 添加检测写事件
-            m_channel->writeEventEnable(true);
-            m_evLoop->AddTask(m_channel, ElemType::MODIFY);
         }
 
         // 登录初始化
         else if (requestType == GET_INFO_TYPE) {
             getInfo();
-
+            responseJson["type"] = GET_INFO;
+            responseJson["status"] = GET_INFO_SUCCESS;
         }
         //
         else if (requestType == FRIEND_GET_LIST) {
             // 计算在线好友。
+            m_friendservice->getList();
+            // 构建好友列表响应json
 
+            responseJson["online_friends"] = m_friendservice->m_onlineFriends;
+            responseJson["offline_friends"] = m_friendservice->m_offlineFriends;
+            responseJson["type"] = FRIEND_LIST_ACK;
+        } else if (requestType == FRIEND_ADD) {
+            string account = requestDataJson["account"];
+            auto storedName = m_redis->hget(account, "username");
+
+            if (!storedName) {
+                responseJson["friendtype"] = NOT_REGISTERED;
+            } else {
+                string name = storedName.value();
+                string key = account + "_Friend";
+                m_redis->hset(key, account, name);
+                responseJson["friendtype"] = SUCCESS_ADD_FRIEND;
+            }
+        } else if (requestType == FRIEND_DELETE) {
+        } else if (requestType == FRIEND_REQUIRY) {
+        } else if (requestType == FRIEND_CHAT) {
+        } else if (requestType == FRIEND_BLOCK) {
         } else {
             // 未知的请求类型
             return false;  // 返回解析失败标志
         }
+        // 将响应JSON数据添加到m_writeBuf中
+        m_writeBuf->appendString(responseJson.dump());
+
+        // 添加检测写事件
+        m_channel->writeEventEnable(true);
+        m_evLoop->AddTask(m_channel, ElemType::MODIFY);
 
     } catch (const std::exception& e) {
         cout << "Json parse error :" << e.what() << endl;
@@ -242,10 +255,12 @@ void TcpConnection::getInfo() {
 // 设置上线状态
 void TcpConnection::setOnline() {
     m_redis->hset(m_account, "status", "online");
+    m_friendservice->addOnlineNumber();  // ONlinemember++
     // 添加进入总在线用户集合
     // 将当前用户添加到总在线用户集合
     if (m_onlineUsersPtr_) {
         m_onlineUsersPtr_->addOnlineUser(m_account);
+        Debug("setOnline success");
     } else {
         std::cerr << "Error: m_onlineUsersPtr_ is nullptr" << std::endl;
     }
