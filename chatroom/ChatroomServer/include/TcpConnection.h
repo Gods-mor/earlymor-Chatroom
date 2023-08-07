@@ -7,6 +7,7 @@
 #include "GroupService.h"
 #include "UserService.h"
 #include "sw/redis++/redis++.h"  // 添加Redis++头文件
+
 // 区分两者不同发送方式，
 // 1,全部放到缓存区再发送，2，变放边发送
 // 定义就是第一种

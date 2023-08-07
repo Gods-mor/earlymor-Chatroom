@@ -5,7 +5,6 @@
 #include <memory>
 #include "../include/TcpConnection.h"
 #include "../include/log.h"
-#include "OnlineUsers.h"
 
 TcpServer::TcpServer(unsigned short port,
                      int threadNum,
@@ -15,7 +14,7 @@ TcpServer::TcpServer(unsigned short port,
     m_mainLoop = new EventLoop;
     m_threadNum = threadNum;
     m_threadPool = new ThreadPool(m_mainLoop, threadNum);
-    m_onlineUsersPtr_ = std::make_shared<OnlineUsers>();
+    m_onlineUsersPtr_ = OnlineUsers::create();
     setListen();
 }
 

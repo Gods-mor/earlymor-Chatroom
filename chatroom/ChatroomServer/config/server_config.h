@@ -10,12 +10,13 @@ constexpr int LOGIN_MSG_TYPE = 1;
 constexpr int REG_MSG_TYPE = 2;
 constexpr int GET_INFO_TYPE = 3;
 constexpr int FRIEND_GET_LIST = 4;
+
 // 客户端好友功能请求
-constexpr int FRIEND_ADD = 5;
-constexpr int FRIEND_DELETE = 6;
-constexpr int FRIEND_REQUIRY = 7;
-constexpr int FRIEND_CHAT = 8;
-constexpr int FRIEND_BLOCK = 9;
+constexpr int FRIEND_ADD = 1;
+constexpr int FRIEND_DELETE = 2;
+constexpr int FRIEND_REQUIRY = 3;
+constexpr int FRIEND_CHAT = 4;
+constexpr int FRIEND_BLOCK = 5;
 // 服务器回应信息
 constexpr int LOGIN_MSG_ACK = 1;
 constexpr int REG_MSG_ACK = 2;

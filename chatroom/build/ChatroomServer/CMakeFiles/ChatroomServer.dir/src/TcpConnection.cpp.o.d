@@ -163,25 +163,32 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpConnection.cpp.o: \
  /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Dispatcher.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/FriendService.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/GroupService.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/UserService.h \
- /usr/include/arpa/inet.h /usr/include/netinet/in.h \
- /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \
- /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
- /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
- /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
- /usr/include/asm/sockios.h /usr/include/asm-generic/sockios.h \
- /usr/include/bits/types/struct_osockaddr.h /usr/include/bits/in.h \
- /usr/include/sys/epoll.h /usr/include/bits/epoll.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
- /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
- /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/linux/close_range.h /usr/include/c++/13.2.1/iostream \
- /usr/include/c++/13.2.1/ostream /usr/include/c++/13.2.1/ios \
- /usr/include/c++/13.2.1/bits/ios_base.h \
+ /usr/include/c++/13.2.1/set /usr/include/c++/13.2.1/bits/stl_set.h \
+ /usr/include/c++/13.2.1/bits/stl_multiset.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/OnlineUsers.h \
+ /usr/include/c++/13.2.1/memory \
+ /usr/include/c++/13.2.1/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/13.2.1/bits/align.h \
+ /usr/include/c++/13.2.1/bits/shared_ptr.h \
+ /usr/include/c++/13.2.1/bits/shared_ptr_base.h \
+ /usr/include/c++/13.2.1/bits/allocated_ptr.h \
+ /usr/include/c++/13.2.1/ext/concurrence.h \
+ /usr/include/c++/13.2.1/bits/shared_ptr_atomic.h \
+ /usr/include/c++/13.2.1/bits/atomic_base.h \
+ /usr/include/c++/13.2.1/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/13.2.1/backward/auto_ptr.h \
+ /usr/include/c++/13.2.1/pstl/glue_memory_defs.h \
+ /usr/include/c++/13.2.1/pstl/execution_defs.h \
+ /usr/include/c++/13.2.1/unordered_set \
+ /usr/include/c++/13.2.1/bits/unordered_set.h \
+ /usr/include/sw/redis++/redis++.h /usr/include/sw/redis++/redis.h \
+ /usr/include/c++/13.2.1/chrono /usr/include/sw/redis++/connection_pool.h \
+ /usr/include/c++/13.2.1/cassert /usr/include/assert.h \
+ /usr/include/c++/13.2.1/condition_variable \
+ /usr/include/sw/redis++/connection.h /usr/include/c++/13.2.1/cstring \
+ /usr/include/string.h /usr/include/strings.h \
+ /usr/include/c++/13.2.1/sstream /usr/include/c++/13.2.1/istream \
+ /usr/include/c++/13.2.1/ios /usr/include/c++/13.2.1/bits/ios_base.h \
  /usr/include/c++/13.2.1/bits/locale_classes.h \
  /usr/include/c++/13.2.1/bits/locale_classes.tcc \
  /usr/include/c++/13.2.1/system_error /usr/include/c++/13.2.1/stdexcept \
@@ -196,33 +203,13 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpConnection.cpp.o: \
  /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/ctype_inline.h \
  /usr/include/c++/13.2.1/bits/locale_facets.tcc \
  /usr/include/c++/13.2.1/bits/basic_ios.tcc \
- /usr/include/c++/13.2.1/bits/ostream.tcc /usr/include/c++/13.2.1/istream \
- /usr/include/c++/13.2.1/bits/istream.tcc /usr/include/c++/13.2.1/utility \
- /usr/include/c++/13.2.1/bits/stl_relops.h \
- /usr/include/sw/redis++/redis++.h /usr/include/sw/redis++/redis.h \
- /usr/include/c++/13.2.1/chrono /usr/include/c++/13.2.1/memory \
- /usr/include/c++/13.2.1/bits/stl_raw_storage_iter.h \
- /usr/include/c++/13.2.1/bits/align.h \
- /usr/include/c++/13.2.1/bits/shared_ptr.h \
- /usr/include/c++/13.2.1/bits/shared_ptr_base.h \
- /usr/include/c++/13.2.1/bits/allocated_ptr.h \
- /usr/include/c++/13.2.1/ext/concurrence.h \
- /usr/include/c++/13.2.1/bits/shared_ptr_atomic.h \
- /usr/include/c++/13.2.1/bits/atomic_base.h \
- /usr/include/c++/13.2.1/bits/atomic_lockfree_defines.h \
- /usr/include/c++/13.2.1/backward/auto_ptr.h \
- /usr/include/c++/13.2.1/pstl/glue_memory_defs.h \
- /usr/include/c++/13.2.1/pstl/execution_defs.h \
- /usr/include/sw/redis++/connection_pool.h \
- /usr/include/c++/13.2.1/cassert /usr/include/assert.h \
- /usr/include/c++/13.2.1/condition_variable \
- /usr/include/sw/redis++/connection.h /usr/include/c++/13.2.1/cstring \
- /usr/include/string.h /usr/include/strings.h \
- /usr/include/c++/13.2.1/sstream /usr/include/c++/13.2.1/bits/sstream.tcc \
- /usr/include/hiredis/hiredis.h /usr/include/hiredis/read.h \
- /usr/include/sys/time.h /usr/include/hiredis/sds.h \
- /usr/include/hiredis/alloc.h /usr/include/sw/redis++/errors.h \
- /usr/include/sw/redis++/reply.h /usr/include/c++/13.2.1/iterator \
+ /usr/include/c++/13.2.1/ostream /usr/include/c++/13.2.1/bits/ostream.tcc \
+ /usr/include/c++/13.2.1/bits/istream.tcc \
+ /usr/include/c++/13.2.1/bits/sstream.tcc /usr/include/hiredis/hiredis.h \
+ /usr/include/hiredis/read.h /usr/include/sys/time.h \
+ /usr/include/hiredis/sds.h /usr/include/hiredis/alloc.h \
+ /usr/include/sw/redis++/errors.h /usr/include/sw/redis++/reply.h \
+ /usr/include/c++/13.2.1/iterator \
  /usr/include/c++/13.2.1/bits/stream_iterator.h \
  /usr/include/sw/redis++/utils.h /usr/include/sw/redis++/cxx_utils.h \
  /usr/include/c++/13.2.1/optional /usr/include/c++/13.2.1/variant \
@@ -262,11 +249,28 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpConnection.cpp.o: \
  /usr/include/c++/13.2.1/bits/stl_numeric.h \
  /usr/include/c++/13.2.1/pstl/glue_numeric_defs.h \
  /usr/include/sw/redis++/redis_cluster.hpp \
+ /usr/include/c++/13.2.1/utility \
+ /usr/include/c++/13.2.1/bits/stl_relops.h \
  /usr/include/sw/redis++/queued_redis.h \
- /usr/include/c++/13.2.1/unordered_set \
- /usr/include/c++/13.2.1/bits/unordered_set.h \
- /usr/include/sw/redis++/queued_redis.hpp /usr/include/nlohmann/json.hpp \
- /usr/include/c++/13.2.1/algorithm \
+ /usr/include/sw/redis++/queued_redis.hpp \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/GroupService.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/UserService.h \
+ /usr/include/arpa/inet.h /usr/include/netinet/in.h \
+ /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \
+ /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
+ /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
+ /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
+ /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
+ /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/asm/sockios.h /usr/include/asm-generic/sockios.h \
+ /usr/include/bits/types/struct_osockaddr.h /usr/include/bits/in.h \
+ /usr/include/sys/epoll.h /usr/include/bits/epoll.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
+ /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h /usr/include/c++/13.2.1/iostream \
+ /usr/include/nlohmann/json.hpp /usr/include/c++/13.2.1/algorithm \
  /usr/include/c++/13.2.1/pstl/glue_algorithm_defs.h \
  /usr/include/nlohmann/adl_serializer.hpp \
  /usr/include/nlohmann/detail/abi_macros.hpp \

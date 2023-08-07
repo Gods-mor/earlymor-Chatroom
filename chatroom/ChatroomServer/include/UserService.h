@@ -9,12 +9,6 @@
 
 using namespace std;
 
-// 定义用户结构
-struct User {
-    std::string account;   // 用户账号
-    std::string username;  // 用户名
-    std::string password;  // 用户密码
-};
 constexpr int REGISTER_SUCCESS = 0;  // 注册成功
 constexpr int REGISTER_FAILED = 1;   // 注册失败
 constexpr int ACCOUNT_EXIST = 2;     // 帐号已注册

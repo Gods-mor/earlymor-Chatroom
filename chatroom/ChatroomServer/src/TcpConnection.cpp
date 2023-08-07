@@ -4,7 +4,6 @@
 #include "../config/server_config.h"
 #include "../include/ChatService.h"
 #include "../include/log.h"
-#include "OnlineUsers.h"
 
 using json = nlohmann::json;
 
@@ -34,6 +33,7 @@ TcpConnection::TcpConnection(int fd,
 // 接受数据操作
 TcpConnection::~TcpConnection() {
     // 判断 读写缓存区是否还有数据没有被处理
+    m_redis->hset(m_account, "status", "offline");
     if (m_readBuf && m_readBuf->readableSize() == 0 && m_writeBuf &&
         m_writeBuf->readableSize() == 0) {
         delete m_writeBuf;
@@ -207,22 +207,32 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             responseJson["online_friends"] = m_friendservice->m_onlineFriends;
             responseJson["offline_friends"] = m_friendservice->m_offlineFriends;
             responseJson["type"] = FRIEND_LIST_ACK;
-        } else if (requestType == FRIEND_ADD) {
+        } else if (requestType == FRIEND_ACK) {
+            responseJson["type"] = FRIEND_ACK;
+            responseJson["friendtype"] = FRIEND_ADD;
             string account = requestDataJson["account"];
             auto storedName = m_redis->hget(account, "username");
 
             if (!storedName) {
-                responseJson["friendtype"] = NOT_REGISTERED;
+                responseJson["status"] = NOT_REGISTERED;
             } else {
                 string name = storedName.value();
                 string key = account + "_Friend";
                 m_redis->hset(key, account, name);
-                responseJson["friendtype"] = SUCCESS_ADD_FRIEND;
+                responseJson["status"] = SUCCESS_ADD_FRIEND;
             }
         } else if (requestType == FRIEND_DELETE) {
+            responseJson["type"] = FRIEND_ACK;
+            responseJson["friendtype"] = FRIEND_DELETE;
         } else if (requestType == FRIEND_REQUIRY) {
+            responseJson["type"] = FRIEND_ACK;
+            responseJson["friendtype"] = FRIEND_REQUIRY;
         } else if (requestType == FRIEND_CHAT) {
+            responseJson["type"] = FRIEND_ACK;
+            responseJson["friendtype"] = FRIEND_CHAT;
         } else if (requestType == FRIEND_BLOCK) {
+            responseJson["type"] = FRIEND_ACK;
+            responseJson["friendtype"] = FRIEND_BLOCK;
         } else {
             // 未知的请求类型
             return false;  // 返回解析失败标志

@@ -3,6 +3,8 @@
 #include <string>
 #include <unordered_map>
 #include "OnlineUsers.h"
+#include <sw/redis++/redis++.h>  // 添加Redis++头文件
+
 using namespace std;
 class FriendService {
    public:

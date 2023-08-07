@@ -296,4 +296,8 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
  /usr/include/c++/13.2.1/thread /usr/include/c++/13.2.1/bits/std_thread.h \
  /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/../config/client_config.h
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/../config/client_config.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h \
+ /usr/include/c++/13.2.1/set /usr/include/c++/13.2.1/bits/stl_set.h \
+ /usr/include/c++/13.2.1/bits/stl_multiset.h \
+ /usr/include/c++/13.2.1/stdlib.h

@@ -1,4 +1,6 @@
 #include "TcpClient.h"
+#include <stdlib.h>
+
 using namespace std;
 // client初始化，socket,sem
 TcpClient::TcpClient() {
@@ -9,6 +11,7 @@ TcpClient::TcpClient() {
         exit(-1);
     }
     // 初始化信号量
+    
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager = new FriendManager(m_fd, m_rwsem);
 }
@@ -78,19 +81,31 @@ void TcpClient::run() {
                     getInfo(account);
                     // 进入主菜单
                     mainMenu();
-                    int mainMenuChoice;
-                    cin >> mainMenuChoice;
-                    switch (mainMenuChoice) {
-                        case 1:
-                            m_friendmanager->fiendMenu();
+
+                    while (true) {
+                        int mainMenuChoice;
+                        cin >> mainMenuChoice;
+                        sleep(1);
+                        // system("clear");
+                        switch (mainMenuChoice) {
+                            case 1:
+                                m_friendmanager->fiendMenu();
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                break;
+                            case 4:
+                                break;
+                            default:
+                                // 当进入default分支时，设置条件为false，退出循环
+                                mainMenuChoice = 0;
+                                break;
+                        }
+                        if (mainMenuChoice == 0) {
+                            // 在default分支中设置mainMenuChoice为0，退出循环
                             break;
-                        case 2:
-                            break;
-                        case 3:
-                            break;
-                        case 4:
-                            break;
-                        default:
+                        }
                     }
                 }
                 break;
@@ -193,10 +208,32 @@ void TcpClient::readTaskHandler(int cfd) {
                 case FRIEND_LIST_ACK:
                     handleFriendListResponse(js);
                     sem_post(&m_rwsem);
-        
+                    break;
                 case FRIEND_ACK:
-
-                case GET_INFO_SUCCESS:
+                    int friendtype;
+                    friendtype = js["friendtype"].get<int>();
+                    switch (friendtype) {
+                        case FRIEND_ADD:
+                            handleFriendAddResponse(js);
+                            break;
+                        case FRIEND_DELETE:
+                            handleFriendDeleteResponse(js);
+                            break;
+                        case FRIEND_REQUIRY:
+                            handleFriendRequiryResponse(js);
+                            break;
+                        case FRIEND_CHAT:
+                            handleFriendChatResponse(js);
+                            break;
+                        case FRIEND_BLOCK:
+                            handleFriendBlockResponse(js);
+                            break;
+                    }
+                    sem_post(&m_rwsem);
+                    break;
+                case GET_INFO:
+                    sem_post(&m_rwsem);
+                    break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
                     break;
@@ -244,6 +281,50 @@ void TcpClient::handleRegisterResponse(const json& message) {
     }
 }
 
+// 好友间聊天处理
+void TcpClient::handleOneChatMessage(const json& message) {
+    ;
+}
+
+// 群聊处理
+void TcpClient::handleGroupChatMessage(const json& message) {
+    ;
+}
+
+// 获取好友列表
+void TcpClient::handleFriendListResponse(const json& message) {
+    try {
+        cout << "----handleFriendListResponse" << endl;
+        m_friendmanager->onlineFriends = message["online_friends"];
+        m_friendmanager->offlineFriends = message["offline_friends"];
+    } catch (const exception& e) {
+        cout << "handleFriendListResponse error :" << e.what() << endl;
+    }
+}
+
+// 处理添加好友请求回应
+void TcpClient::handleFriendAddResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == NOT_REGISTERED) {
+        cout << "account didn't register" << endl;
+    }
+    if (status == SUCCESS_ADD_FRIEND) {
+        cout << "add friend successfully!" << endl;
+    }
+}
+
+// 处理删除好友请求回应
+void TcpClient::handleFriendDeleteResponse(const json& message) {}
+
+// 处理好友聊天请求回应
+void TcpClient::handleFriendChatResponse(const json& message) {}
+
+// 处理查询好友请求回应
+void TcpClient::handleFriendRequiryResponse(const json& message) {}
+
+// 处理拉黑好友请求回应
+void TcpClient::handleFriendBlockResponse(const json& message) {}
+
 // 向数据中加入数据长度
 void TcpClient::addDataLen(json& js) {
     string prerequest = js.dump();  // 序列化
@@ -274,27 +355,11 @@ void TcpClient::mainMenu() {
     cout << "               #####################################" << endl;
 }
 
-void TcpClient::handleOneChatMessage(const json& message) {
-    ;
-}
-
-void TcpClient::handleGroupChatMessage(const json& message) {
-    ;
-}
-
-void TcpClient::handleFriendListResponse(const json& message) {
-    try {
-        m_friendmanager->onlineFriends = message["online_friends"];
-        m_friendmanager->offlineFriends = message["offline_friends"];
-    } catch (const exception& e) {
-        cout << "handleFriendListResponse error :" << e.what() << endl;
-    }
-    
-}
-
+// 得到账号信息
 void TcpClient::getInfo(string account) {
     json js;
     js["type"] = GET_INFO_TYPE;
+    addDataLen(js);
     string request = js.dump();
     int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
     if (0 == len || -1 == len) {

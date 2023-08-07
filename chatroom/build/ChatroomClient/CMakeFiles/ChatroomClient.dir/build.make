@@ -69,10 +69,24 @@ include ChatroomClient/CMakeFiles/ChatroomClient.dir/progress.make
 # Include the compile flags for this target's objects.
 include ChatroomClient/CMakeFiles/ChatroomClient.dir/flags.make
 
+ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: ChatroomClient/CMakeFiles/ChatroomClient.dir/flags.make
+ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/FriendManager.cpp
+ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: ChatroomClient/CMakeFiles/ChatroomClient.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o"
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o -MF CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o.d -o CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o -c /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/FriendManager.cpp
+
+ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.i"
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/FriendManager.cpp > CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.i
+
+ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.s"
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/FriendManager.cpp -o CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.s
+
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: ChatroomClient/CMakeFiles/ChatroomClient.dir/flags.make
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/TcpClient.cpp
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: ChatroomClient/CMakeFiles/ChatroomClient.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o"
 	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o -MF CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o.d -o CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o -c /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/TcpClient.cpp
 
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.i: cmake_force
@@ -86,7 +100,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.s: cmake_force
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: ChatroomClient/CMakeFiles/ChatroomClient.dir/flags.make
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/main.cpp
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: ChatroomClient/CMakeFiles/ChatroomClient.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o"
 	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o -MF CMakeFiles/ChatroomClient.dir/src/main.cpp.o.d -o CMakeFiles/ChatroomClient.dir/src/main.cpp.o -c /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/main.cpp
 
 ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.i: cmake_force
@@ -99,17 +113,19 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.s: cmake_force
 
 # Object files for target ChatroomClient
 ChatroomClient_OBJECTS = \
+"CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o" \
 "CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o" \
 "CMakeFiles/ChatroomClient.dir/src/main.cpp.o"
 
 # External object files for target ChatroomClient
 ChatroomClient_EXTERNAL_OBJECTS =
 
+ChatroomClient/ChatroomClient: ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o
 ChatroomClient/ChatroomClient: ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o
 ChatroomClient/ChatroomClient: ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o
 ChatroomClient/ChatroomClient: ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make
 ChatroomClient/ChatroomClient: ChatroomClient/CMakeFiles/ChatroomClient.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable ChatroomClient"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/earlymor/文档/earlymor-Chatroom/chatroom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable ChatroomClient"
 	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build/ChatroomClient && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ChatroomClient.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -130,6 +130,30 @@ ChatroomClient/fast:
 	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/build
 .PHONY : ChatroomClient/fast
 
+src/FriendManager.o: src/FriendManager.cpp.o
+.PHONY : src/FriendManager.o
+
+# target to build an object file
+src/FriendManager.cpp.o:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o
+.PHONY : src/FriendManager.cpp.o
+
+src/FriendManager.i: src/FriendManager.cpp.i
+.PHONY : src/FriendManager.i
+
+# target to preprocess a source file
+src/FriendManager.cpp.i:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.i
+.PHONY : src/FriendManager.cpp.i
+
+src/FriendManager.s: src/FriendManager.cpp.s
+.PHONY : src/FriendManager.s
+
+# target to generate assembly for a file
+src/FriendManager.cpp.s:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.s
+.PHONY : src/FriendManager.cpp.s
+
 src/TcpClient.o: src/TcpClient.cpp.o
 .PHONY : src/TcpClient.o
 
@@ -187,6 +211,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... ChatroomClient"
+	@echo "... src/FriendManager.o"
+	@echo "... src/FriendManager.i"
+	@echo "... src/FriendManager.s"
 	@echo "... src/TcpClient.o"
 	@echo "... src/TcpClient.i"
 	@echo "... src/TcpClient.s"

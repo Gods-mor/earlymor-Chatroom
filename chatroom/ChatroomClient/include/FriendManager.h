@@ -2,9 +2,14 @@
 #include <semaphore.h>
 #include <iostream>
 #include <set>
+#include <unordered_map>
+#include <vector>
+#include <string>
+
+using namespace std;
 class FriendManager {
    public:
-    FriendManager(int fd, sem_t rwsem);
+    FriendManager(int fd, sem_t& rwsem);
     ~FriendManager();
     void fiendMenu();      // 好友功能主菜单
     void showFriendFunctionMenu();
@@ -19,6 +24,6 @@ class FriendManager {
     int m_onlineNumber;                            // 在线人数
    private:
     int m_fd;  // 通信fd
-    sem_t m_rwsem;
+    sem_t& m_rwsem;
     vector<string> userFriends;  // 用户的所有好友列表
 };

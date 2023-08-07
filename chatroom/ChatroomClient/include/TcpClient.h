@@ -26,6 +26,11 @@ class TcpClient {
     void mainMenu();     // 主菜单
 
     void readTaskHandler(int cfd);  // 子线程用于读数据
+    void handleFriendAddResponse(const json& message);
+    void handleFriendDeleteResponse(const json& message);
+    void handleFriendChatResponse(const json& message);
+    void handleFriendRequiryResponse(const json& message);
+    void handleFriendBlockResponse(const json& message);
     void handleOneChatMessage(const json& message);
     void handleGroupChatMessage(const json& message);
     void handleLoginResponse(const json& message);
