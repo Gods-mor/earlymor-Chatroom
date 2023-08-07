@@ -1,5 +1,6 @@
 #include "TcpClient.h"
 #include <stdlib.h>
+#include <iostream>
 
 using namespace std;
 // client初始化，socket,sem
@@ -11,14 +12,16 @@ TcpClient::TcpClient() {
         exit(-1);
     }
     // 初始化信号量
-    
+
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager = new FriendManager(m_fd, m_rwsem);
 }
 
 // 析构回收资源
 TcpClient::~TcpClient() {
-    ;
+    close(m_fd);
+    sem_destroy(&m_rwsem);
+    delete m_friendmanager;
 }
 
 // 连接server -> 启动client
@@ -51,119 +54,19 @@ void TcpClient::run() {
     for (;;) {
         welcomeMenu();
         int choice = 0;
+        cout << "请输入：";
         cin >> choice;
         cin.get();
         switch (choice) {
             case LOGIN: {
-                std::string account;  // 11位账号id
-                std::string pwd;
-                cout << "不支持输入空格" << endl;
-                cout << "account:";
-                cin >> account;
-                cout << "userpassword:";
-                cin >> pwd;
-
-                json js;
-                js["type"] = LOGIN_MSG_TYPE;
-                js["account"] = account;
-                js["password"] = pwd;
-                addDataLen(js);
-                string request = js.dump();
-                int len =
-                    send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
-                if (len == -1) {
-                    cerr << "send login msg error:" << request << endl;
-                }
-                sem_wait(
-                    &m_rwsem);  // 等待信号量，由子线程处理完登录的响应消息后，通知这里
-                if (is_LoginSuccess) {
-                    // 初始化个人信息
-                    getInfo(account);
-                    // 进入主菜单
-                    mainMenu();
-
-                    while (true) {
-                        int mainMenuChoice;
-                        cin >> mainMenuChoice;
-                        sleep(1);
-                        // system("clear");
-                        switch (mainMenuChoice) {
-                            case 1:
-                                m_friendmanager->fiendMenu();
-                                break;
-                            case 2:
-                                break;
-                            case 3:
-                                break;
-                            case 4:
-                                break;
-                            default:
-                                // 当进入default分支时，设置条件为false，退出循环
-                                mainMenuChoice = 0;
-                                break;
-                        }
-                        if (mainMenuChoice == 0) {
-                            // 在default分支中设置mainMenuChoice为0，退出循环
-                            break;
-                        }
-                    }
-                }
+                handleLogin();
                 break;
             }
             case REGISTER: {
-                std::string account;
-                std::string name;
-                std::string pwd;
-                cout << "不支持输入空格" << endl;
-                cout << "account(11位以内):";
-                cin >> account;
-                if (account.length() > 11) {
-                    std::cout << "Input exceeded the maximum allowed length. "
-                                 "Truncating..."
-                              << std::endl;
-                    account = account.substr(
-                        0, 11);  // Truncate the input to 11 characters
-                }
-                cout << "username(20字符以内):";
-                cin >> name;
-                if (name.length() > 20) {
-                    std::cout << "Input exceeded the maximum allowed length. "
-                                 "Truncating..."
-                              << std::endl;
-                    account = account.substr(
-                        0, 20);  // Truncate the input to 10 characters
-                }
-                cout << "userpassword(20字符以内):";
-                cin >> pwd;
-                if (pwd.length() > 20) {
-                    std::cout << "Input exceeded the maximum allowed length. "
-                                 "Truncating..."
-                              << std::endl;
-                    account = account.substr(
-                        0, 20);  // Truncate the input to 10 characters
-                }
-                json js;
-                js["type"] = REG_MSG_TYPE;
-                js["username"] = name;
-                js["account"] = account;
-                js["password"] = pwd;
-                addDataLen(js);
-                string request = js.dump();
-
-                int len =
-                    send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
-                if (len == -1) {
-                    cerr << "send reg msg error:" << request << endl;
-                }
-
-                sem_wait(&m_rwsem);  // 等待信号量，子线程处理完注册消息会通知
-
-                cout << "pthread work successfully" << endl;
+                handleRegister();
                 break;
             }
             case QUIT: {
-                close(m_fd);
-                sem_destroy(&m_rwsem);
                 exit(0);
             }
             default:
@@ -314,21 +217,37 @@ void TcpClient::handleFriendAddResponse(const json& message) {
 }
 
 // 处理删除好友请求回应
-void TcpClient::handleFriendDeleteResponse(const json& message) {}
-
+void TcpClient::handleFriendDeleteResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == NOT_FRIEND) {
+        cout << "The person is not your friend" << endl;
+    }
+    if (status == SUCCESS_DELETE_FRIEND) {
+        cout << "delete friend successfully!" << endl;
+    }
+}
 // 处理好友聊天请求回应
 void TcpClient::handleFriendChatResponse(const json& message) {}
 
 // 处理查询好友请求回应
-void TcpClient::handleFriendRequiryResponse(const json& message) {}
+void TcpClient::handleFriendRequiryResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == NOT_FRIEND) {
+        cout << "The person is not your friend" << endl;
+    }
+    if (status == SUCCESS_REQUIRY_FRIEND) {
+        cout << "requiry friend successfully!" << endl;
+    }
+}
 
 // 处理拉黑好友请求回应
 void TcpClient::handleFriendBlockResponse(const json& message) {}
 
 // 向数据中加入数据长度
 void TcpClient::addDataLen(json& js) {
+    js["datalen"] = "";
     string prerequest = js.dump();  // 序列化
-    int datalen = prerequest.length() + 13 + FIXEDWIDTH;
+    int datalen = prerequest.length() + FIXEDWIDTH;
     std::string strNumber = std::to_string(datalen);
     std::string paddedStrNumber =
         std::string(FIXEDWIDTH - strNumber.length(), '0') + strNumber;
@@ -365,4 +284,105 @@ void TcpClient::getInfo(string account) {
     if (0 == len || -1 == len) {
         cerr << "getInfo send error:" << request << endl;
     }
+}
+
+void TcpClient::handleLogin() {
+    std::string account;  // 11位账号id
+    std::string pwd;
+    cout << "不支持输入空格" << endl;
+    cout << "account:";
+    cin >> account;
+    cout << "userpassword:";
+    cin >> pwd;
+
+    json js;
+    js["type"] = LOGIN_MSG_TYPE;
+    js["account"] = account;
+    js["password"] = pwd;
+    addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (len == -1) {
+        cerr << "send login msg error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);  // 等待信号量，由子线程处理完登录的响应消息后，通知这里
+    if (is_LoginSuccess) {
+        // 初始化个人信息
+        getInfo(account);
+        // 进入主菜单
+        mainMenu();
+        handleMainMenu();
+    }
+}
+
+void TcpClient::handleMainMenu() {
+    while (true) {
+        cout << "请输入：";
+        int mainMenuChoice;
+        cin >> mainMenuChoice;
+        cin.get();
+        sleep(1);
+        // system("clear");
+        switch (mainMenuChoice) {
+            case 1:  // 好友
+                m_friendmanager->fiendMenu();
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                // 返回到上一层菜单
+                return;
+            default:
+                cerr << "invalid input!" << endl;
+                break;
+        }
+    }
+}
+
+void TcpClient::handleRegister() {
+    std::string account;
+    std::string name;
+    std::string pwd;
+    cout << "不支持输入空格" << endl;
+    cout << "account(11位以内):";
+    cin >> account;
+    if (account.length() > 11) {
+        std::cout << "Input exceeded the maximum allowed length. Truncating..."
+                  << std::endl;
+        account = account.substr(0, 11);  // Truncate the input to 11 characters
+    }
+    cout << "username(20字符以内):";
+    cin >> name;
+    if (name.length() > 20) {
+        std::cout << "Input exceeded the maximum allowed length. Truncating..."
+                  << std::endl;
+        account = account.substr(0, 20);  // Truncate the input to 20 characters
+    }
+    cout << "userpassword(20字符以内):";
+    cin >> pwd;
+    if (pwd.length() > 20) {
+        std::cout << "Input exceeded the maximum allowed length. Truncating..."
+                  << std::endl;
+        account = account.substr(0, 20);  // Truncate the input to 20 characters
+    }
+    json js;
+    js["type"] = REG_MSG_TYPE;
+    js["username"] = name;
+    js["account"] = account;
+    js["password"] = pwd;
+    addDataLen(js);
+    string request = js.dump();
+
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (len == -1) {
+        cerr << "send reg msg error:" << request << endl;
+    }
+
+    sem_wait(&m_rwsem);  // 等待信号量，子线程处理完注册消息会通知
+
+    cout << "pthread work successfully" << endl;
 }

@@ -1,4 +1,8 @@
 #include "../include/TcpConnection.h"
+#include <sys/epoll.h>
+#include <sys/timerfd.h>
+#include <chrono>
+#include <ctime>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "../config/server_config.h"
@@ -11,7 +15,10 @@ TcpConnection::TcpConnection(int fd,
                              EventLoop* evloop,
                              std::shared_ptr<sw::redis::Redis> redis,
                              std::shared_ptr<OnlineUsers> onlineUsersPtr_)
-    : m_evLoop(evloop), m_redis(redis), m_onlineUsersPtr_(onlineUsersPtr_) {
+    : m_evLoop(evloop),
+      m_redis(redis),
+      m_onlineUsersPtr_(onlineUsersPtr_),
+      m_fd(fd) {
     // 并没有创建evloop，当前的TcpConnect都是在子线程中完成的
 
     m_readBuf = new Buffer(10240);  // 10K
@@ -22,11 +29,43 @@ TcpConnection::TcpConnection(int fd,
     m_name = "Connection-" + to_string(fd);
 
     m_friendservice = new FriendService(redis, onlineUsersPtr_);
-
     // 服务器最迫切想知道的，客户端有没有数据到达
     m_channel = new Channel(fd, FDEvent::ReadEvent, processRead, processWrite,
                             destory, this);
     Debug("Channel初始化成功....");
+    // 初始化定时器
+    // m_heartbeatTimerFd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK);
+    // if (m_heartbeatTimerFd == -1) {
+    //     cerr << "Failed to create timerfd." << endl;
+    //     // 处理错误
+    // }
+
+    // // 初始化EPOLL
+    // m_epollFd = epoll_create1(0);
+    // if (m_epollFd == -1) {
+    //     cerr << "Failed to create epoll." << endl;
+    //     // 处理错误
+    // }
+
+    // // 将定时器和连接的文件描述符添加到EPOLL中
+    // struct epoll_event event;
+    // event.events = EPOLLIN | EPOLLET;  // 设置边缘触发模式
+    // event.data.fd = fd;
+    // if (epoll_ctl(m_epollFd, EPOLL_CTL_ADD, fd, &event) == -1) {
+    //     cerr << "Failed to add fd to epoll." << endl;
+    //     // 处理错误
+    // }
+
+    // event.events = EPOLLIN;  // 定时器只需要读事件
+    // event.data.fd = m_heartbeatTimerFd;
+    // if (epoll_ctl(m_epollFd, EPOLL_CTL_ADD, m_heartbeatTimerFd, &event) ==
+    // -1) {
+    //     cerr << "Failed to add timerfd to epoll." << endl;
+    //     // 处理错误
+    // }
+
+    // // 启动心跳定时器
+    // startHeartbeat();
     // 把channel放到任务循环的任务队列里面
     evloop->AddTask(m_channel, ElemType::ADD);
 }
@@ -43,6 +82,8 @@ TcpConnection::~TcpConnection() {
         delete m_friendservice;
         delete m_groupservice;
         m_evLoop->freeChannel(m_channel);
+        close(m_heartbeatTimerFd);
+        close(m_epollFd);
     }
 
     Debug("连接断开，释放资源, connName： %s", m_name.c_str());
@@ -72,10 +113,8 @@ int TcpConnection::processRead(void* arg) {
             conn->m_writeBuf->appendString(errMsg);
         }
     } else {
-#ifdef MSG_SEND_AUTO  // 如果被定义，
         // 断开连接
         conn->m_evLoop->AddTask(conn->m_channel, ElemType::DELETE);
-#endif
     }
     // 断开连接 完全写入缓存区再发送不能立即关闭，还没有发送
 #ifndef MSG_SEND_AUTO  // 如果没有被定义，
@@ -138,8 +177,13 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         Debug("requestType:%d", requestType);
         // 根据请求类型执行不同的操作
         json responseJson;
+
         // "登录"
-        if (requestType == LOGIN_MSG_TYPE) {
+        if (requestType == HEARTBEAT_IDENTIFIER) {
+            cout << "Received heartbeat from client." << endl;
+            // 更新上次收到心跳的时间
+            responseJson["type"] = HEARTBEAT_RESPONSE;
+        } else if (requestType == LOGIN_MSG_TYPE) {
             // 从JSON数据中获取输入信息（账号密码）
             std::string account = requestDataJson["account"];
             std::string password = requestDataJson["password"];
@@ -207,33 +251,68 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             responseJson["online_friends"] = m_friendservice->m_onlineFriends;
             responseJson["offline_friends"] = m_friendservice->m_offlineFriends;
             responseJson["type"] = FRIEND_LIST_ACK;
-        } else if (requestType == FRIEND_ACK) {
+        } else if (requestType == FRIEND_TYPE) {
+            cout << "requestType == FRIEND_TYPE" << endl;
             responseJson["type"] = FRIEND_ACK;
-            responseJson["friendtype"] = FRIEND_ADD;
-            string account = requestDataJson["account"];
-            auto storedName = m_redis->hget(account, "username");
+            int friendType = requestDataJson["friendtype"].get<int>();
+            cout << "friendType:" << friendType << endl;
+            if (friendType == FRIEND_ADD) {
+                Debug("addfriend");
+                responseJson["friendtype"] = FRIEND_ADD;
+                string account = requestDataJson["account"];
+                auto storedName = m_redis->hget(account, "username");
 
-            if (!storedName) {
-                responseJson["status"] = NOT_REGISTERED;
-            } else {
-                string name = storedName.value();
-                string key = account + "_Friend";
-                m_redis->hset(key, account, name);
-                responseJson["status"] = SUCCESS_ADD_FRIEND;
+                if (!storedName) {
+                    responseJson["status"] = NOT_REGISTERED;
+                } else {
+                    string name = storedName.value();
+                    string key = m_account + "_Friend";
+                    m_redis->hset(key, account, name);
+                    responseJson["status"] = SUCCESS_ADD_FRIEND;
+                }
             }
-        } else if (requestType == FRIEND_DELETE) {
-            responseJson["type"] = FRIEND_ACK;
-            responseJson["friendtype"] = FRIEND_DELETE;
-        } else if (requestType == FRIEND_REQUIRY) {
-            responseJson["type"] = FRIEND_ACK;
-            responseJson["friendtype"] = FRIEND_REQUIRY;
-        } else if (requestType == FRIEND_CHAT) {
-            responseJson["type"] = FRIEND_ACK;
-            responseJson["friendtype"] = FRIEND_CHAT;
-        } else if (requestType == FRIEND_BLOCK) {
-            responseJson["type"] = FRIEND_ACK;
-            responseJson["friendtype"] = FRIEND_BLOCK;
-        } else {
+
+            else if (friendType == FRIEND_DELETE) {
+                responseJson["friendtype"] = FRIEND_DELETE;
+                responseJson["type"] = FRIEND_ACK;
+                string key = m_account + "_Friend";
+                string account = requestDataJson["account"];
+                auto storedName = m_redis->hget(key, account);
+                if (!storedName) {
+                    responseJson["status"] = NOT_FRIEND;
+                } else {
+                    string name = storedName.value();
+                    m_redis->hdel(key, account);
+                    responseJson["status"] = SUCCESS_DELETE_FRIEND;
+                }
+            }
+
+            else if (friendType == FRIEND_REQUIRY) {
+                responseJson["friendtype"] = FRIEND_DELETE;
+                responseJson["type"] = FRIEND_ACK;
+                string key = m_account + "_Friend";
+                string account = requestDataJson["account"];
+                auto storedName = m_redis->hget(key, account);
+                if (!storedName) {
+                    responseJson["status"] = NOT_FRIEND;
+                } else {
+                    string name = storedName.value();
+                    responseJson["status"] = SUCCESS_REQUIRY_FRIEND;
+                }
+
+            } else if (friendType == FRIEND_CHAT) {
+                responseJson["friendtype"] = FRIEND_CHAT;
+                responseJson["type"] = FRIEND_ACK;
+
+            }
+
+            else if (friendType == FRIEND_BLOCK) {
+                responseJson["friendtype"] = FRIEND_BLOCK;
+                responseJson["type"] = FRIEND_ACK;
+            }
+        }
+
+        else {
             // 未知的请求类型
             return false;  // 返回解析失败标志
         }
@@ -243,7 +322,6 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         // 添加检测写事件
         m_channel->writeEventEnable(true);
         m_evLoop->AddTask(m_channel, ElemType::MODIFY);
-
     } catch (const std::exception& e) {
         cout << "Json parse error :" << e.what() << endl;
         // JSON解析错误
@@ -274,4 +352,62 @@ void TcpConnection::setOnline() {
     } else {
         std::cerr << "Error: m_onlineUsersPtr_ is nullptr" << std::endl;
     }
+}
+
+void TcpConnection::startHeartbeat() {
+    struct itimerspec its;
+    its.it_interval.tv_sec = 5;  // 心跳间隔：5秒
+    its.it_interval.tv_nsec = 0;
+    its.it_value.tv_sec = 1;  // 第一次心跳延迟：1秒
+    its.it_value.tv_nsec = 0;
+
+    if (timerfd_settime(m_heartbeatTimerFd, 0, &its, NULL) == -1) {
+        cerr << "Failed to start heartbeat timer." << endl;
+        // 处理错误
+    }
+
+    // 创建线程来处理EPOLL事件
+    // 在这里略去了线程的创建和管理代码
+    // 可以使用线程池或其他方式来处理事件
+    handleEpollEvents();
+}
+void TcpConnection::handleEpollEvents() {
+    // 定义事件数组和缓冲区
+    struct epoll_event events[2];  // 最多处理2个事件
+    char buffer[8];                // 用于读取timerfd事件
+
+    while (true) {
+        int nfds = epoll_wait(m_epollFd, events, 2, -1);
+        if (nfds == -1) {
+            cerr << "epoll_wait error." << endl;
+            // 处理错误
+            continue;
+        }
+
+        for (int i = 0; i < nfds; ++i) {
+            if (events[i].data.fd == m_fd) {
+                // 处理连接上的数据读取事件
+                // 例如，读取客户端发送的心跳包或其他数据
+                handleDataRead();
+            } else if (events[i].data.fd == m_heartbeatTimerFd) {
+                // 处理定时器事件
+                // 读取定时器事件，以清除已触发的定时器
+                read(m_heartbeatTimerFd, buffer, sizeof(buffer));
+                // 发送心跳包给客户端
+                sendHeartbeatPacket();
+            }
+        }
+    }
+}
+
+void TcpConnection::sendHeartbeatPacket() {
+    // 构造心跳包并发送给客户端
+    // 省略具体实现...
+    cout << "Sending heartbeat packet..." << endl;
+}
+
+void TcpConnection::handleDataRead() {
+    // 处理连接上的数据读取事件
+    // 省略具体实现...
+    cout << "Handling data read..." << endl;
 }

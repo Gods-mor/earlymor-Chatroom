@@ -13,8 +13,14 @@ FriendService::~FriendService() {}
 void FriendService::getList() {
     try {
         string key = m_account + "_Friend";
-        m_redis->hgetall(key,
-                         std::inserter(m_userFriends, m_userFriends.begin()));  // 获取哈希所有好友账号：昵称（keys）
+        m_redis->hgetall(
+            key,
+            std::inserter(
+                m_userFriends,
+                m_userFriends.begin()));  // 获取哈希所有好友账号：昵称（keys）
+                
+        m_onlineFriends.clear();
+        m_offlineFriends.clear();
         // 遍历 m_userFriends 的键，与 m_onlineUsers 进行交集操作
         for (const auto& entry : m_userFriends) {
             const std::string& friendAccount = entry.first;
@@ -25,7 +31,9 @@ void FriendService::getList() {
                 m_offlineFriends.insert(entry);
             }
         }
-
+        for (const std::string& user : m_onlineUsersPtr_->m_onlineUsers) {
+            std::cout << user << std::endl;
+        }
     } catch (const exception& e) {
         std::cout << "get hkeys from redis error:" << e.what() << std::endl;
     }

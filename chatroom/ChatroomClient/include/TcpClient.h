@@ -24,6 +24,9 @@ class TcpClient {
 
     void welcomeMenu();  // 登录菜单
     void mainMenu();     // 主菜单
+    void handleLogin();
+    void handleMainMenu();
+    void handleRegister();
 
     void readTaskHandler(int cfd);  // 子线程用于读数据
     void handleFriendAddResponse(const json& message);

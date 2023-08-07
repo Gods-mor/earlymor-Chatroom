@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include "Buffer.h"
 #include "Channel.h"
 #include "ChatService.h"
@@ -29,6 +30,13 @@ class TcpConnection {
     void setOnline();
 
    private:
+    void startHeartbeat();
+    void handleEpollEvents();
+    void sendHeartbeatPacket();
+    void handleDataRead();
+    int m_heartbeatTimerFd;  // 心跳定时器的文件描述符
+    int m_fd;
+    int m_epollFd;  // epoll的文件描述符
     ChatService* m_chatservice;
     UserService* m_userservice;
     FriendService* m_friendservice;
@@ -43,4 +51,5 @@ class TcpConnection {
     string m_account;
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
     std::shared_ptr<OnlineUsers> m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
+
 };

@@ -43,8 +43,10 @@ void FriendManager::fiendMenu() {
             cout << entry.second << "(" << entry.first << ")" << endl;
         }
         showFriendFunctionMenu();
+        cout << "请输入：";
         int choice;
         cin >> choice;
+        cin.get();
         switch (choice) {
             case 1:  // 添加好友
                 addFriend();
@@ -111,7 +113,8 @@ void FriendManager::addFriend() {
         account = account.substr(0, 11);  // Truncate the input to 10 characters
     }
     json js;
-    js["type"] = FRIEND_ADD;
+    js["type"] = FRIEND_TYPE;
+    js["friendtype"] = FRIEND_ADD;
     js["account"] = account;
     TcpClient::addDataLen(js);
     string request = js.dump();

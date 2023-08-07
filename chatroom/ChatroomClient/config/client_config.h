@@ -12,6 +12,7 @@ constexpr int LOGIN_MSG_TYPE = 1;
 constexpr int REG_MSG_TYPE = 2;
 constexpr int GET_INFO_TYPE = 3;
 constexpr int FRIEND_GET_LIST = 4;
+constexpr int FRIEND_TYPE = 5;
 // 好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -42,6 +43,9 @@ constexpr int REGISTER_FAILED = 1;   // 注册失败
 constexpr int ACCOUNT_EXIST = 2;     // 帐号已注册
 // 好友功能回应
 constexpr int SUCCESS_ADD_FRIEND = 1;
+constexpr int NOT_FRIEND = 0;
+constexpr int SUCCESS_DELETE_FRIEND = 1;
+constexpr int SUCCESS_REQUIRY_FRIEND = 1;
 // 定义颜色宏
 #define RESET_COLOR "\033[0m"     // 恢复默认颜色
 #define RED_COLOR "\033[31m"      // 红色

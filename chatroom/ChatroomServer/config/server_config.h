@@ -3,14 +3,17 @@
 #define HOST "127.0.0.1"
 
 #define THREAD_NUMBERS 1
-const int FIXEDWIDTH = 4;
-
+// 心跳间隔和超时时间（单位：秒）
+constexpr int HEARTBEAT_INTERVAL = 5;
+constexpr int HEARTBEAT_TIMEOUT = 15;
+constexpr int HEARTBEAT_IDENTIFIER = -1;
+constexpr int HEARTBEAT_RESPONSE = -2;
 // 客户端选项请求
 constexpr int LOGIN_MSG_TYPE = 1;
 constexpr int REG_MSG_TYPE = 2;
 constexpr int GET_INFO_TYPE = 3;
 constexpr int FRIEND_GET_LIST = 4;
-
+constexpr int FRIEND_TYPE = 5;
 // 客户端好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -41,3 +44,6 @@ constexpr int PASS = 3;
 constexpr int ERR = 4;
 // 好友功能回应
 constexpr int SUCCESS_ADD_FRIEND = 1;
+constexpr int NOT_FRIEND = 0;
+constexpr int SUCCESS_DELETE_FRIEND = 1;
+constexpr int SUCCESS_REQUIRY_FRIEND = 1;
