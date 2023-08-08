@@ -1,5 +1,6 @@
 #pragma once
 #include <chrono>
+#include <nlohmann/json.hpp>
 #include "Buffer.h"
 #include "Channel.h"
 #include "ChatService.h"
@@ -9,6 +10,7 @@
 #include "UserService.h"
 #include "sw/redis++/redis++.h"  // 添加Redis++头文件
 
+using json = nlohmann::json;
 // 区分两者不同发送方式，
 // 1,全部放到缓存区再发送，2，变放边发送
 // 定义就是第一种
@@ -20,7 +22,8 @@ class TcpConnection {
    public:
     TcpConnection(int fd,
                   EventLoop* evloop,
-                  std::shared_ptr<sw::redis::Redis> redis,std::shared_ptr<OnlineUsers> onlineUsersPtr_);
+                  std::shared_ptr<sw::redis::Redis> redis,
+                  std::shared_ptr<OnlineUsers> onlineUsersPtr_);
     ~TcpConnection();
     static int processRead(void* arg);   // 读回调
     static int processWrite(void* arg);  // 写回调
@@ -34,6 +37,19 @@ class TcpConnection {
     void handleEpollEvents();
     void sendHeartbeatPacket();
     void handleDataRead();
+    void handleLogin(json requestDataJson, json& responseJson);
+    void handleRegister(json requestDataJson, json& responseJson);
+    void handleGetList(json requestDataJson, json& responseJson);
+    void handleFriend(json requestDataJson, json& responseJson);
+    void handleGetInfo(json requestDataJson, json& responseJson);
+    void handleFriendAdd(json requestDataJson, json& responseJson);
+    void handleFriendDelete(json requestDataJson, json& responseJson);
+    void handleFriendRequiry(json requestDataJson, json& responseJson);
+    void handleFriendBlock(json requestDataJson, json& responseJson);
+    void handleFriendChat(json requestDataJson, json& responseJson);
+    void handleFriendChatWith(json requestDataJson, json& responseJson);
+    void getChatHistory(json requestDataJson, json& responseJson);
+
     int m_heartbeatTimerFd;  // 心跳定时器的文件描述符
     int m_fd;
     int m_epollFd;  // epoll的文件描述符
@@ -50,6 +66,6 @@ class TcpConnection {
     string m_username;
     string m_account;
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
-    std::shared_ptr<OnlineUsers> m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
-
+    std::shared_ptr<OnlineUsers>
+        m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
 };

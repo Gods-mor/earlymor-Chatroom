@@ -184,132 +184,23 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             // 更新上次收到心跳的时间
             responseJson["type"] = HEARTBEAT_RESPONSE;
         } else if (requestType == LOGIN_MSG_TYPE) {
-            // 从JSON数据中获取输入信息（账号密码）
-            std::string account = requestDataJson["account"];
-            std::string password = requestDataJson["password"];
-            cout << "get account:" << account << endl;
-            cout << "get password:" << password << endl;
-            // 处理登录请求
-            int loginstatus = m_userservice->checkLogin(account, password);
-            cout << "get loginstatus" << endl;
-
-            // 登录成功则记录账号信息
-            if (loginstatus == PASS) {
-                m_account = account;
-                setOnline();
-            }
-
-            // 构建登录响应JSON
-            responseJson["type"] = LOGIN_MSG_ACK;
-            responseJson["loginstatus"] = loginstatus;
+            handleLogin(requestDataJson, responseJson);
         }
-
         // “注册”
         else if (requestType == REG_MSG_TYPE) {
-            Debug("处理注册请求");
-            std::string account = requestDataJson["account"];
-            std::string password = requestDataJson["password"];
-            std::string username = requestDataJson["username"];
-            cout << "get account:" << account << endl;
-            cout << "get password:" << password << endl;
-            cout << "get username:" << username << endl;
-            int registerStatus =
-                m_userservice->registerUser(account, password, username);
-            cout << "get registerStatus:" << registerStatus << endl;
-            // 构建注册响应JSON
-
-            responseJson["type"] = REG_MSG_ACK;
-            switch (registerStatus) {
-                case REGISTER_SUCCESS:
-                    responseJson["status"] = REG_SUCCESS;
-                    responseJson["errno"] = 0;
-                    responseJson["account"] = account;
-                    break;
-                case REGISTER_FAILED:
-                    responseJson["status"] = REG_FAIL;
-                    responseJson["errno"] = 1;
-                    break;
-                case ACCOUNT_EXIST:
-                    responseJson["status"] = REG_REPEAT;
-                    responseJson["errno"] = 2;
-                    break;
-            }
+            handleRegister(requestDataJson, responseJson);
         }
-
         // 登录初始化
         else if (requestType == GET_INFO_TYPE) {
-            getInfo();
-            responseJson["type"] = GET_INFO;
-            responseJson["status"] = GET_INFO_SUCCESS;
+            handleGetInfo(requestDataJson, responseJson);
         }
         //
         else if (requestType == FRIEND_GET_LIST) {
-            // 计算在线好友。
-            m_friendservice->getList();
-            // 构建好友列表响应json
+            handleGetList(requestDataJson, responseJson);
 
-            responseJson["online_friends"] = m_friendservice->m_onlineFriends;
-            responseJson["offline_friends"] = m_friendservice->m_offlineFriends;
-            responseJson["type"] = FRIEND_LIST_ACK;
         } else if (requestType == FRIEND_TYPE) {
-            cout << "requestType == FRIEND_TYPE" << endl;
-            responseJson["type"] = FRIEND_ACK;
-            int friendType = requestDataJson["friendtype"].get<int>();
-            cout << "friendType:" << friendType << endl;
-            if (friendType == FRIEND_ADD) {
-                Debug("addfriend");
-                responseJson["friendtype"] = FRIEND_ADD;
-                string account = requestDataJson["account"];
-                auto storedName = m_redis->hget(account, "username");
+            handleFriend(requestDataJson, responseJson);
 
-                if (!storedName) {
-                    responseJson["status"] = NOT_REGISTERED;
-                } else {
-                    string name = storedName.value();
-                    string key = m_account + "_Friend";
-                    m_redis->hset(key, account, name);
-                    responseJson["status"] = SUCCESS_ADD_FRIEND;
-                }
-            }
-
-            else if (friendType == FRIEND_DELETE) {
-                responseJson["friendtype"] = FRIEND_DELETE;
-                responseJson["type"] = FRIEND_ACK;
-                string key = m_account + "_Friend";
-                string account = requestDataJson["account"];
-                auto storedName = m_redis->hget(key, account);
-                if (!storedName) {
-                    responseJson["status"] = NOT_FRIEND;
-                } else {
-                    string name = storedName.value();
-                    m_redis->hdel(key, account);
-                    responseJson["status"] = SUCCESS_DELETE_FRIEND;
-                }
-            }
-
-            else if (friendType == FRIEND_REQUIRY) {
-                responseJson["friendtype"] = FRIEND_DELETE;
-                responseJson["type"] = FRIEND_ACK;
-                string key = m_account + "_Friend";
-                string account = requestDataJson["account"];
-                auto storedName = m_redis->hget(key, account);
-                if (!storedName) {
-                    responseJson["status"] = NOT_FRIEND;
-                } else {
-                    string name = storedName.value();
-                    responseJson["status"] = SUCCESS_REQUIRY_FRIEND;
-                }
-
-            } else if (friendType == FRIEND_CHAT) {
-                responseJson["friendtype"] = FRIEND_CHAT;
-                responseJson["type"] = FRIEND_ACK;
-
-            }
-
-            else if (friendType == FRIEND_BLOCK) {
-                responseJson["friendtype"] = FRIEND_BLOCK;
-                responseJson["type"] = FRIEND_ACK;
-            }
         }
 
         else {
@@ -371,6 +262,7 @@ void TcpConnection::startHeartbeat() {
     // 可以使用线程池或其他方式来处理事件
     handleEpollEvents();
 }
+
 void TcpConnection::handleEpollEvents() {
     // 定义事件数组和缓冲区
     struct epoll_event events[2];  // 最多处理2个事件
@@ -411,3 +303,193 @@ void TcpConnection::handleDataRead() {
     // 省略具体实现...
     cout << "Handling data read..." << endl;
 }
+
+void TcpConnection::handleLogin(json requestDataJson, json& responseJson) {
+    // 从JSON数据中获取输入信息（账号密码）
+    std::string account = requestDataJson["account"];
+    std::string password = requestDataJson["password"];
+    cout << "get account:" << account << endl;
+    cout << "get password:" << password << endl;
+    // 处理登录请求
+    int loginstatus = m_userservice->checkLogin(account, password);
+    cout << "get loginstatus" << endl;
+
+    // 登录成功则记录账号信息
+    if (loginstatus == PASS) {
+        m_account = account;
+        setOnline();
+    }
+
+    // 构建登录响应JSON
+    responseJson["type"] = LOGIN_MSG_ACK;
+    responseJson["loginstatus"] = loginstatus;
+}
+
+void TcpConnection::handleRegister(json requestDataJson, json& responseJson) {
+    Debug("处理注册请求");
+    std::string account = requestDataJson["account"];
+    std::string password = requestDataJson["password"];
+    std::string username = requestDataJson["username"];
+    cout << "get account:" << account << endl;
+    cout << "get password:" << password << endl;
+    cout << "get username:" << username << endl;
+    int registerStatus =
+        m_userservice->registerUser(account, password, username);
+    cout << "get registerStatus:" << registerStatus << endl;
+    // 构建注册响应JSON
+
+    responseJson["type"] = REG_MSG_ACK;
+    switch (registerStatus) {
+        case REGISTER_SUCCESS:
+            responseJson["status"] = REG_SUCCESS;
+            responseJson["errno"] = 0;
+            responseJson["account"] = account;
+            break;
+        case REGISTER_FAILED:
+            responseJson["status"] = REG_FAIL;
+            responseJson["errno"] = 1;
+            break;
+        case ACCOUNT_EXIST:
+            responseJson["status"] = REG_REPEAT;
+            responseJson["errno"] = 2;
+            break;
+    }
+}
+
+void TcpConnection::handleGetInfo(json requestDataJson, json& responseJson) {
+    getInfo();
+    responseJson["type"] = GET_INFO;
+    responseJson["status"] = GET_INFO_SUCCESS;
+}
+
+void TcpConnection::handleGetList(json requestDataJson, json& responseJson) {
+    // 计算在线好友。
+    m_friendservice->getList();
+    // 构建好友列表响应json
+
+    responseJson["online_friends"] = m_friendservice->m_onlineFriends;
+    responseJson["offline_friends"] = m_friendservice->m_offlineFriends;
+    responseJson["type"] = FRIEND_LIST_ACK;
+}
+
+void TcpConnection::handleFriend(json requestDataJson, json& responseJson) {
+    cout << "requestType == FRIEND_TYPE" << endl;
+    responseJson["type"] = FRIEND_ACK;
+    int friendType = requestDataJson["friendtype"].get<int>();
+    cout << "friendType:" << friendType << endl;
+    if (friendType == FRIEND_ADD) {
+        handleFriendAdd(requestDataJson, responseJson);
+    }
+
+    else if (friendType == FRIEND_DELETE) {
+        handleFriendDelete(requestDataJson, responseJson);
+
+    }
+
+    else if (friendType == FRIEND_REQUIRY) {
+        handleFriendRequiry(requestDataJson, responseJson);
+
+    } else if (friendType == FRIEND_CHAT) {
+        handleFriendChat(requestDataJson, responseJson);
+
+    }
+
+    else if (friendType == FRIEND_BLOCK) {
+        handleFriendBlock(requestDataJson, responseJson);
+    }
+}
+
+void TcpConnection::handleFriendAdd(json requestDataJson, json& responseJson) {
+    Debug("addfriend");
+    cout << "addfriend" << endl;
+    responseJson["friendtype"] = FRIEND_ADD;
+    string account = requestDataJson["account"];
+    auto storedName = m_redis->hget(account, "username");
+
+    if (!storedName) {
+        responseJson["status"] = NOT_REGISTERED;
+    } else {
+        string name = storedName.value();
+        string key = m_account + "_Friend";
+        m_redis->hset(key, account, name);
+        responseJson["status"] = SUCCESS_ADD_FRIEND;
+    }
+}
+
+void TcpConnection::handleFriendDelete(json requestDataJson,
+                                       json& responseJson) {
+    cout << "deletefriend" << endl;
+    responseJson["friendtype"] = FRIEND_DELETE;
+    string key = m_account + "_Friend";
+    string account = requestDataJson["account"];
+    auto storedName = m_redis->hget(key, account);
+    if (!storedName) {
+        responseJson["status"] = NOT_FRIEND;
+    } else {
+        string name = storedName.value();
+        m_redis->hdel(key, account);
+        responseJson["status"] = SUCCESS_DELETE_FRIEND;
+    }
+}
+
+void TcpConnection::handleFriendRequiry(json requestDataJson,
+                                        json& responseJson) {
+    cout << "requiryfriend" << endl;
+    responseJson["friendtype"] = FRIEND_DELETE;
+    string key = m_account + "_Friend";
+    string account = requestDataJson["account"];
+    auto storedName = m_redis->hget(key, account);
+    if (!storedName) {
+        responseJson["status"] = NOT_FRIEND;
+    } else {
+        string name = storedName.value();
+        responseJson["status"] = SUCCESS_REQUIRY_FRIEND;
+    }
+}
+
+void TcpConnection::handleFriendBlock(json requestDataJson,
+                                      json& responseJson) {
+    cout << "blockfriend" << endl;
+    responseJson["friendtype"] = FRIEND_BLOCK;
+    responseJson["type"] = FRIEND_ACK;
+    string key = m_account + "_Friend";
+    string account = requestDataJson["account"];
+    auto storedName = m_redis->hget(key, account);
+    if (!storedName) {
+        responseJson["status"] = NOT_FRIEND;
+    } else {
+        string name = storedName.value();
+        //
+    }
+}
+
+void TcpConnection::handleFriendChat(json requestDataJson, json& responseJson) {
+    cout << "chat with friend" << endl;
+    responseJson["friendtype"] = FRIEND_CHAT;
+    responseJson["type"] = FRIEND_ACK;
+    string account = requestDataJson["account"];
+    string key;
+    if (account < m_account) {
+        key = account + "+" + m_account + "_Chat";
+    } else {
+        key = m_account + "+" + account + "_Chat";
+    }
+    json chatinfo;
+    string data = responseJson["data"];
+    string account = responseJson["account"];
+    std::time_t timestamp = std::time(nullptr);
+    chatinfo["account"] = account;
+    chatinfo["timestamp"] = timestamp;
+    chatinfo["data"] = data;
+    string chatmsg = chatinfo.dump();
+    m_redis->rpush(key, chatmsg);
+}
+
+void TcpConnection::handleFriendChatWith(json requestDataJson,
+                                         json& responseJson) {
+    getChatHistory(requestDataJson, responseJson);
+    while (true) {
+        // 接收消息
+    }
+}
+void TcpConnection::getChatHistory(json requestDataJson, json& responseJson) {}

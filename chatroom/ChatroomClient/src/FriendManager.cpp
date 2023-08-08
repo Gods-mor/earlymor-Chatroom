@@ -10,7 +10,8 @@ using namespace std;
 using json = nlohmann::json;
 
 // 初始化m_fd,m_rwsem
-FriendManager::FriendManager(int fd, sem_t& rwsem) : m_fd(fd), m_rwsem(rwsem) {
+FriendManager::FriendManager(int fd, sem_t& rwsem, atomic_bool& isFriend)
+    : m_fd(fd), m_rwsem(rwsem), is_Friend(isFriend) {
     // 对unordered_map进行初始化
     unordered_map<string, string> emptyMap;
     onlineFriends = emptyMap;  // 将emptyMap赋值给onlineFriends
@@ -59,6 +60,7 @@ void FriendManager::fiendMenu() {
                 break;
             case 4:  // 与好友聊天
                 chatWithFriend();
+
                 break;
             case 5:  // 拉黑好友
                 blockFriend();
@@ -137,7 +139,8 @@ void FriendManager::deleteFriend() {
         account = account.substr(0, 11);  // Truncate the input to 10 characters
     }
     json js;
-    js["type"] = FRIEND_DELETE;
+    js["type"] = FRIEND_TYPE;
+    js["friendtype"] = FRIEND_DELETE;
     js["account"] = account;
     TcpClient::addDataLen(js);
     string request = js.dump();
@@ -151,7 +154,7 @@ void FriendManager::deleteFriend() {
 // 查找好友，通过账号查找
 void FriendManager::queryFriend() {
     string account;
-    cout << "请输入要查找的好友账号：";
+    cout << "请输入好友账号：";
     cin >> account;
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
@@ -160,7 +163,8 @@ void FriendManager::queryFriend() {
         account = account.substr(0, 11);  // Truncate the input to 10 characters
     }
     json js;
-    js["type"] = FRIEND_REQUIRY;
+    js["type"] = FRIEND_TYPE;
+    js["friendtype"] = FRIEND_REQUIRY;
     js["account"] = account;
     TcpClient::addDataLen(js);
     string request = js.dump();
@@ -172,7 +176,70 @@ void FriendManager::queryFriend() {
 }
 
 // 和好友聊天
-void FriendManager::chatWithFriend() {}
+void FriendManager::chatWithFriend() {
+    string account;
+    cout << "请输入好友账号：";
+    cin >> account;
+    if (account.length() > 11) {
+        std::cout << "Input exceeded the maximum allowed length. "
+                     "Truncating..."
+                  << std::endl;
+        account = account.substr(0, 11);  // Truncate the input to 10 characters
+    }
+    json js;
+    js["type"] = FRIEND_TYPE;
+    js["friendtype"] = FRIEND_REQUIRY;
+    js["account"] = account;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "queryFriend send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+    // 以上为检验是否为好友，以下是聊天消息发送
+    if (!is_Friend) {
+        return;
+    } else {
+        while (true) {
+            js["type"] = FRIEND_TYPE;
+            js["friendtype"] = FRIEND_CHAT;
+            js["account"] = account;
+            string data;
+            getline(cin, data);
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+        }
+    }
+}
 
 // 拉黑好友
-void FriendManager::blockFriend() {}
+void FriendManager::blockFriend() {
+    string account;
+    cout << "请输入要查找的好友账号：";
+    cin >> account;
+    if (account.length() > 11) {
+        std::cout << "Input exceeded the maximum allowed length. "
+                     "Truncating..."
+                  << std::endl;
+        account = account.substr(0, 11);  // Truncate the input to 10 characters
+    }
+    json js;
+    js["type"] = FRIEND_TYPE;
+    js["friendtype"] = FRIEND_BLOCK;
+    js["account"] = account;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "queryFriend send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+}

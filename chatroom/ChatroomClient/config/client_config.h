@@ -46,6 +46,7 @@ constexpr int SUCCESS_ADD_FRIEND = 1;
 constexpr int NOT_FRIEND = 0;
 constexpr int SUCCESS_DELETE_FRIEND = 1;
 constexpr int SUCCESS_REQUIRY_FRIEND = 1;
+constexpr int SUCCESS_CHAT_FRIEND = 1;
 // 定义颜色宏
 #define RESET_COLOR "\033[0m"     // 恢复默认颜色
 #define RED_COLOR "\033[31m"      // 红色

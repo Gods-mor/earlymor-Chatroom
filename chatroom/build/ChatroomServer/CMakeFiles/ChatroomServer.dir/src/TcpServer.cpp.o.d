@@ -265,6 +265,77 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpServer.cpp.o: \
  /usr/include/bits/types/struct_osockaddr.h /usr/include/bits/in.h \
  /usr/include/c++/13.2.1/stdlib.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/TcpConnection.h \
+ /usr/include/nlohmann/json.hpp /usr/include/c++/13.2.1/algorithm \
+ /usr/include/c++/13.2.1/pstl/glue_algorithm_defs.h \
+ /usr/include/nlohmann/adl_serializer.hpp \
+ /usr/include/nlohmann/detail/abi_macros.hpp \
+ /usr/include/nlohmann/detail/conversions/from_json.hpp \
+ /usr/include/c++/13.2.1/forward_list \
+ /usr/include/c++/13.2.1/bits/forward_list.h \
+ /usr/include/c++/13.2.1/bits/forward_list.tcc \
+ /usr/include/c++/13.2.1/valarray \
+ /usr/include/c++/13.2.1/bits/valarray_array.h \
+ /usr/include/c++/13.2.1/bits/valarray_array.tcc \
+ /usr/include/c++/13.2.1/bits/valarray_before.h \
+ /usr/include/c++/13.2.1/bits/slice_array.h \
+ /usr/include/c++/13.2.1/bits/valarray_after.h \
+ /usr/include/c++/13.2.1/bits/gslice.h \
+ /usr/include/c++/13.2.1/bits/gslice_array.h \
+ /usr/include/c++/13.2.1/bits/mask_array.h \
+ /usr/include/c++/13.2.1/bits/indirect_array.h \
+ /usr/include/nlohmann/detail/exceptions.hpp \
+ /usr/include/nlohmann/detail/value_t.hpp \
+ /usr/include/nlohmann/detail/macro_scope.hpp \
+ /usr/include/nlohmann/detail/meta/detected.hpp \
+ /usr/include/nlohmann/detail/meta/void_t.hpp \
+ /usr/include/nlohmann/thirdparty/hedley/hedley.hpp \
+ /usr/include/c++/13.2.1/version \
+ /usr/include/nlohmann/detail/string_escape.hpp \
+ /usr/include/nlohmann/detail/input/position_t.hpp \
+ /usr/include/nlohmann/detail/meta/cpp_future.hpp \
+ /usr/include/nlohmann/detail/meta/type_traits.hpp \
+ /usr/include/nlohmann/detail/iterators/iterator_traits.hpp \
+ /usr/include/nlohmann/detail/meta/call_std/begin.hpp \
+ /usr/include/nlohmann/detail/meta/call_std/end.hpp \
+ /usr/include/nlohmann/json_fwd.hpp \
+ /usr/include/nlohmann/detail/string_concat.hpp \
+ /usr/include/nlohmann/detail/meta/identity_tag.hpp \
+ /usr/include/nlohmann/detail/meta/std_fs.hpp \
+ /usr/include/c++/13.2.1/filesystem /usr/include/c++/13.2.1/bits/fs_fwd.h \
+ /usr/include/c++/13.2.1/bits/fs_path.h /usr/include/c++/13.2.1/locale \
+ /usr/include/c++/13.2.1/bits/locale_facets_nonio.h \
+ /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/time_members.h \
+ /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/13.2.1/bits/codecvt.h \
+ /usr/include/c++/13.2.1/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/13.2.1/bits/locale_conv.h \
+ /usr/include/c++/13.2.1/iomanip \
+ /usr/include/c++/13.2.1/bits/quoted_string.h \
+ /usr/include/c++/13.2.1/codecvt /usr/include/c++/13.2.1/bits/fs_dir.h \
+ /usr/include/c++/13.2.1/bits/fs_ops.h \
+ /usr/include/nlohmann/detail/conversions/to_json.hpp \
+ /usr/include/nlohmann/detail/iterators/iteration_proxy.hpp \
+ /usr/include/nlohmann/byte_container_with_subtype.hpp \
+ /usr/include/nlohmann/detail/hash.hpp \
+ /usr/include/nlohmann/detail/input/binary_reader.hpp \
+ /usr/include/nlohmann/detail/input/input_adapters.hpp \
+ /usr/include/nlohmann/detail/input/json_sax.hpp \
+ /usr/include/nlohmann/detail/input/lexer.hpp \
+ /usr/include/nlohmann/detail/meta/is_sax.hpp \
+ /usr/include/nlohmann/detail/input/parser.hpp \
+ /usr/include/nlohmann/detail/iterators/internal_iterator.hpp \
+ /usr/include/nlohmann/detail/iterators/primitive_iterator.hpp \
+ /usr/include/nlohmann/detail/iterators/iter_impl.hpp \
+ /usr/include/nlohmann/detail/iterators/json_reverse_iterator.hpp \
+ /usr/include/nlohmann/detail/json_pointer.hpp \
+ /usr/include/nlohmann/detail/json_ref.hpp \
+ /usr/include/nlohmann/detail/output/binary_writer.hpp \
+ /usr/include/nlohmann/detail/output/output_adapters.hpp \
+ /usr/include/nlohmann/detail/output/serializer.hpp \
+ /usr/include/nlohmann/detail/conversions/to_chars.hpp \
+ /usr/include/nlohmann/ordered_map.hpp /usr/include/c++/13.2.1/any \
+ /usr/include/nlohmann/detail/macro_unscope.hpp \
+ /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Buffer.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/ChatService.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/FriendService.h \

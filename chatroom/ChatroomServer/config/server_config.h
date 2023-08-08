@@ -47,3 +47,4 @@ constexpr int SUCCESS_ADD_FRIEND = 1;
 constexpr int NOT_FRIEND = 0;
 constexpr int SUCCESS_DELETE_FRIEND = 1;
 constexpr int SUCCESS_REQUIRY_FRIEND = 1;
+constexpr int SUCCESS_CHAT_FRIEND = 1;

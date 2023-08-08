@@ -34,8 +34,6 @@ class TcpClient {
     void handleFriendChatResponse(const json& message);
     void handleFriendRequiryResponse(const json& message);
     void handleFriendBlockResponse(const json& message);
-    void handleOneChatMessage(const json& message);
-    void handleGroupChatMessage(const json& message);
     void handleLoginResponse(const json& message);
     void handleRegisterResponse(const json& message);
     void handleFriendListResponse(const json& message);
@@ -48,6 +46,8 @@ class TcpClient {
     sem_t m_rwsem;  // 用于读写线程间的通信
     atomic_bool is_LoginSuccess{
         false};  // 原子类型，不需要加锁，用于记录登录状态
+    atomic_bool is_Friend{
+        false};  // 原子类型，不需要加锁，用于记录是否为好友状态
     string m_account;
     string m_username;
     thread* m_readTask;

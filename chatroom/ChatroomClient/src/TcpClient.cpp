@@ -14,7 +14,7 @@ TcpClient::TcpClient() {
     // 初始化信号量
 
     sem_init(&m_rwsem, 0, 0);
-    m_friendmanager = new FriendManager(m_fd, m_rwsem);
+    m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend);
 }
 
 // 析构回收资源
@@ -123,6 +123,7 @@ void TcpClient::readTaskHandler(int cfd) {
                             handleFriendDeleteResponse(js);
                             break;
                         case FRIEND_REQUIRY:
+                            is_Friend = false;
                             handleFriendRequiryResponse(js);
                             break;
                         case FRIEND_CHAT:
@@ -133,6 +134,7 @@ void TcpClient::readTaskHandler(int cfd) {
                             break;
                     }
                     sem_post(&m_rwsem);
+
                     break;
                 case GET_INFO:
                     sem_post(&m_rwsem);
@@ -184,16 +186,6 @@ void TcpClient::handleRegisterResponse(const json& message) {
     }
 }
 
-// 好友间聊天处理
-void TcpClient::handleOneChatMessage(const json& message) {
-    ;
-}
-
-// 群聊处理
-void TcpClient::handleGroupChatMessage(const json& message) {
-    ;
-}
-
 // 获取好友列表
 void TcpClient::handleFriendListResponse(const json& message) {
     try {
@@ -227,7 +219,15 @@ void TcpClient::handleFriendDeleteResponse(const json& message) {
     }
 }
 // 处理好友聊天请求回应
-void TcpClient::handleFriendChatResponse(const json& message) {}
+void TcpClient::handleFriendChatResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == NOT_FRIEND) {
+        cout << "The person is not your friend" << endl;
+    }
+    if (status == SUCCESS_CHAT_FRIEND) {
+        cout << "chat friend successfully!" << endl;
+    }
+}
 
 // 处理查询好友请求回应
 void TcpClient::handleFriendRequiryResponse(const json& message) {
@@ -237,6 +237,7 @@ void TcpClient::handleFriendRequiryResponse(const json& message) {
     }
     if (status == SUCCESS_REQUIRY_FRIEND) {
         cout << "requiry friend successfully!" << endl;
+        is_Friend = true;
     }
 }
 
