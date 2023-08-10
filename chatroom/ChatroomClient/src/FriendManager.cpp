@@ -32,22 +32,29 @@ FriendManager::~FriendManager() {
 void FriendManager::fiendMenu() {
     cout << "friendmenu" << endl;
     while (true) {
-        sleep(1);
         // system("clear");
         // 获取好友列表
         getFriendList();
         // 打印好友菜单
-
+        sem_wait(&m_rwsem);
         cout << "在线好友          未读消息（条）" << endl;
         for (const auto& entry : onlineFriends) {
-            cout << YELLOW_COLOR << entry.second << RESET_COLOR << "("
+            string info = entry.second;
+            json jsinfo = json::parse(info);
+            string username = jsinfo["username"];
+            int unreadmsg = jsinfo["unreadmsg"].get<int>();
+            cout << YELLOW_COLOR << username << RESET_COLOR << "("
                  << entry.first << ")"
-                 << "\t"
-                 << "" << endl;
+                 << "\t" << unreadmsg << endl;
         }
         cout << "离线好友          未读消息（条）" << endl;
         for (const auto& entry : offlineFriends) {
-            cout << entry.second << "(" << entry.first << ")" << endl;
+            string info = entry.second;
+            json jsinfo = json::parse(info);
+            string username = jsinfo["username"];
+            int unreadmsg = jsinfo["unreadmsg"].get<int>();
+            cout << username << "(" << entry.first << ")"
+                 << "\t" << unreadmsg << endl;
         }
         showFriendFunctionMenu();
         cout << "请输入：";
@@ -92,8 +99,7 @@ void FriendManager::getFriendList() {
     if (0 == len || -1 == len) {
         cerr << "getFriendList send error:" << request << endl;
     }
-    cout << "sem_wait" << endl;
-    sem_wait(&m_rwsem);
+
     // cout << "sem_post" << endl;
 }
 
@@ -114,6 +120,7 @@ void FriendManager::addFriend() {
     string account;
     cout << "请输入要添加的好友账号：";
     cin >> account;
+    cin.get();
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -138,6 +145,7 @@ void FriendManager::deleteFriend() {
     string account;
     cout << "请输入要删除的好友账号：";
     cin >> account;
+    cin.get();
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -162,6 +170,7 @@ void FriendManager::queryFriend() {
     string account;
     cout << "请输入查询好友账号：";
     cin >> account;
+    cin.get();
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -186,6 +195,7 @@ void FriendManager::chatWithFriend() {
     string account;
     cout << "请输入好友账号：";
     cin >> account;
+    cin.get();
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -194,7 +204,7 @@ void FriendManager::chatWithFriend() {
     }
     json js;
     js["type"] = FRIEND_TYPE;
-    js["friendtype"] = FRIEND_REQUIRY;
+    js["friendtype"] = FRIEND_CHAT_REQUIRY;
     js["account"] = account;
     TcpClient::addDataLen(js);
     string request = js.dump();
@@ -213,7 +223,6 @@ void FriendManager::chatWithFriend() {
             js["account"] = account;
             string data;
             getline(cin, data);
-
             js["data"] = data;
             TcpClient::addDataLen(js);
             string request = js.dump();
@@ -235,6 +244,7 @@ void FriendManager::blockFriend() {
     string account;
     cout << "请输入要查找的好友账号：";
     cin >> account;
+    cin.get();
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."

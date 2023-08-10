@@ -1,9 +1,12 @@
 #pragma once
+#include <sw/redis++/redis++.h>  // 添加Redis++头文件
 #include <set>
 #include <string>
 #include <unordered_map>
 #include "OnlineUsers.h"
-#include <sw/redis++/redis++.h>  // 添加Redis++头文件
+
+// 此处添加 OnlineUsers 的前置声明
+class OnlineUsers;
 
 using namespace std;
 class FriendService {

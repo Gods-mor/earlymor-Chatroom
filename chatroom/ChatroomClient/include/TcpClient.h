@@ -32,11 +32,13 @@ class TcpClient {
     void handleFriendAddResponse(const json& message);
     void handleFriendDeleteResponse(const json& message);
     void handleFriendChatResponse(const json& message);
+    void handleFriendChatRequiryResponse(const json& message);
     void handleFriendRequiryResponse(const json& message);
     void handleFriendBlockResponse(const json& message);
     void handleLoginResponse(const json& message);
     void handleRegisterResponse(const json& message);
     void handleFriendListResponse(const json& message);
+    void handleFriendMsgResponse(const json& message);
     void static addDataLen(json& js);
 
     void getInfo(string account);

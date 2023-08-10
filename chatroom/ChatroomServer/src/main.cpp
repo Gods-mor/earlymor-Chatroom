@@ -1,5 +1,5 @@
 #include "../config/server_config.h"
-#include "../include/TcpServer.h"
+#include "TcpServer.h"
 #include <sw/redis++/redis++.h>
 #include <stdlib.h>
 #include <unistd.h>

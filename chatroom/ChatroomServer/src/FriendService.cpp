@@ -1,6 +1,7 @@
-#include "../include/FriendService.h"
+#include "FriendService.h"
 #include <sw/redis++/redis++.h>
 #include <iostream>
+#include "OnlineUsers.h"
 
 FriendService::FriendService(std::shared_ptr<sw::redis::Redis> redis,
                              std::shared_ptr<OnlineUsers> onlineUsersPtr)
@@ -18,7 +19,7 @@ void FriendService::getList() {
             std::inserter(
                 m_userFriends,
                 m_userFriends.begin()));  // 获取哈希所有好友账号：昵称（keys）
-                
+
         m_onlineFriends.clear();
         m_offlineFriends.clear();
         // 遍历 m_userFriends 的键，与 m_onlineUsers 进行交集操作

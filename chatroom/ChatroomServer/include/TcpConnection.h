@@ -5,17 +5,19 @@
 #include "Channel.h"
 #include "ChatService.h"
 #include "EventLoop.h"
-#include "FriendService.h"
 #include "GroupService.h"
 #include "UserService.h"
 #include "sw/redis++/redis++.h"  // 添加Redis++头文件
+
+// OnlineUsers 和 FriendService 的前置声明
+class OnlineUsers;
+class FriendService;
 
 using json = nlohmann::json;
 // 区分两者不同发送方式，
 // 1,全部放到缓存区再发送，2，变放边发送
 // 定义就是第一种
 // 没定义即默认第二种
-// #define MSG_SEND_AUTO
 
 // 负责子线程与客户端进行通信，分别存储这读写销毁回调函数->调用相关buffer函数完成相关的通信功能
 class TcpConnection {
@@ -31,6 +33,7 @@ class TcpConnection {
     bool parseClientRequest(Buffer* m_readBuf);
     void getInfo();
     void setOnline();
+    void addDataLen(json& js);
 
    private:
     void startHeartbeat();
@@ -47,8 +50,7 @@ class TcpConnection {
     void handleFriendRequiry(json requestDataJson, json& responseJson);
     void handleFriendBlock(json requestDataJson, json& responseJson);
     void handleFriendChat(json requestDataJson, json& responseJson);
-    void handleFriendChatWith(json requestDataJson, json& responseJson);
-    void getChatHistory(json requestDataJson, json& responseJson);
+    void handleFriendChatRequiry(json requestDataJson, json& responseJson);
 
     int m_heartbeatTimerFd;  // 心跳定时器的文件描述符
     int m_fd;

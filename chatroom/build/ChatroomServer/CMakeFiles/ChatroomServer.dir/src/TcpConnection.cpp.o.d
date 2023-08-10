@@ -1,7 +1,7 @@
 ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpConnection.cpp.o: \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/TcpConnection.cpp \
  /usr/include/stdc-predef.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/TcpConnection.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/TcpConnection.h \
  /usr/include/c++/13.2.1/chrono \
  /usr/include/c++/13.2.1/bits/requires_hosted.h \
  /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
@@ -280,10 +280,10 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpConnection.cpp.o: \
  /usr/include/nlohmann/ordered_map.hpp /usr/include/c++/13.2.1/any \
  /usr/include/nlohmann/detail/macro_unscope.hpp \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Buffer.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Channel.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/ChatService.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/EventLoop.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/Buffer.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/Channel.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/ChatService.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/EventLoop.h \
  /usr/include/c++/13.2.1/mutex /usr/include/c++/13.2.1/bits/std_mutex.h \
  /usr/include/c++/13.2.1/bits/unique_lock.h /usr/include/c++/13.2.1/queue \
  /usr/include/c++/13.2.1/deque /usr/include/c++/13.2.1/bits/stl_deque.h \
@@ -291,13 +291,24 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpConnection.cpp.o: \
  /usr/include/c++/13.2.1/bits/stl_queue.h /usr/include/c++/13.2.1/thread \
  /usr/include/c++/13.2.1/bits/std_thread.h \
  /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Dispatcher.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/FriendService.h \
- /usr/include/c++/13.2.1/set /usr/include/c++/13.2.1/bits/stl_set.h \
- /usr/include/c++/13.2.1/bits/stl_multiset.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/OnlineUsers.h \
- /usr/include/c++/13.2.1/unordered_set \
- /usr/include/c++/13.2.1/bits/unordered_set.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/Dispatcher.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/GroupService.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/UserService.h \
+ /usr/include/arpa/inet.h /usr/include/netinet/in.h \
+ /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \
+ /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
+ /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
+ /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
+ /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
+ /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/asm/sockios.h /usr/include/asm-generic/sockios.h \
+ /usr/include/bits/types/struct_osockaddr.h /usr/include/bits/in.h \
+ /usr/include/sys/epoll.h /usr/include/bits/epoll.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
+ /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h /usr/include/c++/13.2.1/iostream \
  /usr/include/sw/redis++/redis++.h /usr/include/sw/redis++/redis.h \
  /usr/include/sw/redis++/connection_pool.h \
  /usr/include/c++/13.2.1/condition_variable \
@@ -323,24 +334,13 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpConnection.cpp.o: \
  /usr/include/c++/13.2.1/bits/random.tcc \
  /usr/include/sw/redis++/redis_cluster.hpp \
  /usr/include/sw/redis++/queued_redis.h \
- /usr/include/sw/redis++/queued_redis.hpp \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/GroupService.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/UserService.h \
- /usr/include/arpa/inet.h /usr/include/netinet/in.h \
- /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \
- /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
- /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
- /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
- /usr/include/asm/sockios.h /usr/include/asm-generic/sockios.h \
- /usr/include/bits/types/struct_osockaddr.h /usr/include/bits/in.h \
- /usr/include/sys/epoll.h /usr/include/bits/epoll.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
- /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
- /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/linux/close_range.h /usr/include/c++/13.2.1/iostream \
- /usr/include/sys/timerfd.h /usr/include/bits/timerfd.h \
+ /usr/include/c++/13.2.1/unordered_set \
+ /usr/include/c++/13.2.1/bits/unordered_set.h \
+ /usr/include/sw/redis++/queued_redis.hpp /usr/include/sys/timerfd.h \
+ /usr/include/bits/timerfd.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../config/server_config.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/log.h
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/log.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/FriendService.h \
+ /usr/include/c++/13.2.1/set /usr/include/c++/13.2.1/bits/stl_set.h \
+ /usr/include/c++/13.2.1/bits/stl_multiset.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/OnlineUsers.h

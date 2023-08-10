@@ -3,6 +3,8 @@
 #define HOST "127.0.0.1"
 
 #define THREAD_NUMBERS 1
+
+const int FIXEDWIDTH = 4;
 // 心跳间隔和超时时间（单位：秒）
 constexpr int HEARTBEAT_INTERVAL = 5;
 constexpr int HEARTBEAT_TIMEOUT = 15;
@@ -20,13 +22,15 @@ constexpr int FRIEND_DELETE = 2;
 constexpr int FRIEND_REQUIRY = 3;
 constexpr int FRIEND_CHAT = 4;
 constexpr int FRIEND_BLOCK = 5;
+constexpr int FRIEND_CHAT_REQUIRY = 6;
+
 // 服务器回应信息
 constexpr int LOGIN_MSG_ACK = 1;
 constexpr int REG_MSG_ACK = 2;
 constexpr int FRIEND_LIST_ACK = 3;
 constexpr int FRIEND_ACK = 4;
 constexpr int GET_INFO = 5;
-
+constexpr int FRIEND_MSG = 6;
 //
 constexpr int GET_INFO_SUCCESS = 0;
 // 注册状态回应
@@ -48,3 +52,5 @@ constexpr int NOT_FRIEND = 0;
 constexpr int SUCCESS_DELETE_FRIEND = 1;
 constexpr int SUCCESS_REQUIRY_FRIEND = 1;
 constexpr int SUCCESS_CHAT_FRIEND = 1;
+constexpr int SUCCESS_SEND_MSG = 1;
+constexpr int FAIL_SEND_MSG = 0;

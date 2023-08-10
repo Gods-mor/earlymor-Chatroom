@@ -4,6 +4,8 @@
 #include "EventLoop.h"
 #include "ThreadPool.h"
 #include "OnlineUsers.h"
+
+class TcpConnection;
 // 服务器类 负责服务器初始化，设置监听，启动服务器以及接受主线程的请求连接
 class TcpServer {
    public:

@@ -62,11 +62,14 @@ int UserService::registerUser(string account,
         std::string value2 = password;
         std::string field3 = "status";
         std::string value3 = "offline";
+        std::string field4 = "chatstatus";
+        std::string value4 = "";
         // 将用户信息存储到 Redis 数据库中
         // 使用哈希表存储 （账号，密码，用户名，在线状态）
         m_redis->hset(account, field1, value1);
         m_redis->hset(account, field2, value2);
         m_redis->hset(account, field3, value3);
+        m_redis->hset(account, field4, value4);
         // 注册成功
         Debug("REGISTER_SUCCESS");
         return REGISTER_SUCCESS;

@@ -14,7 +14,7 @@ TcpClient::TcpClient() {
     // 初始化信号量
 
     sem_init(&m_rwsem, 0, 0);
-    m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend,m_account);
+    m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend, m_account);
 }
 
 // 析构回收资源
@@ -79,11 +79,11 @@ void TcpClient::run() {
 // 读任务处理器
 void TcpClient::readTaskHandler(int cfd) {
     // 死循环接收消息
-    cout << "pthread start" << endl;
+    cout << "--------------pthread start" << endl;
     for (;;) {
         char buffer[CLIENT_BUFSIZE] = {
             0};  // 默认1024字符的缓冲区，可能需要扩容
-        cout << "recv:" << endl;
+        cout << "----------pthread  recv:" << endl;
         int len = recv(cfd, buffer, CLIENT_BUFSIZE, 0);
         if (-1 == len || 0 == len) {
             cout << "error close cfd " << endl;
@@ -123,7 +123,6 @@ void TcpClient::readTaskHandler(int cfd) {
                             handleFriendDeleteResponse(js);
                             break;
                         case FRIEND_REQUIRY:
-                            is_Friend = false;
                             handleFriendRequiryResponse(js);
                             break;
                         case FRIEND_CHAT:
@@ -132,12 +131,18 @@ void TcpClient::readTaskHandler(int cfd) {
                         case FRIEND_BLOCK:
                             handleFriendBlockResponse(js);
                             break;
+                        case FRIEND_CHAT_REQUIRY:
+                            is_Friend = false;
+                            handleFriendChatRequiryResponse(js);
                     }
                     sem_post(&m_rwsem);
 
                     break;
                 case GET_INFO:
                     sem_post(&m_rwsem);
+                    break;
+                case FRIEND_MSG:
+                    handleFriendMsgResponse(js);
                     break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
@@ -189,7 +194,7 @@ void TcpClient::handleRegisterResponse(const json& message) {
 // 获取好友列表
 void TcpClient::handleFriendListResponse(const json& message) {
     try {
-        cout << "----handleFriendListResponse" << endl;
+        // cout << "----handleFriendListResponse" << endl;
         m_friendmanager->onlineFriends = message["online_friends"];
         m_friendmanager->offlineFriends = message["offline_friends"];
     } catch (const exception& e) {
@@ -218,6 +223,7 @@ void TcpClient::handleFriendDeleteResponse(const json& message) {
         cout << "delete friend successfully!" << endl;
     }
 }
+
 // 处理好友聊天请求回应
 void TcpClient::handleFriendChatResponse(const json& message) {
     int status = message["status"].get<int>();
@@ -237,9 +243,21 @@ void TcpClient::handleFriendRequiryResponse(const json& message) {
     }
     if (status == SUCCESS_REQUIRY_FRIEND) {
         cout << "requiry friend successfully!" << endl;
+    }
+}
+
+void TcpClient::handleFriendChatRequiryResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == NOT_FRIEND) {
+        cout << "The person is not your friend" << endl;
+    }
+    if (status == SUCCESS_REQUIRY_FRIEND) {
+        cout << "chatrequiry friend successfully!" << endl;
         is_Friend = true;
     }
 }
+// 处理好友消息回应
+void TcpClient::handleFriendMsgResponse(const json& message) {}
 
 // 处理拉黑好友请求回应
 void TcpClient::handleFriendBlockResponse(const json& message) {}
@@ -285,6 +303,7 @@ void TcpClient::getInfo(string account) {
     if (0 == len || -1 == len) {
         cerr << "getInfo send error:" << request << endl;
     }
+    sem_wait(&m_rwsem);
 }
 
 void TcpClient::handleLogin() {
@@ -295,7 +314,7 @@ void TcpClient::handleLogin() {
     cin >> account;
     cout << "userpassword:";
     cin >> pwd;
-
+    cin.get();
     json js;
     js["type"] = LOGIN_MSG_TYPE;
     js["account"] = account;
@@ -365,6 +384,7 @@ void TcpClient::handleRegister() {
     }
     cout << "userpassword(20字符以内):";
     cin >> pwd;
+    cin.get();
     if (pwd.length() > 20) {
         std::cout << "Input exceeded the maximum allowed length. Truncating..."
                   << std::endl;

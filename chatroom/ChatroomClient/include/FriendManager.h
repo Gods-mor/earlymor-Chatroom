@@ -1,5 +1,6 @@
 #pragma once
 #include <semaphore.h>
+#include <atomic>
 #include <iostream>
 #include <set>
 #include <unordered_map>

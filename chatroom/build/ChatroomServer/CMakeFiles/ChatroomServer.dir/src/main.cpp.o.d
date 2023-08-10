@@ -2,7 +2,7 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/main.cpp.o: \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/main.cpp \
  /usr/include/stdc-predef.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../config/server_config.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/TcpServer.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/TcpServer.h \
  /usr/include/sw/redis++/redis++.h /usr/include/sw/redis++/redis.h \
  /usr/include/c++/13.2.1/string \
  /usr/include/c++/13.2.1/bits/requires_hosted.h \
@@ -245,17 +245,103 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/main.cpp.o: \
  /usr/include/c++/13.2.1/bits/unordered_set.h \
  /usr/include/sw/redis++/queued_redis.hpp \
  /usr/include/c++/13.2.1/iostream \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/EventLoop.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/EventLoop.h \
  /usr/include/c++/13.2.1/queue /usr/include/c++/13.2.1/bits/stl_queue.h \
  /usr/include/c++/13.2.1/thread /usr/include/c++/13.2.1/bits/std_thread.h \
  /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Channel.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Dispatcher.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/ThreadPool.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/WorkerThread.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/OnlineUsers.h \
- /usr/include/c++/13.2.1/stdlib.h /usr/include/unistd.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/Channel.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/Dispatcher.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/ThreadPool.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/WorkerThread.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/OnlineUsers.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/TcpConnection.h \
+ /usr/include/nlohmann/json.hpp /usr/include/c++/13.2.1/algorithm \
+ /usr/include/c++/13.2.1/pstl/glue_algorithm_defs.h \
+ /usr/include/nlohmann/adl_serializer.hpp \
+ /usr/include/nlohmann/detail/abi_macros.hpp \
+ /usr/include/nlohmann/detail/conversions/from_json.hpp \
+ /usr/include/c++/13.2.1/forward_list \
+ /usr/include/c++/13.2.1/bits/forward_list.h \
+ /usr/include/c++/13.2.1/bits/forward_list.tcc \
+ /usr/include/c++/13.2.1/valarray \
+ /usr/include/c++/13.2.1/bits/valarray_array.h \
+ /usr/include/c++/13.2.1/bits/valarray_array.tcc \
+ /usr/include/c++/13.2.1/bits/valarray_before.h \
+ /usr/include/c++/13.2.1/bits/slice_array.h \
+ /usr/include/c++/13.2.1/bits/valarray_after.h \
+ /usr/include/c++/13.2.1/bits/gslice.h \
+ /usr/include/c++/13.2.1/bits/gslice_array.h \
+ /usr/include/c++/13.2.1/bits/mask_array.h \
+ /usr/include/c++/13.2.1/bits/indirect_array.h \
+ /usr/include/nlohmann/detail/exceptions.hpp \
+ /usr/include/nlohmann/detail/value_t.hpp \
+ /usr/include/nlohmann/detail/macro_scope.hpp \
+ /usr/include/nlohmann/detail/meta/detected.hpp \
+ /usr/include/nlohmann/detail/meta/void_t.hpp \
+ /usr/include/nlohmann/thirdparty/hedley/hedley.hpp \
+ /usr/include/c++/13.2.1/version \
+ /usr/include/nlohmann/detail/string_escape.hpp \
+ /usr/include/nlohmann/detail/input/position_t.hpp \
+ /usr/include/nlohmann/detail/meta/cpp_future.hpp \
+ /usr/include/nlohmann/detail/meta/type_traits.hpp \
+ /usr/include/nlohmann/detail/iterators/iterator_traits.hpp \
+ /usr/include/nlohmann/detail/meta/call_std/begin.hpp \
+ /usr/include/nlohmann/detail/meta/call_std/end.hpp \
+ /usr/include/nlohmann/json_fwd.hpp \
+ /usr/include/nlohmann/detail/string_concat.hpp \
+ /usr/include/nlohmann/detail/meta/identity_tag.hpp \
+ /usr/include/nlohmann/detail/meta/std_fs.hpp \
+ /usr/include/c++/13.2.1/filesystem /usr/include/c++/13.2.1/bits/fs_fwd.h \
+ /usr/include/c++/13.2.1/bits/fs_path.h /usr/include/c++/13.2.1/locale \
+ /usr/include/c++/13.2.1/bits/locale_facets_nonio.h \
+ /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/time_members.h \
+ /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/13.2.1/bits/codecvt.h \
+ /usr/include/c++/13.2.1/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/13.2.1/bits/locale_conv.h \
+ /usr/include/c++/13.2.1/iomanip \
+ /usr/include/c++/13.2.1/bits/quoted_string.h \
+ /usr/include/c++/13.2.1/codecvt /usr/include/c++/13.2.1/bits/fs_dir.h \
+ /usr/include/c++/13.2.1/bits/fs_ops.h \
+ /usr/include/nlohmann/detail/conversions/to_json.hpp \
+ /usr/include/nlohmann/detail/iterators/iteration_proxy.hpp \
+ /usr/include/nlohmann/byte_container_with_subtype.hpp \
+ /usr/include/nlohmann/detail/hash.hpp \
+ /usr/include/nlohmann/detail/input/binary_reader.hpp \
+ /usr/include/nlohmann/detail/input/input_adapters.hpp \
+ /usr/include/nlohmann/detail/input/json_sax.hpp \
+ /usr/include/nlohmann/detail/input/lexer.hpp \
+ /usr/include/nlohmann/detail/meta/is_sax.hpp \
+ /usr/include/nlohmann/detail/input/parser.hpp \
+ /usr/include/nlohmann/detail/iterators/internal_iterator.hpp \
+ /usr/include/nlohmann/detail/iterators/primitive_iterator.hpp \
+ /usr/include/nlohmann/detail/iterators/iter_impl.hpp \
+ /usr/include/nlohmann/detail/iterators/json_reverse_iterator.hpp \
+ /usr/include/nlohmann/detail/json_pointer.hpp \
+ /usr/include/nlohmann/detail/json_ref.hpp \
+ /usr/include/nlohmann/detail/output/binary_writer.hpp \
+ /usr/include/nlohmann/detail/output/output_adapters.hpp \
+ /usr/include/nlohmann/detail/output/serializer.hpp \
+ /usr/include/nlohmann/detail/conversions/to_chars.hpp \
+ /usr/include/nlohmann/ordered_map.hpp /usr/include/c++/13.2.1/any \
+ /usr/include/nlohmann/detail/macro_unscope.hpp \
+ /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/Buffer.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/ChatService.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/GroupService.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/UserService.h \
+ /usr/include/arpa/inet.h /usr/include/netinet/in.h \
+ /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \
+ /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
+ /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
+ /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
+ /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
+ /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
+ /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
+ /usr/include/asm/sockios.h /usr/include/asm-generic/sockios.h \
+ /usr/include/bits/types/struct_osockaddr.h /usr/include/bits/in.h \
+ /usr/include/sys/epoll.h /usr/include/bits/epoll.h /usr/include/unistd.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
  /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/linux/close_range.h
+ /usr/include/linux/close_range.h /usr/include/c++/13.2.1/stdlib.h
