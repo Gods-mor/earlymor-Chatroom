@@ -409,9 +409,14 @@ void TcpConnection::handleFriendAdd(json requestDataJson, json& responseJson) {
     if (!storedName) {
         responseJson["status"] = NOT_REGISTERED;
     } else {
+        json jsonvalue;
+        int num = 0;
         string name = storedName.value();
         string key = m_account + "_Friend";
-        m_redis->hset(key, account, name);
+        jsonvalue["username"] = name;
+        jsonvalue["unreadmsg"] = num;
+        string value = jsonvalue.dump();
+        m_redis->hset(key, account, value);
         responseJson["status"] = SUCCESS_ADD_FRIEND;
     }
 }

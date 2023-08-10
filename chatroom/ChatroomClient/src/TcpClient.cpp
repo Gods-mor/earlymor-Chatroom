@@ -14,7 +14,7 @@ TcpClient::TcpClient() {
     // 初始化信号量
 
     sem_init(&m_rwsem, 0, 0);
-    m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend);
+    m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend,m_account);
 }
 
 // 析构回收资源

@@ -9,7 +9,7 @@
 using namespace std;
 class FriendManager {
    public:
-    FriendManager(int fd, sem_t& rwsem,atomic_bool& isFriend);
+    FriendManager(int fd, sem_t& rwsem,atomic_bool& isFriend,string);
     ~FriendManager();
     void fiendMenu();      // 好友功能主菜单
     void showFriendFunctionMenu();
@@ -26,5 +26,6 @@ class FriendManager {
     int m_fd;  // 通信fd
     sem_t& m_rwsem;
     atomic_bool& is_Friend;
+    string m_account;
     vector<string> userFriends;  // 用户的所有好友列表
 };

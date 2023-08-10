@@ -10,8 +10,11 @@ using namespace std;
 using json = nlohmann::json;
 
 // 初始化m_fd,m_rwsem
-FriendManager::FriendManager(int fd, sem_t& rwsem, atomic_bool& isFriend)
-    : m_fd(fd), m_rwsem(rwsem), is_Friend(isFriend) {
+FriendManager::FriendManager(int fd,
+                             sem_t& rwsem,
+                             atomic_bool& isFriend,
+                             string account)
+    : m_fd(fd), m_rwsem(rwsem), is_Friend(isFriend), m_account(account) {
     // 对unordered_map进行初始化
     unordered_map<string, string> emptyMap;
     onlineFriends = emptyMap;  // 将emptyMap赋值给onlineFriends
@@ -34,12 +37,15 @@ void FriendManager::fiendMenu() {
         // 获取好友列表
         getFriendList();
         // 打印好友菜单
-        cout << "在线好友如下：" << endl;
+
+        cout << "在线好友          未读消息（条）" << endl;
         for (const auto& entry : onlineFriends) {
             cout << YELLOW_COLOR << entry.second << RESET_COLOR << "("
-                 << entry.first << ")" << endl;
+                 << entry.first << ")"
+                 << "\t"
+                 << "" << endl;
         }
-        cout << "离线好友如下：" << endl;
+        cout << "离线好友          未读消息（条）" << endl;
         for (const auto& entry : offlineFriends) {
             cout << entry.second << "(" << entry.first << ")" << endl;
         }
@@ -154,7 +160,7 @@ void FriendManager::deleteFriend() {
 // 查找好友，通过账号查找
 void FriendManager::queryFriend() {
     string account;
-    cout << "请输入好友账号：";
+    cout << "请输入查询好友账号：";
     cin >> account;
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
@@ -207,6 +213,7 @@ void FriendManager::chatWithFriend() {
             js["account"] = account;
             string data;
             getline(cin, data);
+
             js["data"] = data;
             TcpClient::addDataLen(js);
             string request = js.dump();
@@ -216,6 +223,9 @@ void FriendManager::chatWithFriend() {
                 cerr << "data send error:" << request << endl;
             }
             sem_wait(&m_rwsem);
+            if (data == ":q") {
+                break;
+            }
         }
     }
 }
