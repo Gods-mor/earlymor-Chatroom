@@ -27,6 +27,7 @@ constexpr int FRIEND_LIST_ACK = 3;
 constexpr int FRIEND_ACK = 4;
 constexpr int GET_INFO = 5;
 constexpr int FRIEND_MSG = 6;
+constexpr int FRIEND_NOTICE = 7;
 // 存储用户账号信息
 constexpr int GET_INFO_SUCCESS = 0;
 // 在线状态

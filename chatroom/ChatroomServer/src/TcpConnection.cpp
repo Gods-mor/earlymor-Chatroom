@@ -377,3 +377,11 @@ void TcpConnection::addDataLen(json& js) {
     js["datalen"] = paddedStrNumber;
 }
 
+void TcpConnection::forwardMessageToFriend(const std::string& message) {
+    // 添加延迟，单位为毫秒
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    m_writeBuf->appendString(message);
+    // 添加检测写事件
+    m_channel->writeEventEnable(true);
+    m_evLoop->AddTask(m_channel, ElemType::MODIFY);
+}

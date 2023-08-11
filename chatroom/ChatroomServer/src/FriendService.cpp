@@ -1,8 +1,8 @@
 #include "FriendService.h"
 #include <sw/redis++/redis++.h>
 #include <iostream>
-#include "OnlineUsers.h"
 #include "../config/server_config.h"
+#include "OnlineUsers.h"
 #include "log.h"
 
 FriendService::FriendService(std::shared_ptr<sw::redis::Redis> redis,
@@ -211,39 +211,45 @@ void FriendService::handleFriendChat(json requestDataJson, json& responseJson) {
             return;
         }
         string chatstatus = m_redis->hget(receiver, "chatstatus").value();
-        if (chatstatus == m_account) {  // 好友在对应聊天界面
-            // 转发json数据
+        string status = m_redis->hget(receiver, "status").value();
+        if (status == "online") {
             auto connection = m_onlineUsersPtr_->getOnlineConnection(receiver);
-            // 将响应JSON数据添加到m_writeBuf中
-            if (connection) {
-                json sendToFriend;
-                sendToFriend["type"] = FRIEND_TYPE;
-                sendToFriend["friendtype"] = FRIEND_MSG;
-                sendToFriend["account"] = m_account;
-                sendToFriend["timestamp"] = timestamp;
-                sendToFriend["data"] = data;
-                string forwardMsg = sendToFriend.dump();
-                // connection->m_writeBuf->appendString(forwardMsg);
-                // // 添加检测写事件
-                // connection->m_channel->writeEventEnable(true);
-                // connection->m_evLoop->AddTask(connection->m_channel,
-                //                               ElemType::ADD);
+            if (chatstatus == m_account) {  // 好友在对应聊天界面
+                // 转发json数据
+                // 将响应JSON数据添加到m_writeBuf中
+                if (connection) {
+                    json sendToFriend;
+                    sendToFriend["type"] = FRIEND_MSG;
+                    sendToFriend["account"] = m_account;
+                    sendToFriend["username"] = m_username;
+                    sendToFriend["timestamp"] = timestamp;
+                    sendToFriend["data"] = data;
+                    string forwardMsg = sendToFriend.dump();
+                    connection->forwardMessageToFriend(forwardMsg);
+                } else {
+                    responseJson["status"] = FAIL_SEND_MSG;
+                }
             } else {
-                responseJson["status"] = FAIL_SEND_MSG;
-            }
-        } else {
-            try {
-                string key2 =
-                    receiver + "_Friend";  // 对方的来自自己未读消息加一
-                string jsonstr = m_redis->hget(key2, m_account).value();
-                json js = json::parse(jsonstr);
-                int unreadmsg = js["unreadmsg"].get<int>();
-                ++unreadmsg;
-                js["unreadmsg"] = unreadmsg;
-                string newjson = js.dump();
-                m_redis->hset(key2, m_account, newjson);
-            } catch (const exception& e) {
-                cout << "chatstatus != m_account error:" << e.what() << endl;
+                try {
+                    string key2 =
+                        receiver + "_Friend";  // 对方的来自自己未读消息加一
+                    string jsonstr = m_redis->hget(key2, m_account).value();
+                    json js = json::parse(jsonstr);
+                    int unreadmsg = js["unreadmsg"].get<int>();
+                    ++unreadmsg;
+                    js["unreadmsg"] = unreadmsg;
+                    string newjson = js.dump();
+                    m_redis->hset(key2, m_account, newjson);
+                } catch (const exception& e) {
+                    cout << "chatstatus != m_account error:" << e.what()
+                         << endl;
+                }
+                json sendToFriend;
+                sendToFriend["type"] = FRIEND_NOTICE;
+                sendToFriend["account"] = m_account;
+                sendToFriend["username"] = m_username;
+                string forwardMsg = sendToFriend.dump();
+                connection->forwardMessageToFriend(forwardMsg);
             }
         }
         // 存储在数据库中

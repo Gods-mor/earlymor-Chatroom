@@ -73,7 +73,6 @@ void FriendManager::fiendMenu() {
                 break;
             case 4:  // 与好友聊天
                 chatWithFriend();
-
                 break;
             case 5:  // 拉黑好友
                 blockFriend();
@@ -222,7 +221,20 @@ void FriendManager::chatWithFriend() {
             js["friendtype"] = FRIEND_CHAT;
             js["account"] = account;
             string data;
+            std::time_t timestamp = std::time(nullptr);
+            std::tm timeinfo;
+            localtime_r(&timestamp, &timeinfo);
+            std::stringstream ss;
+            ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+            std::string formattedTime = ss.str();
             getline(cin, data);
+            if (data != ":q") {
+                cout << "\033[A"
+                     << "\33[2K\r";
+                cout << YELLOW_COLOR << "我" << RESET_COLOR << formattedTime
+                     << ":" << endl;
+                cout << "「" << data << "」" << endl;
+            }
             js["data"] = data;
             TcpClient::addDataLen(js);
             string request = js.dump();

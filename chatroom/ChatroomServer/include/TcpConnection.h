@@ -34,7 +34,7 @@ class TcpConnection {
     void getInfo();
     void setOnline();
     void addDataLen(json& js);
-    void forwardMessageToFriend(const std::string& friendAccount, const std::string& message);
+    void forwardMessageToFriend(const std::string& message);
    private:
     void startHeartbeat();
     void handleEpollEvents();

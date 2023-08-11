@@ -83,7 +83,7 @@ void TcpClient::readTaskHandler(int cfd) {
     for (;;) {
         char buffer[CLIENT_BUFSIZE] = {
             0};  // 默认1024字符的缓冲区，可能需要扩容
-        cout << "----------pthread  recv:" << endl;
+        // cout << "----------pthread  recv:" << endl;
         int len = recv(cfd, buffer, CLIENT_BUFSIZE, 0);
         if (-1 == len || 0 == len) {
             cout << "error close cfd " << endl;
@@ -91,11 +91,12 @@ void TcpClient::readTaskHandler(int cfd) {
             sem_post(&m_rwsem);
             exit(-1);
         }
+        // cout << buffer << endl;
         // 接收ChatServer转发的数据，反序列化生成json数据对象
         try {
             json js = json::parse(buffer);
             int type = js["type"].get<int>();
-            cout << "get type:" << type << endl;
+            // cout << "get type:" << type << endl;
             js.erase("type");  // 剔除type字段，只保留数据
             switch (type) {
                 case LOGIN_MSG_ACK:
@@ -143,6 +144,9 @@ void TcpClient::readTaskHandler(int cfd) {
                     break;
                 case FRIEND_MSG:
                     handleFriendMsgResponse(js);
+                    break;
+                case FRIEND_NOTICE:
+                    handleFriendNoticeResponse(js);
                     break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
@@ -231,7 +235,7 @@ void TcpClient::handleFriendChatResponse(const json& message) {
         cout << "The person is not your friend" << endl;
     }
     if (status == SUCCESS_CHAT_FRIEND) {
-        cout << "chat friend successfully!" << endl;
+        // cout << "chat friend successfully!" << endl;
     }
 }
 
@@ -252,16 +256,43 @@ void TcpClient::handleFriendChatRequiryResponse(const json& message) {
         cout << "The person is not your friend" << endl;
     }
     if (status == SUCCESS_REQUIRY_FRIEND) {
-        cout << "chatrequiry friend successfully!" << endl;
+        cout << "chatrequiry friend successfully! 输入“:q”退出 "
+                "输入“:h”显示历史消息"
+             << endl;
         is_Friend = true;
     }
 }
 // 处理好友消息回应
-void TcpClient::handleFriendMsgResponse(const json& message) {}
+void TcpClient::handleFriendMsgResponse(const json& message) {
+    try {
+        string sender = message["account"];
+        string data = message["data"];
+        string username = message["username"];
+        std::time_t timestamp = message["timestamp"];
+        std::tm timeinfo;
+        localtime_r(&timestamp, &timeinfo);
+        std::stringstream ss;
+        ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+        std::string formattedTime = ss.str();
+        std::cout << BLUE_COLOR << username << RESET_COLOR << "(" << sender
+                  << ")" << formattedTime << ":" << std::endl;
+        std::cout << "「" << data << "」" << std::endl;
+    } catch (const exception& e) {
+        std::cout << "handleFriendMsgResponse error" << e.what() << std::endl;
+    }
+}
 
 // 处理拉黑好友请求回应
 void TcpClient::handleFriendBlockResponse(const json& message) {}
 
+void TcpClient::handleFriendNoticeResponse(const json& message) {
+    string account = message["account"];
+    string name = message["username"];
+    cout << endl;
+    cout << "您收到一条消息来自" << name << "(" << account << ")" << std::flush;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    cout << "\33[2K\r" << std::flush;
+}
 // 向数据中加入数据长度
 void TcpClient::addDataLen(json& js) {
     js["datalen"] = "";
@@ -329,14 +360,15 @@ void TcpClient::handleLogin() {
     if (is_LoginSuccess) {
         // 初始化个人信息
         getInfo(account);
+        m_account = account;
         // 进入主菜单
-        mainMenu();
         handleMainMenu();
     }
 }
 
 void TcpClient::handleMainMenu() {
     while (true) {
+        mainMenu();
         cout << "请输入：";
         int mainMenuChoice;
         cin >> mainMenuChoice;
