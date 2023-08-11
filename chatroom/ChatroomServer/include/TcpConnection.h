@@ -34,7 +34,7 @@ class TcpConnection {
     void getInfo();
     void setOnline();
     void addDataLen(json& js);
-
+    void forwardMessageToFriend(const std::string& friendAccount, const std::string& message);
    private:
     void startHeartbeat();
     void handleEpollEvents();
@@ -42,16 +42,7 @@ class TcpConnection {
     void handleDataRead();
     void handleLogin(json requestDataJson, json& responseJson);
     void handleRegister(json requestDataJson, json& responseJson);
-    void handleGetList(json requestDataJson, json& responseJson);
-    void handleFriend(json requestDataJson, json& responseJson);
     void handleGetInfo(json requestDataJson, json& responseJson);
-    void handleFriendAdd(json requestDataJson, json& responseJson);
-    void handleFriendDelete(json requestDataJson, json& responseJson);
-    void handleFriendRequiry(json requestDataJson, json& responseJson);
-    void handleFriendBlock(json requestDataJson, json& responseJson);
-    void handleFriendChat(json requestDataJson, json& responseJson);
-    void handleFriendChatRequiry(json requestDataJson, json& responseJson);
-
     int m_heartbeatTimerFd;  // 心跳定时器的文件描述符
     int m_fd;
     int m_epollFd;  // epoll的文件描述符

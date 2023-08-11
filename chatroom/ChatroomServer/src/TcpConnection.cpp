@@ -75,6 +75,7 @@ TcpConnection::TcpConnection(int fd,
 TcpConnection::~TcpConnection() {
     // 判断 读写缓存区是否还有数据没有被处理
     m_redis->hset(m_account, "status", "offline");
+    m_redis->hset(m_account, "chatstatus", "");
     if (m_readBuf && m_readBuf->readableSize() == 0 && m_writeBuf &&
         m_writeBuf->readableSize() == 0) {
         delete m_writeBuf;
@@ -198,10 +199,10 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         }
         //
         else if (requestType == FRIEND_GET_LIST) {
-            handleGetList(requestDataJson, responseJson);
+            m_friendservice->handleGetList(requestDataJson, responseJson);
 
         } else if (requestType == FRIEND_TYPE) {
-            handleFriend(requestDataJson, responseJson);
+            m_friendservice->handleFriend(requestDataJson, responseJson);
 
         }
 
@@ -216,7 +217,7 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         m_channel->writeEventEnable(true);
         m_evLoop->AddTask(m_channel, ElemType::MODIFY);
     } catch (const std::exception& e) {
-        cout << "Json parse error :" << e.what() << endl;
+        cout << "#######Json parse error :" << e.what() << endl;
         // JSON解析错误
         return false;  // 返回解析失败标志
     }
@@ -231,6 +232,7 @@ void TcpConnection::getInfo() {
     string field = "username";
     auto storedUsernameOpt = m_redis->hget(m_account, field);
     m_username = storedUsernameOpt.value();
+    m_friendservice->getName(m_username);
 }
 
 // 设置上线状态
@@ -365,186 +367,6 @@ void TcpConnection::handleGetInfo(json requestDataJson, json& responseJson) {
     responseJson["status"] = GET_INFO_SUCCESS;
 }
 
-void TcpConnection::handleGetList(json requestDataJson, json& responseJson) {
-    // 计算在线好友。
-    m_friendservice->getList();
-    // 构建好友列表响应json
-
-    responseJson["online_friends"] = m_friendservice->m_onlineFriends;
-    responseJson["offline_friends"] = m_friendservice->m_offlineFriends;
-    responseJson["type"] = FRIEND_LIST_ACK;
-}
-
-void TcpConnection::handleFriend(json requestDataJson, json& responseJson) {
-    cout << "requestType == FRIEND_TYPE" << endl;
-    responseJson["type"] = FRIEND_ACK;
-    int friendType = requestDataJson["friendtype"].get<int>();
-    cout << "friendType:" << friendType << endl;
-    if (friendType == FRIEND_ADD) {
-        handleFriendAdd(requestDataJson, responseJson);
-    }
-
-    else if (friendType == FRIEND_DELETE) {
-        handleFriendDelete(requestDataJson, responseJson);
-
-    }
-
-    else if (friendType == FRIEND_REQUIRY) {
-        handleFriendRequiry(requestDataJson, responseJson);
-
-    } else if (friendType == FRIEND_CHAT) {
-        handleFriendChat(requestDataJson, responseJson);
-
-    }
-
-    else if (friendType == FRIEND_BLOCK) {
-        handleFriendBlock(requestDataJson, responseJson);
-    } else if (friendType == FRIEND_CHAT_REQUIRY) {
-        handleFriendChatRequiry(requestDataJson, responseJson);
-    }
-}
-
-void TcpConnection::handleFriendAdd(json requestDataJson, json& responseJson) {
-    Debug("addfriend");
-    cout << "addfriend" << endl;
-    responseJson["friendtype"] = FRIEND_ADD;
-    string account = requestDataJson["account"];
-    auto storedName = m_redis->hget(account, "username");
-
-    if (!storedName) {
-        responseJson["status"] = NOT_REGISTERED;
-    } else {
-        json jsonvalue;
-        int num = 0;
-        string name = storedName.value();
-        string key = m_account + "_Friend";
-        string key2 = account + "_Friend";
-        jsonvalue["username"] = name;
-        jsonvalue["unreadmsg"] = num;
-        string value = jsonvalue.dump();
-        json jsonvalue2;
-        jsonvalue2["username"] = m_username;
-        jsonvalue2["unreadmsg"] = num;
-
-        string value2 = jsonvalue2.dump();
-        m_redis->hset(key, account, value);
-        m_redis->hset(key2, m_account, value2);
-        responseJson["status"] = SUCCESS_ADD_FRIEND;
-    }
-}
-
-void TcpConnection::handleFriendDelete(json requestDataJson,
-                                       json& responseJson) {
-    cout << "deletefriend" << endl;
-    responseJson["friendtype"] = FRIEND_DELETE;
-    string key = m_account + "_Friend";
-    string account = requestDataJson["account"];
-    auto storedName = m_redis->hget(key, account);
-    if (!storedName) {
-        responseJson["status"] = NOT_FRIEND;
-    } else {
-        string name = storedName.value();
-        m_redis->hdel(key, account);
-        responseJson["status"] = SUCCESS_DELETE_FRIEND;
-    }
-}
-
-void TcpConnection::handleFriendRequiry(json requestDataJson,
-                                        json& responseJson) {
-    cout << "requiryfriend" << endl;
-    responseJson["friendtype"] = FRIEND_REQUIRY;
-    string key = m_account + "_Friend";
-    string account = requestDataJson["account"];
-    auto storedName = m_redis->hget(key, account);
-    if (!storedName) {
-        responseJson["status"] = NOT_FRIEND;
-    } else {
-        string name = storedName.value();
-        responseJson["status"] = SUCCESS_REQUIRY_FRIEND;
-    }
-}
-
-void TcpConnection::handleFriendChatRequiry(json requestDataJson,
-                                            json& responseJson) {
-    cout << "chatrequiryfriend" << endl;
-    responseJson["friendtype"] = FRIEND_CHAT_REQUIRY;
-    string key = m_account + "_Friend";
-    string account = requestDataJson["account"];
-    auto storedName = m_redis->hget(key, account);
-    if (!storedName) {
-        responseJson["status"] = NOT_FRIEND;
-    } else {
-        string name = storedName.value();
-        responseJson["status"] = SUCCESS_REQUIRY_FRIEND;
-        m_redis->hset(m_account, "chatstatus", account);
-    }
-}
-void TcpConnection::handleFriendBlock(json requestDataJson,
-                                      json& responseJson) {
-    cout << "blockfriend" << endl;
-    responseJson["friendtype"] = FRIEND_BLOCK;
-    responseJson["type"] = FRIEND_ACK;
-    string key = m_account + "_Friend";
-    string account = requestDataJson["account"];
-    auto storedName = m_redis->hget(key, account);
-    if (!storedName) {
-        responseJson["status"] = NOT_FRIEND;
-    } else {
-        string name = storedName.value();
-        //
-    }
-}
-
-void TcpConnection::handleFriendChat(json requestDataJson, json& responseJson) {
-    cout << "chat with friend" << endl;
-    // 构建回应json
-    responseJson["friendtype"] = FRIEND_CHAT;
-    responseJson["type"] = FRIEND_ACK;
-    responseJson["status"] = SUCCESS_SEND_MSG;
-    string account = requestDataJson["account"];
-    string key;
-    if (account < m_account) {
-        key = account + "+" + m_account + "_Chat";
-    } else {
-        key = m_account + "+" + account + "_Chat";
-    }
-    json chatinfo;
-    string data = requestDataJson["data"];
-    std::time_t timestamp = std::time(nullptr);
-    if (data == ":q") {
-        m_redis->hset(m_account, "chatstatus", "");
-        return;
-    }
-    string chatstatus = m_redis->hget(account, "chatstatus").value();
-    if (chatstatus == m_account) {  // 好友在对应聊天界面
-        // 转发json数据
-        auto connection = m_onlineUsersPtr_->getOnlineConnection(account);
-        // 将响应JSON数据添加到m_writeBuf中
-        if (connection) {
-            json sendToFriend;
-            sendToFriend["type"] = FRIEND_TYPE;
-            sendToFriend["friendtype"] = FRIEND_MSG;
-            sendToFriend["account"] = m_account;
-            sendToFriend["timestamp"] = timestamp;
-            sendToFriend["data"] = data;
-            string forwardMsg = sendToFriend.dump();
-            connection->m_writeBuf->appendString(forwardMsg);
-            // 添加检测写事件
-            connection->m_channel->writeEventEnable(true);
-            connection->m_evLoop->AddTask(connection->m_channel, ElemType::ADD);
-        } else {
-            responseJson["status"] = FAIL_SEND_MSG;
-        }
-    }
-    // 存储在数据库中
-
-    chatinfo["account"] = account;
-    chatinfo["timestamp"] = timestamp;
-    chatinfo["data"] = data;
-    string chatmsg = chatinfo.dump();
-    m_redis->rpush(key, chatmsg);
-}
-
 void TcpConnection::addDataLen(json& js) {
     js["datalen"] = "";
     string prerequest = js.dump();  // 序列化
@@ -554,3 +376,4 @@ void TcpConnection::addDataLen(json& js) {
         std::string(FIXEDWIDTH - strNumber.length(), '0') + strNumber;
     js["datalen"] = paddedStrNumber;
 }
+

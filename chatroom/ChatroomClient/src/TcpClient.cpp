@@ -314,7 +314,7 @@ void TcpClient::handleLogin() {
     cin >> account;
     cout << "userpassword:";
     cin >> pwd;
-    cin.get();
+    // cin.get(); 似乎是这里的bug
     json js;
     js["type"] = LOGIN_MSG_TYPE;
     js["account"] = account;

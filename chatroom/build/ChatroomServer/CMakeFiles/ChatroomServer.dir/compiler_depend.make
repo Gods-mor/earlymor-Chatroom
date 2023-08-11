@@ -1135,6 +1135,8 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/FriendService.cpp.o: /home/earl
   /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/OnlineUsers.h \
   /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/TcpConnection.h \
   /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/UserService.h \
+  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/log.h \
+  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/config/server_config.h \
   /usr/include/alloca.h \
   /usr/include/arpa/inet.h \
   /usr/include/asm-generic/bitsperlong.h \
@@ -3735,8 +3737,6 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/main.cpp.o: /home/earlymor/文�
 
 /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/TcpServer.cpp:
 
-/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/config/server_config.h:
-
 /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/GroupService.cpp:
 
 /usr/include/sys/time.h:
@@ -3960,6 +3960,8 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/main.cpp.o: /home/earlymor/文�
 /usr/include/nlohmann/detail/meta/std_fs.hpp:
 
 /usr/include/arpa/inet.h:
+
+/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/config/server_config.h:
 
 /usr/include/c++/13.2.1/pstl/glue_memory_defs.h:
 

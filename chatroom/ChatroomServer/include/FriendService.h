@@ -16,7 +16,18 @@ class FriendService {
     ~FriendService();
     void getList();
     inline void getAccount(string account) { m_account = account; }
+    inline void getName(string name) { m_username = name; };
     inline void addOnlineNumber() { m_onlineNumber++; }
+
+    void clearUnreadMsg(json& js);
+    void handleGetList(json requestDataJson, json& responseJson);
+    void handleFriend(json requestDataJson, json& responseJson);
+    void handleFriendAdd(json requestDataJson, json& responseJson);
+    void handleFriendDelete(json requestDataJson, json& responseJson);
+    void handleFriendRequiry(json requestDataJson, json& responseJson);
+    void handleFriendBlock(json requestDataJson, json& responseJson);
+    void handleFriendChat(json requestDataJson, json& responseJson);
+    void handleFriendChatRequiry(json requestDataJson, json& responseJson);
 
     std::unordered_map<std::string, std::string>
         m_onlineFriends;  // 得到的在线列表
@@ -26,6 +37,7 @@ class FriendService {
         m_userFriends;  // 用户的所有好友哈希表（account：name）
    private:
     string m_account;
+    string m_username;
     int m_onlineNumber;                         // 在线人数
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
     std::shared_ptr<OnlineUsers>

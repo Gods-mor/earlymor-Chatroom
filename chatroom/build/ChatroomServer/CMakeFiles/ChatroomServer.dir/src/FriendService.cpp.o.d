@@ -342,4 +342,6 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/FriendService.cpp.o: \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
  /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/linux/close_range.h /usr/include/c++/13.2.1/iostream
+ /usr/include/linux/close_range.h /usr/include/c++/13.2.1/iostream \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../config/server_config.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/log.h
