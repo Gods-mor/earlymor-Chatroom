@@ -103,14 +103,15 @@ void GroupManager::addGroup() {
 void GroupManager::createGroup() {
     string groupname;
     cout << "请输入要创建的群名称：";
+    // 未来要加一些限制
     cin >> groupname;
     cin.get();
-     json js;
+    json js;
     js["type"] = GROUP_TYPE;
     js["grouptype"] = GROUP_CREATE;
     js["owner"] = m_account;
     js["groupname"] = groupname;
-    // 
+    // 群组id由服务器分配
     TcpClient::addDataLen(js);
     string request = js.dump();
     int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);

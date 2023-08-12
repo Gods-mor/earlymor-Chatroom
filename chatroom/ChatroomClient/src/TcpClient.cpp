@@ -139,7 +139,6 @@ void TcpClient::readTaskHandler(int cfd) {
                             handleFriendChatRequiryResponse(js);
                     }
                     sem_post(&m_rwsem);
-
                     break;
                 case GET_INFO:
                     sem_post(&m_rwsem);
@@ -152,6 +151,27 @@ void TcpClient::readTaskHandler(int cfd) {
                     break;
                 case GROUP_LIST_ACK:
                     handleGroupListResponse(js);
+                case GROUP_ACK:
+                    int grouptype;
+                    grouptype = js["grouptype"].get<int>();
+                    switch (grouptype) {
+                        case GROUP_ADD:
+                            handleGroupAddResponse(js);
+                            break;
+                        case GROUP_CREATE:
+                            handleGroupCreateResponse(js);
+                            break;
+                        case GROUP_ENTER:
+                            handleGroupEnterResponse(js);
+                            break;
+                        case GROUP_REQUIRY:
+                            handleGroupRequiryResponse(js);
+                            break;
+                        default:
+                            break;
+                    }
+                    sem_post(&m_rwsem);
+                    break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
                     break;
@@ -445,11 +465,26 @@ void TcpClient::handleRegister() {
     cout << "pthread work successfully" << endl;
 }
 
-void TcpClient::handleGroupListResponse(const json& message){
-     try {
+void TcpClient::handleGroupListResponse(const json& message) {
+    try {
         cout << "----handleGroupListResponse" << endl;
         m_groupmanager->userGroups = message["usergroups"];
     } catch (const exception& e) {
         cout << "handleGroupListResponse error :" << e.what() << endl;
     }
 }
+
+void TcpClient::handleGroupAddResponse(const json& message) {}
+
+void TcpClient::handleGroupCreateResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == SUCCESS_CREATE_GROUP) {
+        string id = message["groupid"];
+        cout << "create group successfully" << endl;
+        cout << "don't forget ,your groupid is " << id << endl;
+    } else {
+        cout << "fail to create group" << endl;
+    }
+}
+void TcpClient::handleGroupEnterResponse(const json& message) {}
+void TcpClient::handleGroupRequiryResponse(const json& message) {}

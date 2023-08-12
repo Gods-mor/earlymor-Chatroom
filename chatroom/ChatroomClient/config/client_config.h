@@ -31,6 +31,7 @@ constexpr int GET_INFO = 5;
 constexpr int FRIEND_MSG = 6;
 constexpr int FRIEND_NOTICE = 7;
 constexpr int GROUP_LIST_ACK = 8;
+constexpr int GROUP_ACK = 9;
 // 存储用户账号信息
 constexpr int GET_INFO_SUCCESS = 0;
 // 在线状态
@@ -53,10 +54,15 @@ constexpr int NOT_FRIEND = 0;
 constexpr int SUCCESS_DELETE_FRIEND = 1;
 constexpr int SUCCESS_REQUIRY_FRIEND = 1;
 constexpr int SUCCESS_CHAT_FRIEND = 1;
-
+// 群组功能回应
+constexpr int FAIL_CREATE_GROUP = 0;
+constexpr int SUCCESS_CREATE_GROUP = 1;
 // 群组功能请求
 constexpr int GROUP_ADD = 1;
 constexpr int GROUP_CREATE = 2;
+constexpr int GROUP_ENTER = 3;
+constexpr int GROUP_REQUIRY = 4;
+
 // 定义颜色宏
 #define RESET_COLOR "\033[0m"     // 恢复默认颜色
 #define RED_COLOR "\033[31m"      // 红色
