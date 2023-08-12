@@ -16,6 +16,8 @@ constexpr int REG_MSG_TYPE = 2;
 constexpr int GET_INFO_TYPE = 3;
 constexpr int FRIEND_GET_LIST = 4;
 constexpr int FRIEND_TYPE = 5;
+constexpr int GROUP_GET_LIST = 6;
+constexpr int GROUP_TYPE = 7;
 // 客户端好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -23,7 +25,8 @@ constexpr int FRIEND_REQUIRY = 3;
 constexpr int FRIEND_CHAT = 4;
 constexpr int FRIEND_BLOCK = 5;
 constexpr int FRIEND_CHAT_REQUIRY = 6;
-
+// 客户端群组功能请求
+constexpr int GROUP_ADD = 1;
 // 服务器回应信息
 constexpr int LOGIN_MSG_ACK = 1;
 constexpr int REG_MSG_ACK = 2;
@@ -32,6 +35,7 @@ constexpr int FRIEND_ACK = 4;
 constexpr int GET_INFO = 5;
 constexpr int FRIEND_MSG = 6;
 constexpr int FRIEND_NOTICE = 7;
+constexpr int GROUP_LIST_ACK = 8;
 //
 constexpr int GET_INFO_SUCCESS = 0;
 // 注册状态回应

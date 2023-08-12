@@ -205,7 +205,13 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             m_friendservice->handleFriend(requestDataJson, responseJson);
 
         }
+        else if (requestType == GROUP_GET_LIST) {
+            m_groupservice->handleGetList(requestDataJson, responseJson);
 
+        }else if (requestType == GROUP_TYPE) {
+            m_groupservice->handleGroup(requestDataJson, responseJson);
+
+        }
         else {
             // 未知的请求类型
             return false;  // 返回解析失败标志
@@ -227,12 +233,14 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
 
 // 获取登录信息
 void TcpConnection::getInfo() {
-    m_friendservice->getAccount(m_account);
     // 获取用户名
     string field = "username";
     auto storedUsernameOpt = m_redis->hget(m_account, field);
     m_username = storedUsernameOpt.value();
+    m_friendservice->getAccount(m_account);
     m_friendservice->getName(m_username);
+     m_groupservice->getAccount(m_account);
+    m_groupservice->getName(m_username);
 }
 
 // 设置上线状态

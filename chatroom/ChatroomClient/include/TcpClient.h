@@ -11,6 +11,7 @@
 #include <vector>
 #include "../config/client_config.h"
 #include "FriendManager.h"
+#include "GroupManager.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -40,6 +41,7 @@ class TcpClient {
     void handleFriendListResponse(const json& message);
     void handleFriendMsgResponse(const json& message);
     void handleFriendNoticeResponse(const json& message);
+    void handleGroupListResponse(const json& message);
     void static addDataLen(json& js);
 
     void getInfo(string account);
@@ -51,8 +53,11 @@ class TcpClient {
         false};  // 原子类型，不需要加锁，用于记录登录状态
     atomic_bool is_Friend{
         false};  // 原子类型，不需要加锁，用于记录是否为好友状态
+    atomic_bool is_Group{
+        false};  // 原子类型，不需要加锁，用于记录是否为群组状态
     string m_account;
     string m_username;
     thread* m_readTask;
     FriendManager* m_friendmanager;
+    GroupManager* m_groupmanager;
 };

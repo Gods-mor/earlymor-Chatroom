@@ -15,6 +15,7 @@ TcpClient::TcpClient() {
 
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend, m_account);
+    m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account);
 }
 
 // 析构回收资源
@@ -22,6 +23,7 @@ TcpClient::~TcpClient() {
     close(m_fd);
     sem_destroy(&m_rwsem);
     delete m_friendmanager;
+    delete m_groupmanager;
 }
 
 // 连接server -> 启动client
@@ -148,6 +150,8 @@ void TcpClient::readTaskHandler(int cfd) {
                 case FRIEND_NOTICE:
                     handleFriendNoticeResponse(js);
                     break;
+                case GROUP_LIST_ACK:
+                    handleGroupListResponse(js);
                 default:
                     cerr << "Invalid message type received: " << type << endl;
                     break;
@@ -380,6 +384,7 @@ void TcpClient::handleMainMenu() {
                 m_friendmanager->fiendMenu();
                 break;
             case 2:
+                m_groupmanager->groupMenu();
                 break;
             case 3:
                 break;
@@ -438,4 +443,13 @@ void TcpClient::handleRegister() {
     sem_wait(&m_rwsem);  // 等待信号量，子线程处理完注册消息会通知
 
     cout << "pthread work successfully" << endl;
+}
+
+void TcpClient::handleGroupListResponse(const json& message){
+     try {
+        cout << "----handleGroupListResponse" << endl;
+        m_groupmanager->userGroups = message["usergroups"];
+    } catch (const exception& e) {
+        cout << "handleGroupListResponse error :" << e.what() << endl;
+    }
 }
