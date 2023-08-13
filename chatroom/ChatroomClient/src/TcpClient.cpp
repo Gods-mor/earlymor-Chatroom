@@ -16,7 +16,7 @@ TcpClient::TcpClient() {
     m_account = emptystring;
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend, m_account);
-    m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account);
+    m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account,this);
 }
 
 // 析构回收资源
@@ -498,5 +498,8 @@ void TcpClient::handleGroupCreateResponse(const json& message) {
         cout << "fail to create group" << endl;
     }
 }
-void TcpClient::handleGroupEnterResponse(const json& message) {}
+void TcpClient::handleGroupEnterResponse(const json& message) {
+    m_permission = message["permission"];
+
+}
 void TcpClient::handleGroupRequiryResponse(const json& message) {}

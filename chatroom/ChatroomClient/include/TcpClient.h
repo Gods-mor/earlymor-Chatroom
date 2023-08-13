@@ -50,9 +50,11 @@ class TcpClient {
     void static addDataLen(json& js);
 
     void getInfo(string account);
+    inline string getPermisson() { return m_permission; }
 
    private:
     int m_fd;
+    string m_permission;
     sem_t m_rwsem;  // 用于读写线程间的通信
     atomic_bool is_LoginSuccess{
         false};  // 原子类型，不需要加锁，用于记录登录状态

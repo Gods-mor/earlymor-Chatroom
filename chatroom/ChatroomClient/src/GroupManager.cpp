@@ -13,8 +13,13 @@ using json = nlohmann::json;
 GroupManager::GroupManager(int fd,
                            sem_t& rwsem,
                            atomic_bool& isGroup,
-                           string& account)
-    : m_fd(fd), m_rwsem(rwsem), is_Group(isGroup), m_account(account) {
+                           string& account,
+                           TcpClient* tcpclient)
+    : m_fd(fd),
+      m_rwsem(rwsem),
+      is_Group(isGroup),
+      m_account(account),
+      m_tcpclient(tcpclient) {
     // 对unordered_map进行初始化
     unordered_map<string, string> emptyMap;
     userGroups = emptyMap;
@@ -128,5 +133,80 @@ void GroupManager::createGroup() {
     }
     sem_wait(&m_rwsem);
 }
-void GroupManager::enterGroup() {}
+void GroupManager::enterGroup() {
+    string id;
+    cout << "请输入要进入的群组号码：";
+    cin >> id;
+    cin.get();
+    if (id.length() > 11) {
+        std::cout << "Input exceeded the maximum allowed length. "
+                     "Truncating..."
+                  << std::endl;
+        id = id.substr(0, 11);  // Truncate the input to 10 characters
+    }
+    json js;
+    js["type"] = GROUP_TYPE;
+    js["grouptype"] = GROUP_ENTER;
+    js["groupid"] = id;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "enterGroup send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+    string permisson = m_tcpclient->getPermisson();
+    if (permisson == "owner") {
+        ownerMenu();
+        handleOwner();
+    } else if (permisson == "administrator") {
+        administratorMenu();
+        handleAdmin();
+    } else {
+        memberMenu();
+        handleMember();
+    }
+}
+void GroupManager::ownerMenu() {
+    cout << "               #####################################" << endl;
+    cout << "                           1.聊天" << endl;
+    cout << "                           2.踢人" << endl;
+    cout << "                           3.添加管理员" << endl;
+    cout << "                           4.查看群成员 " << endl;
+    cout << "                           5.查看历史记录" << endl;
+    cout << "                           6.群通知" << endl;
+    cout << "                           7.修改群名" << endl;
+    cout << "                           8.解散该群" << endl;
+    cout << "                           9.返回" << endl;
+    cout << "               #####################################" << endl;
+}
+
+void GroupManager::administratorMenu() {
+    cout << "               #####################################" << endl;
+    cout << "                           1.聊天" << endl;
+    cout << "                           2.踢人" << endl;
+    cout << "                           3.查看群成员" << endl;
+    cout << "                           4.查看历史记录 " << endl;
+    cout << "                           5.群通知" << endl;
+    cout << "                           6.退出该群" << endl;
+    cout << "                           7.返回" << endl;
+    cout << "               #####################################" << endl;
+}
+void GroupManager::memberMenu() {
+    cout << "               #####################################" << endl;
+    cout << "                           1.聊天" << endl;
+    cout << "                           2.查看群成员" << endl;
+    cout << "                           3.查看历史记录" << endl;
+    cout << "                           4.退出该群 " << endl;
+    cout << "                           5.返回" << endl;
+    cout << "               #####################################" << endl;
+}
+void GroupManager::handleOwner(){
+    
+}
+
+void GroupManager::handleAdmin(){}
+
+void GroupManager::handleMember(){}
+
 void GroupManager::requiryGroup() {}

@@ -131,7 +131,23 @@ void GroupService::handleGroupCreate(json requestDataJson, json& responseJson) {
 void GroupService::handleGroupRequiry(json requestDataJson,
                                       json& responseJson) {}
 
-void GroupService::handleGroupEnter(json requestDataJson, json& responseJson) {}
+void GroupService::handleGroupEnter(json requestDataJson, json& responseJson) {
+    responseJson["grouptype"] = GROUP_ENTER;
+    string groupid = requestDataJson["groupid"];
+    string owner = m_redis->hget("Group_" + groupid, "owner").value();
+    // 获取权限
+    if (m_account == owner) {
+        responseJson["permission"] = "owner";
+    } else {
+        string permission =
+            m_redis->hget("Group_" + groupid, m_account).value();
+        if (permission == "administrator") {
+            responseJson["permission"] = "administrator";
+        } else {
+            responseJson["permission"] = "member";
+        }
+    }
+}
 
 void GroupService::handleGroup(json requestDataJson, json& responseJson) {
     cout << "requestType == GROUP_TYPE" << endl;

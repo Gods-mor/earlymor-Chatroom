@@ -36,4 +36,5 @@ class GroupService {
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
     std::shared_ptr<OnlineUsers>
         m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
+    
 };
