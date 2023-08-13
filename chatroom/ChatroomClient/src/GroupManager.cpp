@@ -13,8 +13,12 @@ using json = nlohmann::json;
 GroupManager::GroupManager(int fd,
                            sem_t& rwsem,
                            atomic_bool& isGroup,
-                           string account)
-    : m_fd(fd), m_rwsem(rwsem), is_Group(isGroup), m_account(account) {}
+                           string& account)
+    : m_fd(fd), m_rwsem(rwsem), is_Group(isGroup), m_account(account) {
+    // 对unordered_map进行初始化
+    unordered_map<string, string> emptyMap;
+    userGroups = emptyMap;
+}
 
 GroupManager::~GroupManager() {
     ;
@@ -88,10 +92,14 @@ void GroupManager::addGroup() {
                   << std::endl;
         id = id.substr(0, 11);  // Truncate the input to 10 characters
     }
+    string msg;
+    cout << "请输入留言:";
+    getline(cin, msg);
     json js;
     js["type"] = GROUP_TYPE;
     js["grouptype"] = GROUP_ADD;
     js["groupid"] = id;
+    js["msg"] = msg;
     TcpClient::addDataLen(js);
     string request = js.dump();
     int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);

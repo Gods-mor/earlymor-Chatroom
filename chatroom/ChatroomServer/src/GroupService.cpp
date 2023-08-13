@@ -17,6 +17,7 @@ void GroupService::handleGetList(json requestDataJson, json& responseJson) {
     getList();
     // 构建好友列表响应json
     responseJson["type"] = GROUP_LIST_ACK;
+    responseJson["usergroups"] = m_userGroups;
 }
 
 void GroupService::getList() {
@@ -34,23 +35,39 @@ void GroupService::getList() {
 }
 
 void GroupService::handleGroupAdd(json requestDataJson, json& responseJson) {
+    responseJson["status"] = FAIL_SEND_APPLICATION;
     Debug("addgroup");
     cout << "addgroup" << endl;
     responseJson["grouptype"] = GROUP_ADD;
     string id = requestDataJson["groupid"];
     string key = "Group_" + id;
-    auto storedName = m_redis->hget(id, "groupname");
+    auto storedName = m_redis->hget(key, "groupname");
     string adkey = id + "+administrator";
     if (!storedName) {
         responseJson["status"] = NOT_REGISTERED;
     } else {
         // 发送通知到群主或管理员处
-        std::unordered_set<std::string> administrator;
-        // 取出管理员
-        m_redis->smembers("adkey", std::back_inserter(administrator));
-        for(const auto& entry :administrator){
-            // 对管理员发送入群申请
-            
+        // 只需要发送到群通知里
+        /* 消息类型 type：“add“responseJson["status"] = SUCCESS_SEND_MSG;
+
+​		来源 source：“account“
+
+​		内容 msg：“msg”// 对方留言
+
+​		处理者：“ad_account”
+
+ */ string msg = requestDataJson["msg"];
+        string notice = id + "_Group_Notice";
+        json application;
+        application["type"] = "add";
+        application["source"] = m_account;
+        application["msg"] = msg;
+        string appstr = application.dump();
+        try {
+            m_redis->rpush(notice, appstr);
+            responseJson["status"] = SUCCESS_SEND_APPLICATION;
+        } catch (const exception& e) {
+            cout << "redis rpush error:" << e.what() << endl;
         }
     }
 }
@@ -107,7 +124,7 @@ void GroupService::handleGroupCreate(json requestDataJson, json& responseJson) {
     // 把群组添加进入用户加入的群组
     string key2 = m_account + "_Group";
     m_redis->hset(key2, idstring, groupname);
-    responseJson["groupid"] = id;
+    responseJson["groupid"] = idstring;
     responseJson["status"] = SUCCESS_CREATE_GROUP;
 }
 

@@ -9,6 +9,7 @@
 #include "../include/ChatService.h"
 #include "../include/log.h"
 #include "FriendService.h"
+#include "GroupService.h"
 #include "OnlineUsers.h"
 
 using json = nlohmann::json;
@@ -29,7 +30,7 @@ TcpConnection::TcpConnection(int fd,
     // m_chatservice = new ChatService;
     m_userservice = new UserService(redis);
     m_name = "Connection-" + to_string(fd);
-
+    m_groupservice = new GroupService(redis, onlineUsersPtr_);
     m_friendservice = new FriendService(redis, onlineUsersPtr_);
     // 服务器最迫切想知道的，客户端有没有数据到达
     m_channel = new Channel(fd, FDEvent::ReadEvent, processRead, processWrite,
@@ -204,15 +205,13 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         } else if (requestType == FRIEND_TYPE) {
             m_friendservice->handleFriend(requestDataJson, responseJson);
 
-        }
-        else if (requestType == GROUP_GET_LIST) {
+        } else if (requestType == GROUP_GET_LIST) {
             m_groupservice->handleGetList(requestDataJson, responseJson);
 
-        }else if (requestType == GROUP_TYPE) {
+        } else if (requestType == GROUP_TYPE) {
             m_groupservice->handleGroup(requestDataJson, responseJson);
 
-        }
-        else {
+        } else {
             // 未知的请求类型
             return false;  // 返回解析失败标志
         }
@@ -234,13 +233,17 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
 // 获取登录信息
 void TcpConnection::getInfo() {
     // 获取用户名
-    string field = "username";
-    auto storedUsernameOpt = m_redis->hget(m_account, field);
-    m_username = storedUsernameOpt.value();
-    m_friendservice->getAccount(m_account);
-    m_friendservice->getName(m_username);
-     m_groupservice->getAccount(m_account);
-    m_groupservice->getName(m_username);
+    try {
+        string field = "username";
+        auto storedUsernameOpt = m_redis->hget(m_account, field);
+        m_username = storedUsernameOpt.value();
+        m_friendservice->getAccount(m_account);
+        m_friendservice->getName(m_username);
+        m_groupservice->getAccount(m_account);
+        m_groupservice->getName(m_username);
+    } catch (const exception& e) {
+        cout << "getinfo error" << e.what() << endl;
+    }
 }
 
 // 设置上线状态

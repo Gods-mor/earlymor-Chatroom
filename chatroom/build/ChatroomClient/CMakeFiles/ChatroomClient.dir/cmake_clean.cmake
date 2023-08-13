@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o"
   "CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o.d"
+  "CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.o"
+  "CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.o.d"
   "CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o"
   "CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o.d"
   "CMakeFiles/ChatroomClient.dir/src/main.cpp.o"

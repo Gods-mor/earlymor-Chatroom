@@ -12,7 +12,8 @@ TcpClient::TcpClient() {
         exit(-1);
     }
     // 初始化信号量
-
+    string emptystring;
+    m_account = emptystring;
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend, m_account);
     m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account);
@@ -151,6 +152,8 @@ void TcpClient::readTaskHandler(int cfd) {
                     break;
                 case GROUP_LIST_ACK:
                     handleGroupListResponse(js);
+                    sem_post(&m_rwsem);
+                    break;
                 case GROUP_ACK:
                     int grouptype;
                     grouptype = js["grouptype"].get<int>();
@@ -286,7 +289,7 @@ void TcpClient::handleFriendChatRequiryResponse(const json& message) {
         is_Friend = true;
     }
 }
-// 处理好友消息回应
+// 处理好友消息回应undefined reference to `GroupManager::Grou
 void TcpClient::handleFriendMsgResponse(const json& message) {
     try {
         string sender = message["account"];
@@ -474,7 +477,16 @@ void TcpClient::handleGroupListResponse(const json& message) {
     }
 }
 
-void TcpClient::handleGroupAddResponse(const json& message) {}
+void TcpClient::handleGroupAddResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if(status==NOT_REGISTERED){
+        cout << "group did't register" << endl;
+    } else if (status == SUCCESS_SEND_APPLICATION) {
+        cout << "success send application" << endl;
+    } else {
+        cout << "fail to send application" << endl;
+    }
+}
 
 void TcpClient::handleGroupCreateResponse(const json& message) {
     int status = message["status"].get<int>();

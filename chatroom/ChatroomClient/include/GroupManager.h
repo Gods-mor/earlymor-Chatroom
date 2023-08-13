@@ -10,7 +10,7 @@
 using namespace std;
 class GroupManager {
    public:
-    GroupManager(int fd, sem_t& rwsem, atomic_bool& isGroup, string);
+    GroupManager(int fd, sem_t& rwsem, atomic_bool& isGroup, string& account);
     ~GroupManager();
     void groupMenu();              // 群组功能主菜单
     void getGroupList();           // 获取加入群组列表
@@ -26,6 +26,6 @@ class GroupManager {
     int m_fd;  // 通信fd
     sem_t& m_rwsem;
     atomic_bool& is_Group;
-    string m_account;
+    string& m_account;
 
 };

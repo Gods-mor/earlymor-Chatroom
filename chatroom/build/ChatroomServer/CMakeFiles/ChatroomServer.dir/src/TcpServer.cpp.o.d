@@ -327,7 +327,6 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/TcpServer.cpp.o: \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/Buffer.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/ChatService.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/GroupService.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/src/../include/UserService.h \
  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
  /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \

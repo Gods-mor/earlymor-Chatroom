@@ -326,7 +326,6 @@ ChatroomServer/CMakeFiles/ChatroomServer.dir/src/FriendService.cpp.o: \
  /usr/include/c++/13.2.1/thread /usr/include/c++/13.2.1/bits/std_thread.h \
  /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/Dispatcher.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/GroupService.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomServer/include/UserService.h \
  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
  /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \

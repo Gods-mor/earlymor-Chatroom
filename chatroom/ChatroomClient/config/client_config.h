@@ -57,6 +57,8 @@ constexpr int SUCCESS_CHAT_FRIEND = 1;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
 constexpr int SUCCESS_CREATE_GROUP = 1;
+constexpr int FAIL_SEND_APPLICATION = 1;
+constexpr int SUCCESS_SEND_APPLICATION = 2;
 // 群组功能请求
 constexpr int GROUP_ADD = 1;
 constexpr int GROUP_CREATE = 2;

@@ -300,4 +300,5 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h \
  /usr/include/c++/13.2.1/set /usr/include/c++/13.2.1/bits/stl_set.h \
  /usr/include/c++/13.2.1/bits/stl_multiset.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h \
  /usr/include/c++/13.2.1/stdlib.h

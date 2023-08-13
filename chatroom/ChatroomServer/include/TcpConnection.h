@@ -5,14 +5,13 @@
 #include "Channel.h"
 #include "ChatService.h"
 #include "EventLoop.h"
-#include "GroupService.h"
 #include "UserService.h"
 #include "sw/redis++/redis++.h"  // 添加Redis++头文件
 
 // OnlineUsers 和 FriendService 的前置声明
 class OnlineUsers;
 class FriendService;
-
+class GroupService;
 using json = nlohmann::json;
 // 区分两者不同发送方式，
 // 1,全部放到缓存区再发送，2，变放边发送

@@ -66,3 +66,5 @@ constexpr int FAIL_SEND_MSG = 0;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
 constexpr int SUCCESS_CREATE_GROUP = 1;
+constexpr int FAIL_SEND_APPLICATION = 1;
+constexpr int SUCCESS_SEND_APPLICATION = 2;

@@ -1,7 +1,7 @@
-ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/FriendManager.cpp \
+ChatroomClient/CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.o: \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/GroupManager.cpp \
  /usr/include/stdc-predef.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h \
  /usr/include/semaphore.h /usr/include/features.h \
  /usr/include/features-time64.h /usr/include/bits/wordsize.h \
  /usr/include/bits/timesize.h /usr/include/sys/cdefs.h \
@@ -303,4 +303,4 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: \
  /usr/include/bits/in.h /usr/include/c++/13.2.1/thread \
  /usr/include/c++/13.2.1/bits/std_thread.h \
  /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h

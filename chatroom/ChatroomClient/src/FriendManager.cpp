@@ -13,7 +13,7 @@ using json = nlohmann::json;
 FriendManager::FriendManager(int fd,
                              sem_t& rwsem,
                              atomic_bool& isFriend,
-                             string account)
+                             string& account)
     : m_fd(fd), m_rwsem(rwsem), is_Friend(isFriend), m_account(account) {
     // 对unordered_map进行初始化
     unordered_map<string, string> emptyMap;
