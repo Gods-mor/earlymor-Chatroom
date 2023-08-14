@@ -484,6 +484,7 @@ void TcpClient::handleRegister() {
 
 void TcpClient::handleGroupListResponse(const json& message) {
     try {
+        m_groupmanager->userGroups.clear();
         cout << "----handleGroupListResponse" << endl;
         m_groupmanager->userGroups = message["usergroups"];
     } catch (const exception& e) {
@@ -572,7 +573,7 @@ void TcpClient::ownerChat(const json& message) {}
 void TcpClient::ownerKick(const json& message) {}
 // 回应 添加管理员
 void TcpClient::ownerAddAdministrator(const json& message) {
-    int status = message["ownerstatus"];
+    int status = message["status"];
     if (status == NOT_SELF) {
         cout << "您已是群主，不可以把自己设为管理员" << endl;
     } else if (status == ADMIN_ALREADY_EXIST) {
@@ -586,7 +587,14 @@ void TcpClient::ownerAddAdministrator(const json& message) {
     }
 }
 
-void TcpClient::ownerRevokeAdministrator(const json& message) {}
+void TcpClient::ownerRevokeAdministrator(const json& message) {
+    int status = message["status"];
+    if (status == SUCCESS_REVOKE_ADMIN) {
+        cout << "成功撤除该管理员" << endl;
+    } else {
+        cout << "撤除该管理员失败" << endl;
+    }
+}
 void TcpClient::ownerCheckMember(const json& message) {}
 void TcpClient::ownerCheckHistory(const json& message) {}
 void TcpClient::ownerNotice(const json& message) {
@@ -617,7 +625,7 @@ void TcpClient::memberExit(const json& message) {}
 void TcpClient::handleGroupGetNoticeResponse(const json& message) {
     m_groupnotice.clear();
     m_groupnotice =
-        message["msg"];  // msg字符串是json格式存储的，需要序列化再使用
+        message["notice"];  // msg字符串是json格式存储的，需要序列化再使用
     for (size_t i = 0; i < m_groupnotice.size(); ++i) {
         json info = json::parse(m_groupnotice[i]);
         string type = info["type"];
@@ -645,10 +653,10 @@ void TcpClient::handleGroupGetNoticeResponse(const json& message) {
         } else if (type == "quit") {
             ;
         } else if (type == "revoke") {
-            string source = info["source"];
+            string dealer = info["dealer"];
             string member = info["member"];
             cout << i << "、"
-                 << "成员：" << member << "被群主：" << source
+                 << "成员：" << member << "被群主：" << dealer
                  << "撤除了管理员身份" << endl;
         }
         cout << "---------------------------------------------------" << endl;

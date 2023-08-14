@@ -15,6 +15,7 @@ FriendService::~FriendService() {}
 // 从redis中找到account的好友集合
 void FriendService::getList() {
     try {
+        m_userFriends.clear();
         string key = m_account + "_Friend";
         m_redis->hgetall(
             key,

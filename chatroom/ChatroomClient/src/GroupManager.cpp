@@ -175,12 +175,13 @@ void GroupManager::ownerMenu() {
     cout << "                           1.聊天" << endl;
     cout << "                           2.踢人" << endl;
     cout << "                           3.添加管理员" << endl;
-    cout << "                           4.查看群成员 " << endl;
-    cout << "                           5.查看历史记录" << endl;
-    cout << "                           6.群通知" << endl;
-    cout << "                           7.修改群名" << endl;
-    cout << "                           8.解散该群" << endl;
-    cout << "                           9.返回" << endl;
+    cout << "                           4.撤除管理员" << endl;
+    cout << "                           5.查看群成员 " << endl;
+    cout << "                           6.查看历史记录" << endl;
+    cout << "                           7.群通知" << endl;
+    cout << "                           8.修改群名" << endl;
+    cout << "                           9.解散该群" << endl;
+    cout << "                           10.返回" << endl;
     cout << "               #####################################" << endl;
 }
 
@@ -399,7 +400,12 @@ void GroupManager::ownerNotice() {
         string piece = notice[number];
         json noticejson = json::parse(piece);
         string type = noticejson["type"];
+
         if (type == "add") {
+            if (noticejson.contains("dealer")) {
+                cout << "无法对其操作" << endl;
+                continue;
+            }
             js["number"] = number;
             cout << "1、接受 2、拒绝" << endl;
             int choice;

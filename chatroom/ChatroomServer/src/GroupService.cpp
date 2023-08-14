@@ -255,17 +255,17 @@ void GroupService::ownerAddAdministrator(json requestDataJson,
                                          json& responseJson) {
     string account = requestDataJson["account"];
     if (account == m_account) {
-        responseJson["ownerstatus"] = NOT_SELF;
+        responseJson["status"] = NOT_SELF;
     } else {
         bool exists = m_redis->sismember(m_groupid + "_Administrator", account);
         if (exists) {
-            responseJson["ownerstatus"] = ADMIN_ALREADY_EXIST;
+            responseJson["status"] = ADMIN_ALREADY_EXIST;
         } else {
             bool exists2 = m_redis->sismember(m_groupid + "_Member", account);
             if (exists2) {
                 m_redis->srem(m_groupid + "_Member", account);
                 m_redis->sadd(m_groupid + "_Administrator", account);
-                responseJson["ownerstatus"] = ADMIN_ADD_SUCCESS;
+                responseJson["status"] = ADMIN_ADD_SUCCESS;
                 json info;
                 info["type"] = "promote";
                 info["source"] = m_account;
@@ -274,7 +274,7 @@ void GroupService::ownerAddAdministrator(json requestDataJson,
                 string key = m_groupid + "_Group_Notice";
                 m_redis->rpush(key, infostr);
             } else {
-                responseJson["ownerstatus"] = NOT_MEMBER;
+                responseJson["status"] = NOT_MEMBER;
             }
         }
     }
@@ -284,13 +284,13 @@ void GroupService::ownerRevokeAdministrator(json requestDataJson,
                                             json& responseJson) {
     string account = requestDataJson["account"];
     if (account == m_account) {
-        responseJson["ownerstatus"] = NOT_SELF;
+        responseJson["status"] = NOT_SELF;
     } else {
         bool exists = m_redis->sismember(m_groupid + "_Administrator", account);
         if (exists) {
             m_redis->srem(m_groupid + "_Administrator", account);
             m_redis->sadd(m_groupid + "_Member", account);
-            responseJson["ownerstatus"] = SUCCESS_REVOKE_ADMIN;
+            responseJson["status"] = SUCCESS_REVOKE_ADMIN;
             string key = m_groupid + "_Group_Notice";
             json info;
             info["type"] = "revoke";
@@ -299,7 +299,7 @@ void GroupService::ownerRevokeAdministrator(json requestDataJson,
             string infostr = info.dump();
             m_redis->rpush(key, infostr);
         } else {
-            responseJson["ownerstatus"] = NOT_MEMBER;
+            responseJson["status"] = NOT_MEMBER;
         }
     }
 }
