@@ -188,10 +188,9 @@ void GroupService::handleGroup(json requestDataJson, json& responseJson) {
         handleGroupAdmin(requestDataJson, responseJson);
     } else if (groupType == GROUP_MEMBER) {
         handleGroupMember(requestDataJson, responseJson);
-    }else if(groupType == GROUP_GET_NOTICE){
+    } else if (groupType == GROUP_GET_NOTICE) {
         handleGroupGetNotice(requestDataJson, responseJson);
     }
-
 }
 void GroupService::handleGroupOwner(json requestDataJson, json& responseJson) {
     responseJson["grouptype"] = GROUP_OWNER;
@@ -251,6 +250,7 @@ void GroupService::handleGroupMember(json requestDataJson, json& responseJson) {
 }
 void GroupService::ownerChat(json requestDataJson, json& responseJson) {}
 void GroupService::ownerKick(json requestDataJson, json& responseJson) {}
+// 添加管理员
 void GroupService::ownerAddAdministrator(json requestDataJson,
                                          json& responseJson) {
     string account = requestDataJson["account"];
@@ -279,12 +279,58 @@ void GroupService::ownerAddAdministrator(json requestDataJson,
         }
     }
 }
+// 撤除管理员
 void GroupService::ownerRevokeAdministrator(json requestDataJson,
-                                            json& responseJson) {}
+                                            json& responseJson) {
+    string account = requestDataJson["account"];
+    if (account == m_account) {
+        responseJson["ownerstatus"] = NOT_SELF;
+    } else {
+        bool exists = m_redis->sismember(m_groupid + "_Administrator", account);
+        if (exists) {
+            m_redis->srem(m_groupid + "_Administrator", account);
+            m_redis->sadd(m_groupid + "_Member", account);
+            responseJson["ownerstatus"] = SUCCESS_REVOKE_ADMIN;
+            string key = m_groupid + "_Group_Notice";
+            json info;
+            info["type"] = "revoke";
+            info["dealer"] = m_account;
+            info["member"] = account;
+            string infostr = info.dump();
+            m_redis->rpush(key, infostr);
+        } else {
+            responseJson["ownerstatus"] = NOT_MEMBER;
+        }
+    }
+}
+
 void GroupService::ownerCheckMember(json requestDataJson, json& responseJson) {}
 void GroupService::ownerCheckHistory(json requestDataJson, json& responseJson) {
 }
-void GroupService::ownerNotice(json requestDataJson, json& responseJson) {}
+void GroupService::ownerNotice(json requestDataJson, json& responseJson) {
+    string key = m_groupid + "_Group_Notice";
+    int number = requestDataJson["number"].get<int>();
+    string msg = m_redis->lindex(key, number).value();
+    json info;
+    info = json::parse(msg);
+    string account = info["source"];
+    string choice = requestDataJson["choice"];
+    info["dealer"] = m_account;
+    info["result"] = choice;
+    string infostr = info.dump();
+
+    string groupkey = m_groupid + "_Member";
+    if (choice == "accept") {
+        m_redis->sadd(groupkey, account);
+        m_redis->lset(key, number, infostr);
+        responseJson["status"] = SUCCESS_ACCEPT_MEMBER;
+    } else if (choice == "refuse") {
+        m_redis->lset(key, number, infostr);
+        responseJson["status"] = SUCCESS_REFUSE_MEMBER;
+    } else {
+        responseJson["status"] = FAIL_DEAL_MEMBER;
+    }
+}
 void GroupService::ownerChangeName(json requestDataJson, json& responseJson) {}
 void GroupService::ownerDissolve(json requestDataJson, json& responseJson) {}
 
@@ -302,8 +348,8 @@ void GroupService::memberCheckMember(json requestDataJson, json& responseJson) {
 void GroupService::memberCheckHistory(json requestDataJson,
                                       json& responseJson) {}
 void GroupService::memberExit(json requestDataJson, json& responseJson) {}
-void GroupService::handleGroupGetNotice(json requestDataJson, json& responseJson){
-
+void GroupService::handleGroupGetNotice(json requestDataJson,
+                                        json& responseJson) {
     string id = requestDataJson["groupid"];
     // 使用 LRANGE 命令获取队列中的所有元素
     string key = id + "_Group_Notice";

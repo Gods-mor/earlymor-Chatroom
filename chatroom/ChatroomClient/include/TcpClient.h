@@ -79,6 +79,7 @@ class TcpClient {
 
     void getInfo(string account);
     inline string getPermisson() { return m_permission; }
+    vector<string> m_groupnotice;
 
    private:
     int m_fd;

@@ -95,11 +95,17 @@ constexpr int SUCCESS_CREATE_GROUP = 1;
 constexpr int FAIL_SEND_APPLICATION = 1;
 constexpr int SUCCESS_SEND_APPLICATION = 2;
 // 群主功能回应
-//添加管理员
+// 添加管理员
 constexpr int ADMIN_ALREADY_EXIST = 1;
 constexpr int NOT_MEMBER = 2;
 constexpr int NOT_SELF = 3;
 constexpr int ADMIN_ADD_SUCCESS = 4;
+// 管理员降级
+constexpr int SUCCESS_REVOKE_ADMIN = 1;
+// 入群申请处理
+constexpr int SUCCESS_ACCEPT_MEMBER = 1;
+constexpr int SUCCESS_REFUSE_MEMBER = 2;
+constexpr int FAIL_DEAL_MEMBER = 3;
 // 管理员功能回应
 
 // 成员功能回应

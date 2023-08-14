@@ -318,6 +318,7 @@ void GroupManager::handleMember() {
 }
 void GroupManager::ownerChat() {}
 void GroupManager::ownerKick() {}
+// 添加管理员
 void GroupManager::ownerAddAdministrator() {
     cout << "请输入你想要提升为管理员的成员账号：";
     string account;
@@ -342,24 +343,92 @@ void GroupManager::ownerAddAdministrator() {
     }
     sem_wait(&m_rwsem);
 }
-void GroupManager::ownerRevokeAdministrator() {}
-void GroupManager::ownerCheckMember() {}
-void GroupManager::ownerCheckHistory() {}
-void GroupManager::ownerNotice() {
-    // 展示通知列表
-    getNotice();
+// 撤除管理员身份
+void GroupManager::ownerRevokeAdministrator() {
+    cout << "请输入你想要撤除管理员的成员账号：";
+    string account;
+    cin >> account;
+    cin.get();
+    if (account.length() > 11) {
+        std::cout << "Input exceeded the maximum allowed length. "
+                     "Truncating..."
+                  << std::endl;
+        account = account.substr(0, 11);  // Truncate the input to 10 characters
+    }
     json js;
     js["type"] = GROUP_TYPE;
     js["grouptype"] = GROUP_OWNER;
-    js["entertype"] = OWNER_NOTICE;
+    js["entertype"] = OWNER_REVOKE_ADMINISTRATOR;
+    js["account"] = account;
     TcpClient::addDataLen(js);
     string request = js.dump();
     int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
     if (0 == len || -1 == len) {
-        cerr << "addAdministrator send error:" << request << endl;
+        cerr << "ownerRevokeAdministrator send error:" << request << endl;
     }
     sem_wait(&m_rwsem);
 }
+
+void GroupManager::ownerCheckMember() {}
+void GroupManager::ownerCheckHistory() {}
+// 处理公告
+void GroupManager::ownerNotice() {
+    // 展示通知列表
+    while (true) {
+        getNotice();
+        json js;
+        js["type"] = GROUP_TYPE;
+        js["grouptype"] = GROUP_OWNER;
+        js["entertype"] = OWNER_NOTICE;
+        cout << "你想要处理哪个事件(-1表示退出):" << endl;
+        int number;
+        cin >> number;
+        cin.get();
+        if (number == -1) {
+            break;
+        }
+        if (number < 0) {
+            cout << "不合法的输入" << endl;
+            continue;
+        }
+        vector<string>& notice = m_tcpclient->m_groupnotice;
+        if (number >= notice.size()) {
+            cout << "不合法的输入" << endl;
+            continue;
+        }
+        string piece = notice[number];
+        json noticejson = json::parse(piece);
+        string type = noticejson["type"];
+        if (type == "add") {
+            js["number"] = number;
+            cout << "1、接受 2、拒绝" << endl;
+            int choice;
+            cin >> choice;
+            cin.get();
+            if (choice != 1 && choice != 2) {
+                cout << "不合法的输入" << endl;
+                continue;
+            }
+            if (choice == 1) {
+                js["choice"] = "accept";
+            }
+            if (choice == 2) {
+                js["choice"] = "refuse";
+            }
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "ownerNotice send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+        } else {
+            cout << "无法对其操作" << endl;
+        }
+    }
+}
+
 void GroupManager::ownerChangeName() {}
 void GroupManager::ownerDissolve() {}
 

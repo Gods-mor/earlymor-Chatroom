@@ -14,6 +14,8 @@ TcpClient::TcpClient() {
     // 初始化信号量
     string emptystring;
     m_account = emptystring;
+    vector<string> emptynotice;
+    m_groupnotice = emptynotice;
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend, m_account);
     m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account, this);
@@ -181,6 +183,7 @@ void TcpClient::readTaskHandler(int cfd) {
                             break;
                         case GROUP_GET_NOTICE:
                             handleGroupGetNoticeResponse(js);
+                            break;
                         default:
                             break;
                     }
@@ -567,6 +570,7 @@ void TcpClient::handleGroupMemberResponse(const json& message) {
 }
 void TcpClient::ownerChat(const json& message) {}
 void TcpClient::ownerKick(const json& message) {}
+// 回应 添加管理员
 void TcpClient::ownerAddAdministrator(const json& message) {
     int status = message["ownerstatus"];
     if (status == NOT_SELF) {
@@ -581,10 +585,20 @@ void TcpClient::ownerAddAdministrator(const json& message) {
         cout << "fail to add administration" << endl;
     }
 }
+
 void TcpClient::ownerRevokeAdministrator(const json& message) {}
 void TcpClient::ownerCheckMember(const json& message) {}
 void TcpClient::ownerCheckHistory(const json& message) {}
-void TcpClient::ownerNotice(const json& message) {}
+void TcpClient::ownerNotice(const json& message) {
+    int status = message["status"];
+    if (status == SUCCESS_ACCEPT_MEMBER) {
+        cout << "您已成功接受该申请" << endl;
+    } else if (status == SUCCESS_REFUSE_MEMBER) {
+        cout << "您已成功拒接该申请" << endl;
+    } else {
+        cout << "处理该申请失败" << endl;
+    }
+}
 void TcpClient::ownerChangeName(const json& message) {}
 void TcpClient::ownerDissolve(const json& message) {}
 
@@ -601,10 +615,11 @@ void TcpClient::memberCheckHistory(const json& message) {}
 void TcpClient::memberExit(const json& message) {}
 
 void TcpClient::handleGroupGetNoticeResponse(const json& message) {
-    std::vector<std::string> msg =
+    m_groupnotice.clear();
+    m_groupnotice =
         message["msg"];  // msg字符串是json格式存储的，需要序列化再使用
-    for (size_t i = 0; i < msg.size(); ++i) {
-        json info = json::parse(msg[i]);
+    for (size_t i = 0; i < m_groupnotice.size(); ++i) {
+        json info = json::parse(m_groupnotice[i]);
         string type = info["type"];
         if (type == "add") {
             string source = info["source"];
@@ -612,13 +627,12 @@ void TcpClient::handleGroupGetNoticeResponse(const json& message) {
             cout << i << "、"
                  << "用户：" << source << "发送了一条入群申请" << endl;
             cout << "对方留言：" << msg << endl;
-            if(info.contains("dealer")){
+            if (info.contains("dealer")) {
                 string dealer = info["dealer"];
                 string result = info["result"];
                 cout << "处理人：" << dealer << " 处理结果：" << result << endl;
             }
-            cout << "---------------------------------------------------"
-                 << endl;
+
         } else if (type == "kick") {
             ;
         } else if (type == "promote") {
@@ -627,10 +641,16 @@ void TcpClient::handleGroupGetNoticeResponse(const json& message) {
             cout << i << "、"
                  << "成员：" << member << "被群主：" << source
                  << "设置为了管理员" << endl;
-            cout << "---------------------------------------------------"
-                 << endl;
+
         } else if (type == "quit") {
             ;
+        } else if (type == "revoke") {
+            string source = info["source"];
+            string member = info["member"];
+            cout << i << "、"
+                 << "成员：" << member << "被群主：" << source
+                 << "撤除了管理员身份" << endl;
         }
+        cout << "---------------------------------------------------" << endl;
     }
 }

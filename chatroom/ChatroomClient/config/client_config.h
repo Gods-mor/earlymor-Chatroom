@@ -84,6 +84,10 @@ constexpr int ADMIN_ALREADY_EXIST = 1;
 constexpr int NOT_MEMBER = 2;
 constexpr int NOT_SELF = 3;
 constexpr int ADMIN_ADD_SUCCESS = 4;
+// 入群申请处理
+constexpr int SUCCESS_ACCEPT_MEMBER = 1;
+constexpr int SUCCESS_REFUSE_MEMBER = 2;
+constexpr int FAIL_DEAL_MEMBER = 3;
 // 管理员
 constexpr int ADMIN_CHAT = 1;
 constexpr int ADMIN_KICK = 2;
