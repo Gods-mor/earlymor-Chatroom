@@ -134,6 +134,7 @@ void GroupManager::createGroup() {
     sem_wait(&m_rwsem);
 }
 void GroupManager::enterGroup() {
+    m_groupid.clear();
     string id;
     cout << "请输入要进入的群组号码：";
     cin >> id;
@@ -157,10 +158,13 @@ void GroupManager::enterGroup() {
     sem_wait(&m_rwsem);
     string permisson = m_tcpclient->getPermisson();
     if (permisson == "owner") {
+        m_groupid = id;
         handleOwner();
     } else if (permisson == "administrator") {
+        m_groupid = id;
         handleAdmin();
     } else if (permisson == "member") {
+        m_groupid = id;
         handleMember();
     } else {
         cout << "you are not a member yet" << endl;
@@ -341,7 +345,21 @@ void GroupManager::ownerAddAdministrator() {
 void GroupManager::ownerRevokeAdministrator() {}
 void GroupManager::ownerCheckMember() {}
 void GroupManager::ownerCheckHistory() {}
-void GroupManager::ownerNotice() {}
+void GroupManager::ownerNotice() {
+    // 展示通知列表
+    getNotice();
+    json js;
+    js["type"] = GROUP_TYPE;
+    js["grouptype"] = GROUP_OWNER;
+    js["entertype"] = OWNER_NOTICE;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "addAdministrator send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+}
 void GroupManager::ownerChangeName() {}
 void GroupManager::ownerDissolve() {}
 
@@ -357,3 +375,16 @@ void GroupManager::memberCheckMember() {}
 void GroupManager::memberCheckHistory() {}
 void GroupManager::memberExit() {}
 void GroupManager::requiryGroup() {}
+void GroupManager::getNotice() {
+    json js;
+    js["type"] = GROUP_TYPE;
+    js["grouptype"] = GROUP_GET_NOTICE;
+    js["groupid"] = m_groupid;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "getNotice send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+}

@@ -179,6 +179,8 @@ void TcpClient::readTaskHandler(int cfd) {
                         case GROUP_MEMBER:
                             handleGroupMemberResponse(js);
                             break;
+                        case GROUP_GET_NOTICE:
+                            handleGroupGetNoticeResponse(js);
                         default:
                             break;
                     }
@@ -565,7 +567,20 @@ void TcpClient::handleGroupMemberResponse(const json& message) {
 }
 void TcpClient::ownerChat(const json& message) {}
 void TcpClient::ownerKick(const json& message) {}
-void TcpClient::ownerAddAdministrator(const json& message) {}
+void TcpClient::ownerAddAdministrator(const json& message) {
+    int status = message["ownerstatus"];
+    if (status == NOT_SELF) {
+        cout << "您已是群主，不可以把自己设为管理员" << endl;
+    } else if (status == ADMIN_ALREADY_EXIST) {
+        cout << "该成员已是管理员" << endl;
+    } else if (status == NOT_MEMBER) {
+        cout << "不是群成员" << endl;
+    } else if (status == ADMIN_ADD_SUCCESS) {
+        cout << "添加成功" << endl;
+    } else {
+        cout << "fail to add administration" << endl;
+    }
+}
 void TcpClient::ownerRevokeAdministrator(const json& message) {}
 void TcpClient::ownerCheckMember(const json& message) {}
 void TcpClient::ownerCheckHistory(const json& message) {}
@@ -573,14 +588,49 @@ void TcpClient::ownerNotice(const json& message) {}
 void TcpClient::ownerChangeName(const json& message) {}
 void TcpClient::ownerDissolve(const json& message) {}
 
-void TcpClient::adminChat(const json& message){}
-void TcpClient::adminKick(const json& message){}
-void TcpClient::adminCheckMember(const json& message){}
-void TcpClient::adminCheckHistory(const json& message){}
-void TcpClient::adminNotice(const json& message){}
-void TcpClient::adminExit(const json& message){}
+void TcpClient::adminChat(const json& message) {}
+void TcpClient::adminKick(const json& message) {}
+void TcpClient::adminCheckMember(const json& message) {}
+void TcpClient::adminCheckHistory(const json& message) {}
+void TcpClient::adminNotice(const json& message) {}
+void TcpClient::adminExit(const json& message) {}
 
-void TcpClient::memberChat(const json& message){}
-void TcpClient::memberCheckMember(const json& message){}
-void TcpClient::memberCheckHistory(const json& message){}
-void TcpClient::memberExit(const json& message){}
+void TcpClient::memberChat(const json& message) {}
+void TcpClient::memberCheckMember(const json& message) {}
+void TcpClient::memberCheckHistory(const json& message) {}
+void TcpClient::memberExit(const json& message) {}
+
+void TcpClient::handleGroupGetNoticeResponse(const json& message) {
+    std::vector<std::string> msg =
+        message["msg"];  // msg字符串是json格式存储的，需要序列化再使用
+    for (size_t i = 0; i < msg.size(); ++i) {
+        json info = json::parse(msg[i]);
+        string type = info["type"];
+        if (type == "add") {
+            string source = info["source"];
+            string msg = info["msg"];
+            cout << i << "、"
+                 << "用户：" << source << "发送了一条入群申请" << endl;
+            cout << "对方留言：" << msg << endl;
+            if(info.contains("dealer")){
+                string dealer = info["dealer"];
+                string result = info["result"];
+                cout << "处理人：" << dealer << " 处理结果：" << result << endl;
+            }
+            cout << "---------------------------------------------------"
+                 << endl;
+        } else if (type == "kick") {
+            ;
+        } else if (type == "promote") {
+            string member = info["member"];
+            string source = info["source"];
+            cout << i << "、"
+                 << "成员：" << member << "被群主：" << source
+                 << "设置为了管理员" << endl;
+            cout << "---------------------------------------------------"
+                 << endl;
+        } else if (type == "quit") {
+            ;
+        }
+    }
+}

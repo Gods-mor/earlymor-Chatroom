@@ -47,7 +47,7 @@ class TcpClient {
     void handleGroupCreateResponse(const json& message);
     void handleGroupEnterResponse(const json& message);
     void handleGroupRequiryResponse(const json& message);
-
+    void handleGroupGetNoticeResponse(const json& message);
     void handleGroupOwnerResponse(const json& message);
     void handleGroupAdminResponse(const json& message);
     void handleGroupMemberResponse(const json& message);

@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
+class TcpClient;
 using namespace std;
 class GroupManager {
    public:
@@ -19,6 +20,7 @@ class GroupManager {
     void groupMenu();              // 群组功能主菜单
     void getGroupList();           // 获取加入群组列表
     void showGroupFunctionMenu();  // 群组
+    void getNotice();
 
     void addGroup();
     void createGroup();
@@ -56,6 +58,7 @@ class GroupManager {
     void memberExit();
     unordered_map<string, string> userGroups;  // 得到的群组列表 id+name
    private:
+    string m_groupid;
     int m_fd;  // 通信fd
     sem_t& m_rwsem;
     atomic_bool& is_Group;

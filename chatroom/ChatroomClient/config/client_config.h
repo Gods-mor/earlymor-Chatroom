@@ -67,7 +67,7 @@ constexpr int GROUP_REQUIRY = 4;
 constexpr int GROUP_OWNER = 5;
 constexpr int GROUP_ADMINISTRATOR = 6;
 constexpr int GROUP_MEMBER = 7;
-
+constexpr int GROUP_GET_NOTICE = 8;
 // 群主
 constexpr int OWNER_CHAT = 1;
 constexpr int OWNER_KICK = 2;
@@ -78,6 +78,12 @@ constexpr int OWNER_CHECK_HISTORY = 6;
 constexpr int OWNER_NOTICE = 7;
 constexpr int OWNER_CHANGE_NAME = 8;
 constexpr int OWNER_DISSOLVE = 9;
+// 群主功能回应
+//添加管理员
+constexpr int ADMIN_ALREADY_EXIST = 1;
+constexpr int NOT_MEMBER = 2;
+constexpr int NOT_SELF = 3;
+constexpr int ADMIN_ADD_SUCCESS = 4;
 // 管理员
 constexpr int ADMIN_CHAT = 1;
 constexpr int ADMIN_KICK = 2;

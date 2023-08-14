@@ -33,6 +33,7 @@ constexpr int GROUP_REQUIRY = 4;
 constexpr int GROUP_OWNER = 5;
 constexpr int GROUP_ADMINISTRATOR = 6;
 constexpr int GROUP_MEMBER = 7;
+constexpr int GROUP_GET_NOTICE = 8;
 // 群主
 constexpr int OWNER_CHAT = 1;
 constexpr int OWNER_KICK = 2;

@@ -123,7 +123,11 @@ void GroupService::handleGroupCreate(json requestDataJson, json& responseJson) {
     m_redis->hset(key, field2, groupname);
     // 把群组添加进入用户加入的群组
     string key2 = m_account + "_Group";
-    m_redis->hset(key2, idstring, groupname);
+    json jsonmsg;
+    jsonmsg["groupname"] = groupname;
+    jsonmsg["unreadmsg"] = "0";
+    string groupmsg = jsonmsg.dump();
+    m_redis->hset(key2, idstring, groupmsg);
     responseJson["groupid"] = idstring;
     responseJson["status"] = SUCCESS_CREATE_GROUP;
 }
@@ -162,6 +166,7 @@ void GroupService::handleGroup(json requestDataJson, json& responseJson) {
     cout << "requestType == GROUP_TYPE" << endl;
     responseJson["type"] = GROUP_ACK;
     int groupType = requestDataJson["grouptype"].get<int>();
+    responseJson["grouptype"] = groupType;
     cout << "groupType:" << groupType << endl;
     if (groupType == GROUP_ADD) {
         handleGroupAdd(requestDataJson, responseJson);
@@ -183,7 +188,10 @@ void GroupService::handleGroup(json requestDataJson, json& responseJson) {
         handleGroupAdmin(requestDataJson, responseJson);
     } else if (groupType == GROUP_MEMBER) {
         handleGroupMember(requestDataJson, responseJson);
+    }else if(groupType == GROUP_GET_NOTICE){
+        handleGroupGetNotice(requestDataJson, responseJson);
     }
+
 }
 void GroupService::handleGroupOwner(json requestDataJson, json& responseJson) {
     responseJson["grouptype"] = GROUP_OWNER;
@@ -258,6 +266,13 @@ void GroupService::ownerAddAdministrator(json requestDataJson,
                 m_redis->srem(m_groupid + "_Member", account);
                 m_redis->sadd(m_groupid + "_Administrator", account);
                 responseJson["ownerstatus"] = ADMIN_ADD_SUCCESS;
+                json info;
+                info["type"] = "promote";
+                info["source"] = m_account;
+                info["member"] = account;
+                string infostr = info.dump();
+                string key = m_groupid + "_Group_Notice";
+                m_redis->rpush(key, infostr);
             } else {
                 responseJson["ownerstatus"] = NOT_MEMBER;
             }
@@ -287,3 +302,13 @@ void GroupService::memberCheckMember(json requestDataJson, json& responseJson) {
 void GroupService::memberCheckHistory(json requestDataJson,
                                       json& responseJson) {}
 void GroupService::memberExit(json requestDataJson, json& responseJson) {}
+void GroupService::handleGroupGetNotice(json requestDataJson, json& responseJson){
+
+    string id = requestDataJson["groupid"];
+    // 使用 LRANGE 命令获取队列中的所有元素
+    string key = id + "_Group_Notice";
+    std::vector<std::string> msg;
+    m_redis->lrange(key, 0, -1, std::back_inserter(msg));
+    responseJson["notice"] = msg;
+    responseJson["grouptype"] = GROUP_GET_NOTICE;
+}
