@@ -16,7 +16,7 @@ TcpClient::TcpClient() {
     m_account = emptystring;
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager = new FriendManager(m_fd, m_rwsem, is_Friend, m_account);
-    m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account,this);
+    m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account, this);
 }
 
 // 析构回收资源
@@ -169,6 +169,15 @@ void TcpClient::readTaskHandler(int cfd) {
                             break;
                         case GROUP_REQUIRY:
                             handleGroupRequiryResponse(js);
+                            break;
+                        case GROUP_OWNER:
+                            handleGroupOwnerResponse(js);
+                            break;
+                        case GROUP_ADMINISTRATOR:
+                            handleGroupAdminResponse(js);
+                            break;
+                        case GROUP_MEMBER:
+                            handleGroupMemberResponse(js);
                             break;
                         default:
                             break;
@@ -479,7 +488,7 @@ void TcpClient::handleGroupListResponse(const json& message) {
 
 void TcpClient::handleGroupAddResponse(const json& message) {
     int status = message["status"].get<int>();
-    if(status==NOT_REGISTERED){
+    if (status == NOT_REGISTERED) {
         cout << "group did't register" << endl;
     } else if (status == SUCCESS_SEND_APPLICATION) {
         cout << "success send application" << endl;
@@ -500,6 +509,78 @@ void TcpClient::handleGroupCreateResponse(const json& message) {
 }
 void TcpClient::handleGroupEnterResponse(const json& message) {
     m_permission = message["permission"];
-
 }
+
 void TcpClient::handleGroupRequiryResponse(const json& message) {}
+
+void TcpClient::handleGroupOwnerResponse(const json& message) {
+    int entertype = message["entertype"];
+    if (entertype == OWNER_CHAT) {
+        ownerChat(message);
+    } else if (entertype == OWNER_KICK) {
+        ownerKick(message);
+    } else if (entertype == OWNER_ADD_ADMINISTRATOR) {
+        ownerAddAdministrator(message);
+    } else if (entertype == OWNER_REVOKE_ADMINISTRATOR) {
+        ownerRevokeAdministrator(message);
+    } else if (entertype == OWNER_CHECK_MEMBER) {
+        ownerCheckMember(message);
+    } else if (entertype == OWNER_CHECK_HISTORY) {
+        ownerCheckHistory(message);
+    } else if (entertype == OWNER_NOTICE) {
+        ownerNotice(message);
+    } else if (entertype == OWNER_CHANGE_NAME) {
+        ownerChangeName(message);
+    } else if (entertype == OWNER_DISSOLVE) {
+        ownerDissolve(message);
+    }
+}
+void TcpClient::handleGroupAdminResponse(const json& message) {
+    int entertype = message["entertype"];
+    if (entertype == ADMIN_CHAT) {
+        adminChat(message);
+    } else if (entertype == ADMIN_KICK) {
+        adminKick(message);
+    } else if (entertype == ADMIN_CHECK_MEMBER) {
+        adminCheckMember(message);
+    } else if (entertype == ADMIN_CHECK_HISTORY) {
+        adminCheckHistory(message);
+    } else if (entertype == ADMIN_NOTICE) {
+        adminNotice(message);
+    } else if (entertype == ADMIN_EXIT) {
+        adminExit(message);
+    }
+}
+void TcpClient::handleGroupMemberResponse(const json& message) {
+    int entertype = message["entertype"];
+    if (entertype == MEMBER_CHAT) {
+        memberChat(message);
+    } else if (entertype == MEMBER_CHECK_MEMBER) {
+        memberCheckMember(message);
+    } else if (entertype == MEMBER_CHECK_HISTORY) {
+        memberCheckHistory(message);
+    } else if (entertype == MEMBER_EXIT) {
+        memberExit(message);
+    }
+}
+void TcpClient::ownerChat(const json& message) {}
+void TcpClient::ownerKick(const json& message) {}
+void TcpClient::ownerAddAdministrator(const json& message) {}
+void TcpClient::ownerRevokeAdministrator(const json& message) {}
+void TcpClient::ownerCheckMember(const json& message) {}
+void TcpClient::ownerCheckHistory(const json& message) {}
+void TcpClient::ownerNotice(const json& message) {}
+void TcpClient::ownerChangeName(const json& message) {}
+void TcpClient::ownerDissolve(const json& message) {}
+
+void TcpClient::adminChat(const json& message){}
+void TcpClient::adminKick(const json& message){}
+void TcpClient::adminCheckMember(const json& message){}
+void TcpClient::adminCheckHistory(const json& message){}
+void TcpClient::adminNotice(const json& message){}
+void TcpClient::adminExit(const json& message){}
+
+void TcpClient::memberChat(const json& message){}
+void TcpClient::memberCheckMember(const json& message){}
+void TcpClient::memberCheckHistory(const json& message){}
+void TcpClient::memberExit(const json& message){}

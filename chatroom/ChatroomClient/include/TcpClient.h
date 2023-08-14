@@ -47,6 +47,34 @@ class TcpClient {
     void handleGroupCreateResponse(const json& message);
     void handleGroupEnterResponse(const json& message);
     void handleGroupRequiryResponse(const json& message);
+
+    void handleGroupOwnerResponse(const json& message);
+    void handleGroupAdminResponse(const json& message);
+    void handleGroupMemberResponse(const json& message);
+
+    void ownerChat(const json& message);
+    void ownerKick(const json& message);
+    void ownerAddAdministrator(const json& message);
+    void ownerRevokeAdministrator(const json& message);
+    void ownerCheckMember(const json& message);
+    void ownerCheckHistory(const json& message);
+    void ownerNotice(const json& message);
+    void ownerChangeName(const json& message);
+    void ownerDissolve(const json& message);
+
+    void adminChat(const json& message);
+    void adminKick(const json& message);
+    void adminCheckMember(const json& message);
+    void adminCheckHistory(const json& message);
+    void adminNotice(const json& message);
+    void adminExit(const json& message);
+
+    void memberChat(const json& message);
+    void memberCheckMember(const json& message);
+    void memberCheckHistory(const json& message);
+    void memberExit(const json& message);
+
+
     void static addDataLen(json& js);
 
     void getInfo(string account);

@@ -30,6 +30,31 @@ constexpr int GROUP_ADD = 1;
 constexpr int GROUP_CREATE = 2;
 constexpr int GROUP_ENTER = 3;
 constexpr int GROUP_REQUIRY = 4;
+constexpr int GROUP_OWNER = 5;
+constexpr int GROUP_ADMINISTRATOR = 6;
+constexpr int GROUP_MEMBER = 7;
+// 群主
+constexpr int OWNER_CHAT = 1;
+constexpr int OWNER_KICK = 2;
+constexpr int OWNER_ADD_ADMINISTRATOR = 3;
+constexpr int OWNER_REVOKE_ADMINISTRATOR = 4;
+constexpr int OWNER_CHECK_MEMBER = 5;
+constexpr int OWNER_CHECK_HISTORY = 6;
+constexpr int OWNER_NOTICE = 7;
+constexpr int OWNER_CHANGE_NAME = 8;
+constexpr int OWNER_DISSOLVE = 9;
+// 管理员
+constexpr int ADMIN_CHAT = 1;
+constexpr int ADMIN_KICK = 2;
+constexpr int ADMIN_CHECK_MEMBER = 3;
+constexpr int ADMIN_CHECK_HISTORY = 4;
+constexpr int ADMIN_NOTICE = 5;
+constexpr int ADMIN_EXIT = 6;
+// 成员
+constexpr int MEMBER_CHAT = 1;
+constexpr int MEMBER_CHECK_MEMBER = 2;
+constexpr int MEMBER_CHECK_HISTORY = 3;
+constexpr int MEMBER_EXIT = 4;
 // 服务器回应信息
 constexpr int LOGIN_MSG_ACK = 1;
 constexpr int REG_MSG_ACK = 2;
@@ -68,3 +93,12 @@ constexpr int FAIL_CREATE_GROUP = 0;
 constexpr int SUCCESS_CREATE_GROUP = 1;
 constexpr int FAIL_SEND_APPLICATION = 1;
 constexpr int SUCCESS_SEND_APPLICATION = 2;
+// 群主功能回应
+//添加管理员
+constexpr int ADMIN_ALREADY_EXIST = 1;
+constexpr int NOT_MEMBER = 2;
+constexpr int NOT_SELF = 3;
+constexpr int ADMIN_ADD_SUCCESS = 4;
+// 管理员功能回应
+
+// 成员功能回应

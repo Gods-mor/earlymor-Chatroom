@@ -27,14 +27,40 @@ class GroupService {
 
     void handleGroup(json requestDataJson, json& responseJson);
 
+    void handleGroupOwner(json requestDataJson, json& responseJson);
+    void handleGroupAdmin(json requestDataJson, json& responseJson);
+    void handleGroupMember(json requestDataJson, json& responseJson);
     std::unordered_map<std::string, std::string>
         m_userGroups;  // 用户的所有群组哈希表（account：name）
+
+    void ownerChat(json requestDataJson, json& responseJson);
+    void ownerKick(json requestDataJson, json& responseJson);
+    void ownerAddAdministrator(json requestDataJson, json& responseJson);
+    void ownerRevokeAdministrator(json requestDataJson, json& responseJson);
+    void ownerCheckMember(json requestDataJson, json& responseJson);
+    void ownerCheckHistory(json requestDataJson, json& responseJson);
+    void ownerNotice(json requestDataJson, json& responseJson);
+    void ownerChangeName(json requestDataJson, json& responseJson);
+    void ownerDissolve(json requestDataJson, json& responseJson);
+
+    void adminChat(json requestDataJson, json& responseJson);
+    void adminKick(json requestDataJson, json& responseJson);
+    void adminCheckMember(json requestDataJson, json& responseJson);
+    void adminCheckHistory(json requestDataJson, json& responseJson);
+    void adminNotice(json requestDataJson, json& responseJson);
+    void adminExit(json requestDataJson, json& responseJson);
+
+    void memberChat(json requestDataJson, json& responseJson);
+    void memberCheckMember(json requestDataJson, json& responseJson);
+    void memberCheckHistory(json requestDataJson, json& responseJson);
+    void memberExit(json requestDataJson, json& responseJson);
+
    private:
     string m_account;
     string m_username;
+    string m_groupid;
     int m_onlineNumber;                         // 在线人数
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
     std::shared_ptr<OnlineUsers>
         m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
-    
 };

@@ -157,14 +157,13 @@ void GroupManager::enterGroup() {
     sem_wait(&m_rwsem);
     string permisson = m_tcpclient->getPermisson();
     if (permisson == "owner") {
-        ownerMenu();
         handleOwner();
     } else if (permisson == "administrator") {
-        administratorMenu();
         handleAdmin();
-    } else {
-        memberMenu();
+    } else if (permisson == "member") {
         handleMember();
+    } else {
+        cout << "you are not a member yet" << endl;
     }
 }
 void GroupManager::ownerMenu() {
@@ -201,12 +200,160 @@ void GroupManager::memberMenu() {
     cout << "                           5.返回" << endl;
     cout << "               #####################################" << endl;
 }
-void GroupManager::handleOwner(){
-    
+void GroupManager::handleOwner() {
+    cout << "you are the owner" << endl;
+    while (true) {
+        ownerMenu();
+        int choice;
+        cout << "请输入：";
+        cin >> choice;
+        cin.get();
+        switch (choice) {
+            case 1:
+                ownerChat();
+                break;
+            case 2:
+                ownerKick();
+                break;
+            case 3:
+                ownerAddAdministrator();
+                break;
+            case 4:
+                ownerRevokeAdministrator();
+            case 5:
+                ownerCheckMember();
+                break;
+            case 6:
+                ownerCheckHistory();
+                break;
+            case 7:
+                ownerNotice();
+                break;
+            case 8:
+                ownerChangeName();
+                break;
+            case 9:
+                ownerDissolve();
+                break;
+            default:
+                choice = 0;
+                break;
+        }
+        if (choice == 0) {
+            break;
+        }
+    }
 }
 
-void GroupManager::handleAdmin(){}
+void GroupManager::handleAdmin() {
+    cout << "you are the Administrator" << endl;
+    while (true) {
+        administratorMenu();
+        int choice;
+        cout << "请输入：";
+        cin >> choice;
+        cin.get();
+        switch (choice) {
+            case 1:
+                adminChat();
+                break;
+            case 2:
+                adminKick();
+                break;
+            case 3:
+                adminCheckMember();
+                break;
+            case 4:
+                adminCheckHistory();
+                break;
+            case 5:
+                adminNotice();
+                break;
+            case 6:
+                adminExit();
+                break;
+            default:
+                choice = 0;
+                break;
+        }
+        if (choice == 0) {
+            break;
+        }
+    }
+}
 
-void GroupManager::handleMember(){}
+void GroupManager::handleMember() {
+    cout << "you are the Member" << endl;
+    while (true) {
+        memberMenu();
+        int choice;
+        cout << "请输入：";
+        cin >> choice;
+        cin.get();
+        switch (choice) {
+            case 1:
+                memberChat();
+                break;
+            case 2:
+                memberCheckMember();
+                break;
+            case 3:
+                memberCheckHistory();
+                break;
+            case 4:
+                memberExit();
+                break;
+            default:
+                choice = 0;
+                break;
+        }
+        if (choice == 0) {
+            break;
+        }
+    }
+}
+void GroupManager::ownerChat() {}
+void GroupManager::ownerKick() {}
+void GroupManager::ownerAddAdministrator() {
+    cout << "请输入你想要提升为管理员的成员账号：";
+    string account;
+    cin >> account;
+    cin.get();
+    if (account.length() > 11) {
+        std::cout << "Input exceeded the maximum allowed length. "
+                     "Truncating..."
+                  << std::endl;
+        account = account.substr(0, 11);  // Truncate the input to 10 characters
+    }
+    json js;
+    js["type"] = GROUP_TYPE;
+    js["grouptype"] = GROUP_OWNER;
+    js["entertype"] = OWNER_ADD_ADMINISTRATOR;
+    js["account"] = account;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "addAdministrator send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+}
+void GroupManager::ownerRevokeAdministrator() {}
+void GroupManager::ownerCheckMember() {}
+void GroupManager::ownerCheckHistory() {}
+void GroupManager::ownerNotice() {}
+void GroupManager::ownerChangeName() {}
+void GroupManager::ownerDissolve() {}
 
+void GroupManager::adminChat() {}
+void GroupManager::adminKick() {}
+void GroupManager::adminCheckMember() {}
+void GroupManager::adminCheckHistory() {}
+void GroupManager::adminNotice() {}
+void GroupManager::adminExit() {}
+
+void GroupManager::memberChat() {}
+void GroupManager::memberCheckMember() {}
+void GroupManager::memberCheckHistory() {}
+void GroupManager::memberExit() {}
 void GroupManager::requiryGroup() {}

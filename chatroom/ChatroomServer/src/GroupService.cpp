@@ -138,13 +138,22 @@ void GroupService::handleGroupEnter(json requestDataJson, json& responseJson) {
     // 获取权限
     if (m_account == owner) {
         responseJson["permission"] = "owner";
+        m_groupid = groupid;
     } else {
-        string permission =
-            m_redis->hget("Group_" + groupid, m_account).value();
-        if (permission == "administrator") {
+        // 检查元素是否存在于集合中
+        bool exists = m_redis->sismember(groupid + "_Administrator", m_account);
+        if (exists) {
             responseJson["permission"] = "administrator";
+            m_groupid = groupid;
         } else {
-            responseJson["permission"] = "member";
+            bool exists2 = m_redis->sismember(groupid + "_Member", m_account);
+            if (exists2) {
+                responseJson["permission"] = "member";
+                m_groupid = groupid;
+            } else {
+                responseJson["permisson"] = "none";
+                m_groupid.clear();
+            }
         }
     }
 }
@@ -168,5 +177,113 @@ void GroupService::handleGroup(json requestDataJson, json& responseJson) {
 
     else if (groupType == GROUP_REQUIRY) {
         handleGroupRequiry(requestDataJson, responseJson);
+    } else if (groupType == GROUP_OWNER) {
+        handleGroupOwner(requestDataJson, responseJson);
+    } else if (groupType == GROUP_ADMINISTRATOR) {
+        handleGroupAdmin(requestDataJson, responseJson);
+    } else if (groupType == GROUP_MEMBER) {
+        handleGroupMember(requestDataJson, responseJson);
     }
 }
+void GroupService::handleGroupOwner(json requestDataJson, json& responseJson) {
+    responseJson["grouptype"] = GROUP_OWNER;
+    int entertype = requestDataJson["entertype"];
+    responseJson["entertype"] = entertype;
+    if (entertype == OWNER_CHAT) {
+        ownerChat(requestDataJson, responseJson);
+    } else if (entertype == OWNER_KICK) {
+        ownerKick(requestDataJson, responseJson);
+    } else if (entertype == OWNER_ADD_ADMINISTRATOR) {
+        ownerAddAdministrator(requestDataJson, responseJson);
+    } else if (entertype == OWNER_REVOKE_ADMINISTRATOR) {
+        ownerRevokeAdministrator(requestDataJson, responseJson);
+    } else if (entertype == OWNER_CHECK_MEMBER) {
+        ownerCheckMember(requestDataJson, responseJson);
+    } else if (entertype == OWNER_CHECK_HISTORY) {
+        ownerCheckHistory(requestDataJson, responseJson);
+    } else if (entertype == OWNER_NOTICE) {
+        ownerNotice(requestDataJson, responseJson);
+    } else if (entertype == OWNER_CHANGE_NAME) {
+        ownerChangeName(requestDataJson, responseJson);
+    } else if (entertype == OWNER_DISSOLVE) {
+        ownerDissolve(requestDataJson, responseJson);
+    }
+}
+void GroupService::handleGroupAdmin(json requestDataJson, json& responseJson) {
+    responseJson["grouptype"] = GROUP_ADMINISTRATOR;
+    int entertype = requestDataJson["entertype"];
+    responseJson["entertype"] = entertype;
+    if (entertype == ADMIN_CHAT) {
+        adminChat(requestDataJson, responseJson);
+    } else if (entertype == ADMIN_KICK) {
+        adminKick(requestDataJson, responseJson);
+    } else if (entertype == ADMIN_CHECK_MEMBER) {
+        adminCheckMember(requestDataJson, responseJson);
+    } else if (entertype == ADMIN_CHECK_HISTORY) {
+        adminCheckHistory(requestDataJson, responseJson);
+    } else if (entertype == ADMIN_NOTICE) {
+        adminNotice(requestDataJson, responseJson);
+    } else if (entertype == ADMIN_EXIT) {
+        adminExit(requestDataJson, responseJson);
+    }
+}
+void GroupService::handleGroupMember(json requestDataJson, json& responseJson) {
+    responseJson["grouptype"] = GROUP_MEMBER;
+    int entertype = requestDataJson["entertype"];
+    responseJson["entertype"] = entertype;
+    if (entertype == MEMBER_CHAT) {
+        memberChat(requestDataJson, responseJson);
+    } else if (entertype == MEMBER_CHECK_MEMBER) {
+        memberCheckMember(requestDataJson, responseJson);
+    } else if (entertype == MEMBER_CHECK_HISTORY) {
+        memberCheckHistory(requestDataJson, responseJson);
+    } else if (entertype == MEMBER_EXIT) {
+        memberExit(requestDataJson, responseJson);
+    }
+}
+void GroupService::ownerChat(json requestDataJson, json& responseJson) {}
+void GroupService::ownerKick(json requestDataJson, json& responseJson) {}
+void GroupService::ownerAddAdministrator(json requestDataJson,
+                                         json& responseJson) {
+    string account = requestDataJson["account"];
+    if (account == m_account) {
+        responseJson["ownerstatus"] = NOT_SELF;
+    } else {
+        bool exists = m_redis->sismember(m_groupid + "_Administrator", account);
+        if (exists) {
+            responseJson["ownerstatus"] = ADMIN_ALREADY_EXIST;
+        } else {
+            bool exists2 = m_redis->sismember(m_groupid + "_Member", account);
+            if (exists2) {
+                m_redis->srem(m_groupid + "_Member", account);
+                m_redis->sadd(m_groupid + "_Administrator", account);
+                responseJson["ownerstatus"] = ADMIN_ADD_SUCCESS;
+            } else {
+                responseJson["ownerstatus"] = NOT_MEMBER;
+            }
+        }
+    }
+}
+void GroupService::ownerRevokeAdministrator(json requestDataJson,
+                                            json& responseJson) {}
+void GroupService::ownerCheckMember(json requestDataJson, json& responseJson) {}
+void GroupService::ownerCheckHistory(json requestDataJson, json& responseJson) {
+}
+void GroupService::ownerNotice(json requestDataJson, json& responseJson) {}
+void GroupService::ownerChangeName(json requestDataJson, json& responseJson) {}
+void GroupService::ownerDissolve(json requestDataJson, json& responseJson) {}
+
+void GroupService::adminChat(json requestDataJson, json& responseJson) {}
+void GroupService::adminKick(json requestDataJson, json& responseJson) {}
+void GroupService::adminCheckMember(json requestDataJson, json& responseJson) {}
+void GroupService::adminCheckHistory(json requestDataJson, json& responseJson) {
+}
+void GroupService::adminNotice(json requestDataJson, json& responseJson) {}
+void GroupService::adminExit(json requestDataJson, json& responseJson) {}
+
+void GroupService::memberChat(json requestDataJson, json& responseJson) {}
+void GroupService::memberCheckMember(json requestDataJson, json& responseJson) {
+}
+void GroupService::memberCheckHistory(json requestDataJson,
+                                      json& responseJson) {}
+void GroupService::memberExit(json requestDataJson, json& responseJson) {}
