@@ -78,6 +78,7 @@ class TcpClient {
     void handleGroupChatNoticeResponse(const json& message);
     void static addDataLen(json& js);
 
+    void handleSetChatAckResponse(const json& message);
     void getInfo(string account);
     inline string getPermisson() { return m_permission; }
     vector<string> m_groupnotice;

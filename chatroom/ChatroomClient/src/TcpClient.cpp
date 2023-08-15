@@ -195,6 +195,10 @@ void TcpClient::readTaskHandler(int cfd) {
                 case GROUP_CHAT_NOTICE:
                     handleGroupChatNoticeResponse(js);
                     break;
+                case GROUP_SET_CHAT_ACK:
+                    handleSetChatAckResponse(js);
+                    sem_post(&m_rwsem);
+                    break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
                     break;
@@ -575,7 +579,12 @@ void TcpClient::handleGroupMemberResponse(const json& message) {
         memberExit(message);
     }
 }
-void TcpClient::ownerChat(const json& message) {}
+void TcpClient::ownerChat(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == FAIL_SEND_MSG) {
+        cout << "fail to send msg" << endl;
+    }
+}
 void TcpClient::ownerKick(const json& message) {}
 // 回应 添加管理员
 void TcpClient::ownerAddAdministrator(const json& message) {
@@ -616,14 +625,24 @@ void TcpClient::ownerNotice(const json& message) {
 void TcpClient::ownerChangeName(const json& message) {}
 void TcpClient::ownerDissolve(const json& message) {}
 
-void TcpClient::adminChat(const json& message) {}
+void TcpClient::adminChat(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == FAIL_SEND_MSG) {
+        cout << "fail to send msg" << endl;
+    }
+}
 void TcpClient::adminKick(const json& message) {}
 void TcpClient::adminCheckMember(const json& message) {}
 void TcpClient::adminCheckHistory(const json& message) {}
 void TcpClient::adminNotice(const json& message) {}
 void TcpClient::adminExit(const json& message) {}
 
-void TcpClient::memberChat(const json& message) {}
+void TcpClient::memberChat(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == FAIL_SEND_MSG) {
+        cout << "fail to send msg" << endl;
+    }
+}
 void TcpClient::memberCheckMember(const json& message) {}
 void TcpClient::memberCheckHistory(const json& message) {}
 void TcpClient::memberExit(const json& message) {}
@@ -669,25 +688,53 @@ void TcpClient::handleGroupGetNoticeResponse(const json& message) {
     }
 }
 
-void TcpClient::handleGroupMsgResponse(const json& message){
+void TcpClient::handleGroupMsgResponse(const json& message) {
     try {
         string sender = message["account"];
         string data = message["data"];
         string username = message["username"];
+        string permission = message["permission"];
         std::time_t timestamp = message["timestamp"];
         std::tm timeinfo;
         localtime_r(&timestamp, &timeinfo);
         std::stringstream ss;
         ss << std::put_time(&timeinfo, "%m-%d %H:%M");
         std::string formattedTime = ss.str();
-        std::cout << BLUE_COLOR << username << RESET_COLOR << "(" << sender
-                  << ")" << formattedTime << ":" << std::endl;
-        std::cout << "「" << data << "」" << std::endl;
+        if (permission == "owner") {
+            std::cout << YELLOW_COLOR << "[群主]" << username << RESET_COLOR
+                      << "(" << sender << ")" << formattedTime << ":"
+                      << std::endl;
+            std::cout << "「" << data << "」" << std::endl;
+        } else if (permission == "administrator") {
+            std::cout << GREEN_COLOR << "[管理员]" << username << RESET_COLOR
+                      << "(" << sender << ")" << formattedTime << ":"
+                      << std::endl;
+            std::cout << "「" << data << "」" << std::endl;
+        } else {
+            std::cout << "[成员]" << username << "(" << sender << ")"
+                      << formattedTime << ":" << std::endl;
+            std::cout << "「" << data << "」" << std::endl;
+        }
+
     } catch (const exception& e) {
         std::cout << "handleFriendMsgResponse error" << e.what() << std::endl;
     }
 }
 
-void TcpClient::handleGroupChatNoticeResponse(const json& message){
-
+void TcpClient::handleGroupChatNoticeResponse(const json& message) {
+    string groupid = message["id"];
+    string groupname = message["groupname"];
+    cout << endl;
+    cout << "您收到一条消息来自群聊" << groupname << "(" << groupid << ")"
+         << std::flush;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    cout << "\33[2K\r" << std::flush;
+}
+void TcpClient::handleSetChatAckResponse(const json& message) {
+    int status = message["status"].get<int>();
+    if (status == SUCCESS_SET_CHATSTATUS) {
+        cout << "set chatstatus successfully! 输入“:q”退出 "
+                "输入“:h”显示历史消息"
+             << endl;
+    }
 }

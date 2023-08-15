@@ -323,18 +323,18 @@ void TcpConnection::sendHeartbeatPacket() {
 void TcpConnection::handleDataRead() {
     // 处理连接上的数据读取事件
     // 省略具体实现...
-    cout << "Handling data read..." << endl;
+    // cout << "Handling data read..." << endl;
 }
 
 void TcpConnection::handleLogin(json requestDataJson, json& responseJson) {
     // 从JSON数据中获取输入信息（账号密码）
     std::string account = requestDataJson["account"];
     std::string password = requestDataJson["password"];
-    cout << "get account:" << account << endl;
-    cout << "get password:" << password << endl;
+    // cout << "get account:" << account << endl;
+    // cout << "get password:" << password << endl;
     // 处理登录请求
     int loginstatus = m_userservice->checkLogin(account, password);
-    cout << "get loginstatus" << endl;
+    // cout << "get loginstatus" << endl;
 
     // 登录成功则记录账号信息
     if (loginstatus == PASS) {

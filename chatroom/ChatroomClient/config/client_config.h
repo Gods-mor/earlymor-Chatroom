@@ -7,7 +7,7 @@ constexpr int LOGIN = 1;
 constexpr int REGISTER = 2;
 constexpr int QUIT = 3;
 
-// 发送信息到服务器
+// 客户端发送信息到服务器
 constexpr int LOGIN_MSG_TYPE = 1;
 constexpr int REG_MSG_TYPE = 2;
 constexpr int GET_INFO_TYPE = 3;
@@ -23,7 +23,26 @@ constexpr int FRIEND_REQUIRY = 3;
 constexpr int FRIEND_CHAT = 4;
 constexpr int FRIEND_BLOCK = 5;
 constexpr int FRIEND_CHAT_REQUIRY = 6;
-// 接受消息
+// 群组功能请求
+constexpr int GROUP_ADD = 1;
+constexpr int GROUP_CREATE = 2;
+constexpr int GROUP_ENTER = 3;
+constexpr int GROUP_REQUIRY = 4;
+constexpr int GROUP_OWNER = 5;
+constexpr int GROUP_ADMINISTRATOR = 6;
+constexpr int GROUP_MEMBER = 7;
+constexpr int GROUP_GET_NOTICE = 8;
+// 群主
+constexpr int OWNER_CHAT = 1;
+constexpr int OWNER_KICK = 2;
+constexpr int OWNER_ADD_ADMINISTRATOR = 3;
+constexpr int OWNER_REVOKE_ADMINISTRATOR = 4;
+constexpr int OWNER_CHECK_MEMBER = 5;
+constexpr int OWNER_CHECK_HISTORY = 6;
+constexpr int OWNER_NOTICE = 7;
+constexpr int OWNER_CHANGE_NAME = 8;
+constexpr int OWNER_DISSOLVE = 9;
+// 客户端接受消息
 constexpr int LOGIN_MSG_ACK = 1;
 constexpr int REG_MSG_ACK = 2;
 constexpr int FRIEND_LIST_ACK = 3;
@@ -35,6 +54,7 @@ constexpr int GROUP_LIST_ACK = 8;
 constexpr int GROUP_ACK = 9;
 constexpr int GROUP_MSG = 10;
 constexpr int GROUP_CHAT_NOTICE = 11;
+constexpr int GROUP_SET_CHAT_ACK = 12;
 // 存储用户账号信息
 constexpr int GET_INFO_SUCCESS = 0;
 // 在线状态
@@ -57,30 +77,14 @@ constexpr int NOT_FRIEND = 0;
 constexpr int SUCCESS_DELETE_FRIEND = 1;
 constexpr int SUCCESS_REQUIRY_FRIEND = 1;
 constexpr int SUCCESS_CHAT_FRIEND = 1;
+constexpr int SUCCESS_SEND_MSG = 1;
+constexpr int FAIL_SEND_MSG = 0;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
 constexpr int SUCCESS_CREATE_GROUP = 1;
 constexpr int FAIL_SEND_APPLICATION = 1;
 constexpr int SUCCESS_SEND_APPLICATION = 2;
-// 群组功能请求
-constexpr int GROUP_ADD = 1;
-constexpr int GROUP_CREATE = 2;
-constexpr int GROUP_ENTER = 3;
-constexpr int GROUP_REQUIRY = 4;
-constexpr int GROUP_OWNER = 5;
-constexpr int GROUP_ADMINISTRATOR = 6;
-constexpr int GROUP_MEMBER = 7;
-constexpr int GROUP_GET_NOTICE = 8;
-// 群主
-constexpr int OWNER_CHAT = 1;
-constexpr int OWNER_KICK = 2;
-constexpr int OWNER_ADD_ADMINISTRATOR = 3;
-constexpr int OWNER_REVOKE_ADMINISTRATOR = 4;
-constexpr int OWNER_CHECK_MEMBER = 5;
-constexpr int OWNER_CHECK_HISTORY = 6;
-constexpr int OWNER_NOTICE = 7;
-constexpr int OWNER_CHANGE_NAME = 8;
-constexpr int OWNER_DISSOLVE = 9;
+
 // 群主功能回应
 // 添加管理员
 constexpr int ADMIN_ALREADY_EXIST = 1;
@@ -93,6 +97,8 @@ constexpr int SUCCESS_REVOKE_ADMIN = 1;
 constexpr int SUCCESS_ACCEPT_MEMBER = 1;
 constexpr int SUCCESS_REFUSE_MEMBER = 2;
 constexpr int FAIL_DEAL_MEMBER = 3;
+// set chatstaus
+constexpr int SUCCESS_SET_CHATSTATUS = 1;
 // 管理员
 constexpr int ADMIN_CHAT = 1;
 constexpr int ADMIN_KICK = 2;
