@@ -226,7 +226,7 @@ void FriendService::handleFriendChat(json requestDataJson, json& responseJson) {
                     sendToFriend["timestamp"] = timestamp;
                     sendToFriend["data"] = data;
                     string forwardMsg = sendToFriend.dump();
-                    connection->forwardMessageToFriend(forwardMsg);
+                    connection->forwardMessageToUser(forwardMsg);
                 } else {
                     responseJson["status"] = FAIL_SEND_MSG;
                 }
@@ -250,7 +250,7 @@ void FriendService::handleFriendChat(json requestDataJson, json& responseJson) {
                 sendToFriend["account"] = m_account;
                 sendToFriend["username"] = m_username;
                 string forwardMsg = sendToFriend.dump();
-                connection->forwardMessageToFriend(forwardMsg);
+                connection->forwardMessageToUser(forwardMsg);
             }
         }
         // 存储在数据库中

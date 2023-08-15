@@ -77,6 +77,8 @@ TcpConnection::~TcpConnection() {
     // 判断 读写缓存区是否还有数据没有被处理
     m_redis->hset(m_account, "status", "offline");
     m_redis->hset(m_account, "chatstatus", "");
+    m_onlineUsersPtr_->removeOnlineUser(m_account);
+    m_redis->srem("ONLINE_USERS", m_account);
     if (m_readBuf && m_readBuf->readableSize() == 0 && m_writeBuf &&
         m_writeBuf->readableSize() == 0) {
         delete m_writeBuf;
@@ -211,6 +213,8 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         } else if (requestType == GROUP_TYPE) {
             m_groupservice->handleGroup(requestDataJson, responseJson);
 
+        } else if (requestType == GROUP_SET_CHAT_STATUS) {
+            m_groupservice->setChatStatus(requestDataJson, responseJson);
         } else {
             // 未知的请求类型
             return false;  // 返回解析失败标志
@@ -248,12 +252,14 @@ void TcpConnection::getInfo() {
 
 // 设置上线状态
 void TcpConnection::setOnline() {
+    string onlinekey = "ONLINE_USERS";
     m_redis->hset(m_account, "status", "online");
     m_friendservice->addOnlineNumber();  // ONlinemember++
     // 添加进入总在线用户集合
     // 将当前用户添加到总在线用户集合
     if (m_onlineUsersPtr_) {
         m_onlineUsersPtr_->addOnlineUser(m_account);
+        m_redis->sadd(onlinekey, m_account);
         m_onlineUsersPtr_->addOnlineConnection(m_account, this);
         Debug("setOnline success");
     } else {
@@ -388,9 +394,9 @@ void TcpConnection::addDataLen(json& js) {
     js["datalen"] = paddedStrNumber;
 }
 
-void TcpConnection::forwardMessageToFriend(const std::string& message) {
+void TcpConnection::forwardMessageToUser(const std::string& message) {
     // 添加延迟，单位为毫秒
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(500));
     m_writeBuf->appendString(message);
     // 添加检测写事件
     m_channel->writeEventEnable(true);

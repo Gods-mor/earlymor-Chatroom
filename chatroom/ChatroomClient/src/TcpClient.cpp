@@ -189,6 +189,12 @@ void TcpClient::readTaskHandler(int cfd) {
                     }
                     sem_post(&m_rwsem);
                     break;
+                case GROUP_MSG:
+                    handleGroupMsgResponse(js);
+                    break;
+                case GROUP_CHAT_NOTICE:
+                    handleGroupChatNoticeResponse(js);
+                    break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
                     break;
@@ -661,4 +667,27 @@ void TcpClient::handleGroupGetNoticeResponse(const json& message) {
         }
         cout << "---------------------------------------------------" << endl;
     }
+}
+
+void TcpClient::handleGroupMsgResponse(const json& message){
+    try {
+        string sender = message["account"];
+        string data = message["data"];
+        string username = message["username"];
+        std::time_t timestamp = message["timestamp"];
+        std::tm timeinfo;
+        localtime_r(&timestamp, &timeinfo);
+        std::stringstream ss;
+        ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+        std::string formattedTime = ss.str();
+        std::cout << BLUE_COLOR << username << RESET_COLOR << "(" << sender
+                  << ")" << formattedTime << ":" << std::endl;
+        std::cout << "「" << data << "」" << std::endl;
+    } catch (const exception& e) {
+        std::cout << "handleFriendMsgResponse error" << e.what() << std::endl;
+    }
+}
+
+void TcpClient::handleGroupChatNoticeResponse(const json& message){
+
 }

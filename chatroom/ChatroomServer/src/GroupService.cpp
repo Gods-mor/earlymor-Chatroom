@@ -248,7 +248,74 @@ void GroupService::handleGroupMember(json requestDataJson, json& responseJson) {
         memberExit(requestDataJson, responseJson);
     }
 }
-void GroupService::ownerChat(json requestDataJson, json& responseJson) {}
+void GroupService::ownerChat(json requestDataJson, json& responseJson) {
+    try {
+        // 自己来自群聊的已读消息序列置为最新消息的序列
+        resetGroupReadMsg();
+        responseJson["entertype"] = OWNER_CHAT;
+        responseJson["type"] = GROUP_OWNER;
+        responseJson["status"] = SUCCESS_SEND_MSG;
+
+        string set1 = m_groupid + "_Member";
+        string set2 = m_groupid + "_Administrator";
+        json chatinfo;
+        string data = requestDataJson["data"];
+        std::time_t timestamp = std::time(nullptr);
+        if (data == ":q") {
+            m_redis->hset(m_account, "chatstatus", "");
+            return;
+        }
+        string online_users = "ONLINE_USERS";
+        // 获取在线群成员的集合,遍历得到chatstatus
+        unordered_set<string> groupMemberOnline;
+        m_redis->sinter(
+            online_users, set1,
+            std::inserter(groupMemberOnline, groupMemberOnline.begin()));
+        m_redis->sinter(
+            online_users, set2,
+            std::inserter(groupMemberOnline, groupMemberOnline.end()));
+
+        for (const auto& entry : groupMemberOnline) {
+            string chatstatus = m_redis->hget(entry, "chatstatus").value();
+            string status = m_redis->hget(entry, "status").value();
+
+            auto connection = m_onlineUsersPtr_->getOnlineConnection(entry);
+            if (chatstatus == m_groupid) {  // 群成员在对应聊天界面
+                // 转发json数据
+                // 将响应JSON数据添加到m_writeBuf中
+                if (connection) {
+                    json sendToMember;
+                    sendToMember["type"] = GROUP_MSG;
+                    sendToMember["account"] = m_account;
+                    sendToMember["username"] = m_username;
+                    sendToMember["timestamp"] = timestamp;
+                    sendToMember["data"] = data;
+                    string forwardMsg = sendToMember.dump();
+                    connection->forwardMessageToUser(forwardMsg);
+                } else {
+                    responseJson["status"] = FAIL_SEND_MSG;
+                }
+            } else {
+                json sendToFriend;
+                sendToFriend["type"] = GROUP_CHAT_NOTICE;
+                sendToFriend["id"] = m_groupid;
+                string forwardMsg = sendToFriend.dump();
+                connection->forwardMessageToUser(forwardMsg);
+            }
+            string key = m_groupid + "_Chat";
+            // 存储在数据库中
+            chatinfo["account"] = m_account;  // 发送者是自己
+            chatinfo["permission"] = "owner";
+            chatinfo["timestamp"] = timestamp;
+            chatinfo["data"] = data;
+            string chatmsg = chatinfo.dump();
+            m_redis->rpush(key, chatmsg);
+        }
+
+    } catch (const exception& e) {
+        cout << "handleFriendChat parse json error :" << e.what() << endl;
+    }
+}
 void GroupService::ownerKick(json requestDataJson, json& responseJson) {}
 // 添加管理员
 void GroupService::ownerAddAdministrator(json requestDataJson,
@@ -357,4 +424,25 @@ void GroupService::handleGroupGetNotice(json requestDataJson,
     m_redis->lrange(key, 0, -1, std::back_inserter(msg));
     responseJson["notice"] = msg;
     responseJson["grouptype"] = GROUP_GET_NOTICE;
+}
+
+void GroupService::resetGroupReadMsg() {
+    string key = m_account + "_Group";
+    string field = m_groupid;
+    string info = m_redis->hget(key, field).value();
+    json infojs = json::parse(info);
+    string readmsg = infojs["readmsg"];
+    int readmsgcnt = std::stoi(readmsg);
+    readmsgcnt = m_redis->llen(m_groupid + "_Chat");
+    readmsg = std::to_string(readmsgcnt);
+    infojs["readmsg"] = readmsg;
+    string msg = infojs.dump();
+    m_redis->hset(key, field, msg);
+}
+
+void GroupService::setChatStatus(json requestDataJson, json& responseJson) {
+    string groupid = requestDataJson["groupid"];
+
+    m_redis->hset(m_account, "chatstatus", groupid);
+    responseJson["status"] = SUCCESS_SET_CHATSTATUS;
 }

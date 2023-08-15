@@ -21,6 +21,7 @@ class GroupManager {
     void getGroupList();           // 获取加入群组列表
     void showGroupFunctionMenu();  // 群组
     void getNotice();
+    void setChatStatus();
 
     void addGroup();
     void createGroup();

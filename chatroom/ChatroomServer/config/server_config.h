@@ -18,6 +18,7 @@ constexpr int FRIEND_GET_LIST = 4;
 constexpr int FRIEND_TYPE = 5;
 constexpr int GROUP_GET_LIST = 6;
 constexpr int GROUP_TYPE = 7;
+constexpr int GROUP_SET_CHAT_STATUS = 8;
 // 客户端好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -66,6 +67,9 @@ constexpr int FRIEND_MSG = 6;
 constexpr int FRIEND_NOTICE = 7;
 constexpr int GROUP_LIST_ACK = 8;
 constexpr int GROUP_ACK = 9;
+constexpr int GROUP_MSG = 10;
+constexpr int GROUP_CHAT_NOTICE = 11;
+
 //
 constexpr int GET_INFO_SUCCESS = 0;
 // 注册状态回应
@@ -106,6 +110,8 @@ constexpr int SUCCESS_REVOKE_ADMIN = 1;
 constexpr int SUCCESS_ACCEPT_MEMBER = 1;
 constexpr int SUCCESS_REFUSE_MEMBER = 2;
 constexpr int FAIL_DEAL_MEMBER = 3;
+// set chatstaus
+constexpr int SUCCESS_SET_CHATSTATUS = 1;
 // 管理员功能回应
 
 // 成员功能回应

@@ -74,7 +74,8 @@ class TcpClient {
     void memberCheckHistory(const json& message);
     void memberExit(const json& message);
 
-
+    void handleGroupMsgResponse(const json& message);
+    void handleGroupChatNoticeResponse(const json& message);
     void static addDataLen(json& js);
 
     void getInfo(string account);

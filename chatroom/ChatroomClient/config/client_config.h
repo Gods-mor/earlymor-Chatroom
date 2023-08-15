@@ -15,6 +15,7 @@ constexpr int FRIEND_GET_LIST = 4;
 constexpr int FRIEND_TYPE = 5;
 constexpr int GROUP_GET_LIST = 6;
 constexpr int GROUP_TYPE = 7;
+constexpr int GROUP_SET_CHAT_STATUS = 8;
 // 好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -32,6 +33,8 @@ constexpr int FRIEND_MSG = 6;
 constexpr int FRIEND_NOTICE = 7;
 constexpr int GROUP_LIST_ACK = 8;
 constexpr int GROUP_ACK = 9;
+constexpr int GROUP_MSG = 10;
+constexpr int GROUP_CHAT_NOTICE = 11;
 // 存储用户账号信息
 constexpr int GET_INFO_SUCCESS = 0;
 // 在线状态
@@ -79,7 +82,7 @@ constexpr int OWNER_NOTICE = 7;
 constexpr int OWNER_CHANGE_NAME = 8;
 constexpr int OWNER_DISSOLVE = 9;
 // 群主功能回应
-//添加管理员
+// 添加管理员
 constexpr int ADMIN_ALREADY_EXIST = 1;
 constexpr int NOT_MEMBER = 2;
 constexpr int NOT_SELF = 3;

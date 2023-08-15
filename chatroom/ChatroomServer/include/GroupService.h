@@ -18,6 +18,7 @@ class GroupService {
     inline void getAccount(string account) { m_account = account; }
     inline void getName(string name) { m_username = name; };
     inline void addOnlineNumber() { m_onlineNumber++; }
+    void resetGroupReadMsg();
 
     void handleGetList(json requestDataJson, json& responseJson);
     void handleGroupAdd(json requestDataJson, json& responseJson);
@@ -32,6 +33,8 @@ class GroupService {
     void handleGroupMember(json requestDataJson, json& responseJson);
     std::unordered_map<std::string, std::string>
         m_userGroups;  // 用户的所有群组哈希表（account：name）
+
+    void setChatStatus(json requestDataJson, json& responseJson);
 
     void ownerChat(json requestDataJson, json& responseJson);
     void ownerKick(json requestDataJson, json& responseJson);

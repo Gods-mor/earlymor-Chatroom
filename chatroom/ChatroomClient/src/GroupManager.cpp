@@ -317,7 +317,42 @@ void GroupManager::handleMember() {
         }
     }
 }
-void GroupManager::ownerChat() {}
+void GroupManager::ownerChat() {
+    setChatStatus();
+    while (true) {
+        json js;
+        js["type"] = GROUP_OWNER;
+        js["entertype"] = OWNER_CHAT;
+        js["permisson"] = "owner";
+        string data;
+        std::time_t timestamp = std::time(nullptr);
+        std::tm timeinfo;
+        localtime_r(&timestamp, &timeinfo);
+        std::stringstream ss;
+        ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+        std::string formattedTime = ss.str();
+        getline(cin, data);
+        if (data != ":q") {
+            cout << "\033[A"
+                 << "\33[2K\r";
+            cout << YELLOW_COLOR << "[群主]"<<"我" << RESET_COLOR << formattedTime << ":"
+                 << endl;
+            cout << "「" << data << "」" << endl;
+            }
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+            if (data == ":q") {
+                break;
+            }
+    }
+}
 void GroupManager::ownerKick() {}
 // 添加管理员
 void GroupManager::ownerAddAdministrator() {
@@ -454,6 +489,18 @@ void GroupManager::getNotice() {
     json js;
     js["type"] = GROUP_TYPE;
     js["grouptype"] = GROUP_GET_NOTICE;
+    js["groupid"] = m_groupid;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "getNotice send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+}
+void GroupManager::setChatStatus(){
+    json js;
+    js["type"] = GROUP_SET_CHAT_STATUS;
     js["groupid"] = m_groupid;
     TcpClient::addDataLen(js);
     string request = js.dump();
