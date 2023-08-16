@@ -333,7 +333,7 @@ void GroupManager::ownerChat() {
         ss << std::put_time(&timeinfo, "%m-%d %H:%M");
         std::string formattedTime = ss.str();
         getline(cin, data);
-        if (data != ":q") {
+        if (data != ":q" && data != ":h") {
             cout << "\033[A"
                  << "\33[2K\r";
             cout << YELLOW_COLOR << "[群主]"
@@ -471,7 +471,29 @@ void GroupManager::ownerNotice() {
 }
 
 void GroupManager::ownerChangeName() {}
-void GroupManager::ownerDissolve() {}
+void GroupManager::ownerDissolve() {
+    cout << "1、确认解散 2、返回" << endl;
+    int choice;
+    cin >> choice;
+    cin.get();
+    if (choice == 1) {
+        json js;
+        js["type"] = GROUP_TYPE;
+        js["grouptype"] = GROUP_OWNER;
+        js["entertype"] = OWNER_DISSOLVE;
+        TcpClient::addDataLen(js);
+        string request = js.dump();
+        int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+        if (0 == len || -1 == len) {
+            cerr << "ownerRevokeAdministrator send error:" << request << endl;
+        }
+        sem_wait(&m_rwsem);
+    } else if (choice == 2) {
+        return;
+    } else {
+        cout << "输入不合法" << endl;
+    }
+}
 
 void GroupManager::adminChat() {
     setChatStatus();
@@ -489,7 +511,7 @@ void GroupManager::adminChat() {
         ss << std::put_time(&timeinfo, "%m-%d %H:%M");
         std::string formattedTime = ss.str();
         getline(cin, data);
-        if (data != ":q") {
+        if (data != ":q" && data != ":h") {
             cout << "\033[A"
                  << "\33[2K\r";
             cout << GREEN_COLOR << "[管理员]"
@@ -531,13 +553,14 @@ void GroupManager::memberChat() {
         ss << std::put_time(&timeinfo, "%m-%d %H:%M");
         std::string formattedTime = ss.str();
         getline(cin, data);
-        if (data != ":q") {
+        if (data != ":q" && data != ":h") {
             cout << "\033[A"
                  << "\33[2K\r";
             cout << "[成员]"
                  << "我 " << formattedTime << ":" << endl;
             cout << "「" << data << "」" << endl;
         }
+
         js["data"] = data;
         TcpClient::addDataLen(js);
         string request = js.dump();

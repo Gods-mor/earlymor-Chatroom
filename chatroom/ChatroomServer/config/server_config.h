@@ -11,14 +11,19 @@ constexpr int HEARTBEAT_TIMEOUT = 15;
 constexpr int HEARTBEAT_IDENTIFIER = -1;
 constexpr int HEARTBEAT_RESPONSE = -2;
 // 客户端选项请求
-constexpr int LOGIN_MSG_TYPE = 1;
-constexpr int REG_MSG_TYPE = 2;
-constexpr int GET_INFO_TYPE = 3;
+constexpr int LOGIN = 1;
+constexpr int REG = 2;
+constexpr int GET_INFO = 3;
 constexpr int FRIEND_GET_LIST = 4;
 constexpr int FRIEND_TYPE = 5;
 constexpr int GROUP_GET_LIST = 6;
 constexpr int GROUP_TYPE = 7;
 constexpr int GROUP_SET_CHAT_STATUS = 8;
+// 随机事件
+constexpr int GROUP_MSG = 9;
+constexpr int GROUP_CHAT_NOTICE = 10;
+constexpr int FRIEND_MSG = 11;
+constexpr int FRIEND_NOTICE = 12;
 // 客户端好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -57,19 +62,6 @@ constexpr int MEMBER_CHAT = 1;
 constexpr int MEMBER_CHECK_MEMBER = 2;
 constexpr int MEMBER_CHECK_HISTORY = 3;
 constexpr int MEMBER_EXIT = 4;
-// 服务器回应信息
-constexpr int LOGIN_MSG_ACK = 1;
-constexpr int REG_MSG_ACK = 2;
-constexpr int FRIEND_LIST_ACK = 3;
-constexpr int FRIEND_ACK = 4;
-constexpr int GET_INFO = 5;
-constexpr int FRIEND_MSG = 6;
-constexpr int FRIEND_NOTICE = 7;
-constexpr int GROUP_LIST_ACK = 8;
-constexpr int GROUP_ACK = 9;
-constexpr int GROUP_MSG = 10;
-constexpr int GROUP_CHAT_NOTICE = 11;
-constexpr int GROUP_SET_CHAT_ACK = 12;
 //
 constexpr int GET_INFO_SUCCESS = 0;
 // 注册状态回应
@@ -92,6 +84,8 @@ constexpr int SUCCESS_DELETE_FRIEND = 1;
 constexpr int SUCCESS_REQUIRY_FRIEND = 1;
 constexpr int SUCCESS_CHAT_FRIEND = 1;
 constexpr int SUCCESS_SEND_MSG = 1;
+constexpr int GET_FRIEND_HISTORY = 2;
+constexpr int GET_GROUP_HISTORY = 2;
 constexpr int FAIL_SEND_MSG = 0;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
@@ -112,6 +106,9 @@ constexpr int SUCCESS_REFUSE_MEMBER = 2;
 constexpr int FAIL_DEAL_MEMBER = 3;
 // set chatstaus
 constexpr int SUCCESS_SET_CHATSTATUS = 1;
+// 解散群聊
+constexpr int DISSOLVE_FAIL = 0;
+constexpr int DISSOLVE_SUCCESS = 1;
 // 管理员功能回应
 
 // 成员功能回应

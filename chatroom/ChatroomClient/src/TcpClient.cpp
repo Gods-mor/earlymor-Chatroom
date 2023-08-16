@@ -104,21 +104,24 @@ void TcpClient::readTaskHandler(int cfd) {
             // cout << "get type:" << type << endl;
             js.erase("type");  // 剔除type字段，只保留数据
             switch (type) {
-                case LOGIN_MSG_ACK:
+                case LOGIN:
                     handleLoginResponse(js);
                     sem_post(&m_rwsem);  // Notify the main thread that login
                                          // response is handled
                     break;
-                case REG_MSG_ACK:
+                case REG:
                     handleRegisterResponse(js);
                     sem_post(&m_rwsem);  // Notify the main thread that register
                                          // response is handled
                     break;
-                case FRIEND_LIST_ACK:
+                case FRIEND_GET_LIST:
                     handleFriendListResponse(js);
                     sem_post(&m_rwsem);
                     break;
-                case FRIEND_ACK:
+                case GET_INFO:
+                    sem_post(&m_rwsem);
+                    break;
+                case FRIEND_TYPE:
                     int friendtype;
                     friendtype = js["friendtype"].get<int>();
                     switch (friendtype) {
@@ -143,20 +146,11 @@ void TcpClient::readTaskHandler(int cfd) {
                     }
                     sem_post(&m_rwsem);
                     break;
-                case GET_INFO:
-                    sem_post(&m_rwsem);
-                    break;
-                case FRIEND_MSG:
-                    handleFriendMsgResponse(js);
-                    break;
-                case FRIEND_NOTICE:
-                    handleFriendNoticeResponse(js);
-                    break;
-                case GROUP_LIST_ACK:
+                case GROUP_GET_LIST:
                     handleGroupListResponse(js);
                     sem_post(&m_rwsem);
                     break;
-                case GROUP_ACK:
+                case GROUP_TYPE:
                     int grouptype;
                     grouptype = js["grouptype"].get<int>();
                     switch (grouptype) {
@@ -189,15 +183,21 @@ void TcpClient::readTaskHandler(int cfd) {
                     }
                     sem_post(&m_rwsem);
                     break;
+                case GROUP_SET_CHAT_STATUS:
+                    handleSetChatAckResponse(js);
+                    sem_post(&m_rwsem);
+                    break;
                 case GROUP_MSG:
                     handleGroupMsgResponse(js);
                     break;
                 case GROUP_CHAT_NOTICE:
                     handleGroupChatNoticeResponse(js);
                     break;
-                case GROUP_SET_CHAT_ACK:
-                    handleSetChatAckResponse(js);
-                    sem_post(&m_rwsem);
+                case FRIEND_MSG:
+                    handleFriendMsgResponse(js);
+                    break;
+                case FRIEND_NOTICE:
+                    handleFriendNoticeResponse(js);
                     break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
@@ -282,11 +282,41 @@ void TcpClient::handleFriendDeleteResponse(const json& message) {
 // 处理好友聊天请求回应
 void TcpClient::handleFriendChatResponse(const json& message) {
     int status = message["status"].get<int>();
+
     if (status == NOT_FRIEND) {
         cout << "The person is not your friend" << endl;
-    }
-    if (status == SUCCESS_CHAT_FRIEND) {
+    } else if (status == SUCCESS_CHAT_FRIEND) {
         // cout << "chat friend successfully!" << endl;
+    } else if (status == GET_FRIEND_HISTORY) {
+        std::vector<std::string> msg;
+        msg = message["msg"];
+        if (msg.size() == 0) {
+            cout << "无历史记录" << endl;
+            return;
+        }
+
+        cout << "----------以下为历史记录----------" << endl;
+        for (const auto& entry : msg) {
+            json entryjson = json::parse(entry);
+            string sender = entryjson["account"];
+            string data = entryjson["data"];
+            std::time_t timestamp = entryjson["timestamp"];
+            std::tm timeinfo;
+            localtime_r(&timestamp, &timeinfo);
+            std::stringstream ss;
+            ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+            std::string formattedTime = ss.str();
+            if (sender != m_account) {
+                std::cout << YELLOW_COLOR << "[好友]" << sender << RESET_COLOR
+                          << formattedTime << ":" << std::endl;
+                std::cout << "「" << data << "」" << std::endl;
+            } else {
+                std::cout << BLUE_COLOR << "[我]" << m_username << RESET_COLOR
+                          << formattedTime << ":" << std::endl;
+                std::cout << "「" << data << "」" << std::endl;
+            }
+        }
+        cout << "----------以上为历史记录----------" << endl;
     }
 }
 
@@ -378,7 +408,7 @@ void TcpClient::mainMenu() {
 // 得到账号信息
 void TcpClient::getInfo(string account) {
     json js;
-    js["type"] = GET_INFO_TYPE;
+    js["type"] = GET_INFO;
     addDataLen(js);
     string request = js.dump();
     int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
@@ -398,7 +428,7 @@ void TcpClient::handleLogin() {
     cin >> pwd;
     // cin.get(); 似乎是这里的bug
     json js;
-    js["type"] = LOGIN_MSG_TYPE;
+    js["type"] = LOGIN;
     js["account"] = account;
     js["password"] = pwd;
     addDataLen(js);
@@ -424,8 +454,6 @@ void TcpClient::handleMainMenu() {
         int mainMenuChoice;
         cin >> mainMenuChoice;
         cin.get();
-        sleep(1);
-        // system("clear");
         switch (mainMenuChoice) {
             case 1:  // 好友
                 m_friendmanager->fiendMenu();
@@ -475,7 +503,7 @@ void TcpClient::handleRegister() {
         account = account.substr(0, 20);  // Truncate the input to 20 characters
     }
     json js;
-    js["type"] = REG_MSG_TYPE;
+    js["type"] = REG;
     js["username"] = name;
     js["account"] = account;
     js["password"] = pwd;
@@ -583,6 +611,61 @@ void TcpClient::ownerChat(const json& message) {
     int status = message["status"].get<int>();
     if (status == FAIL_SEND_MSG) {
         cout << "fail to send msg" << endl;
+    } else if (status == GET_FRIEND_HISTORY) {
+        std::vector<std::string> msg;
+        msg = message["msg"];
+        if (msg.size() == 0) {
+            cout << "无历史记录" << endl;
+            return;
+        }
+        cout << "----------以下为历史记录----------" << endl;
+        for (const auto& entry : msg) {
+            json entryjson = json::parse(entry);
+            string sender = entryjson["account"];
+            string permission = entryjson["permission"];
+            string data = entryjson["data"];
+            std::time_t timestamp = entryjson["timestamp"];
+            std::tm timeinfo;
+            localtime_r(&timestamp, &timeinfo);
+            std::stringstream ss;
+            ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+            std::string formattedTime = ss.str();
+            if (sender != m_account) {
+                if (permission == "owner") {
+                    std::cout << YELLOW_COLOR << "[群主]" << sender
+                              << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "administrator") {
+                    std::cout << GREEN_COLOR << "[管理员]" << sender
+                              << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "member") {
+                    std::cout << "[成员]" << sender << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                }
+            } else {
+                if (permission == "owner") {
+                    std::cout << YELLOW_COLOR << "[群主]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "administrator") {
+                    std::cout << GREEN_COLOR << "[管理员]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "member") {
+                    std::cout << BLUE_COLOR << "[成员]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                }
+            }
+        }
+        cout << "----------以上为历史记录----------" << endl;
     }
 }
 void TcpClient::ownerKick(const json& message) {}
@@ -623,12 +706,74 @@ void TcpClient::ownerNotice(const json& message) {
     }
 }
 void TcpClient::ownerChangeName(const json& message) {}
-void TcpClient::ownerDissolve(const json& message) {}
+void TcpClient::ownerDissolve(const json& message) {
+    int status = message["status"].get<int>();
+    if(status == DISSOLVE_FAIL){
+        cout << "fail to dissolve" << endl;
+    }else{
+        cout << "dissolve successfully" << endl;
+    }
+}
 
 void TcpClient::adminChat(const json& message) {
     int status = message["status"].get<int>();
     if (status == FAIL_SEND_MSG) {
         cout << "fail to send msg" << endl;
+    } else if (status == GET_FRIEND_HISTORY) {
+        std::vector<std::string> msg;
+        msg = message["msg"];
+        if (msg.size() == 0) {
+            cout << "无历史记录" << endl;
+            return;
+        }
+        cout << "----------以下为历史记录----------" << endl;
+        for (const auto& entry : msg) {
+            json entryjson = json::parse(entry);
+            string sender = entryjson["account"];
+            string permission = entryjson["permission"];
+            string data = entryjson["data"];
+            std::time_t timestamp = entryjson["timestamp"];
+            std::tm timeinfo;
+            localtime_r(&timestamp, &timeinfo);
+            std::stringstream ss;
+            ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+            std::string formattedTime = ss.str();
+            if (sender != m_account) {
+                if (permission == "owner") {
+                    std::cout << YELLOW_COLOR << "[群主]" << sender
+                              << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "administrator") {
+                    std::cout << GREEN_COLOR << "[管理员]" << sender
+                              << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "member") {
+                    std::cout << "[成员]" << sender << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                }
+            } else {
+                if (permission == "owner") {
+                    std::cout << YELLOW_COLOR << "[群主]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "administrator") {
+                    std::cout << GREEN_COLOR << "[管理员]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "member") {
+                    std::cout << BLUE_COLOR << "[成员]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                }
+            }
+        }
+        cout << "----------以上为历史记录----------" << endl;
     }
 }
 void TcpClient::adminKick(const json& message) {}
@@ -641,6 +786,61 @@ void TcpClient::memberChat(const json& message) {
     int status = message["status"].get<int>();
     if (status == FAIL_SEND_MSG) {
         cout << "fail to send msg" << endl;
+    } else if (status == GET_FRIEND_HISTORY) {
+        std::vector<std::string> msg;
+        msg = message["msg"];
+        if (msg.size() == 0) {
+            cout << "无历史记录" << endl;
+            return;
+        }
+        cout << "----------以下为历史记录----------" << endl;
+        for (const auto& entry : msg) {
+            json entryjson = json::parse(entry);
+            string sender = entryjson["account"];
+            string permission = entryjson["permission"];
+            string data = entryjson["data"];
+            std::time_t timestamp = entryjson["timestamp"];
+            std::tm timeinfo;
+            localtime_r(&timestamp, &timeinfo);
+            std::stringstream ss;
+            ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+            std::string formattedTime = ss.str();
+            if (sender != m_account) {
+                if (permission == "owner") {
+                    std::cout << YELLOW_COLOR << "[群主]" << sender
+                              << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "administrator") {
+                    std::cout << GREEN_COLOR << "[管理员]" << sender
+                              << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "member") {
+                    std::cout << "[成员]" << sender << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                }
+            } else {
+                if (permission == "owner") {
+                    std::cout << YELLOW_COLOR << "[群主]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "administrator") {
+                    std::cout << GREEN_COLOR << "[管理员]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                } else if (permission == "member") {
+                    std::cout << BLUE_COLOR << "[成员]"
+                              << "我" << RESET_COLOR << formattedTime << ":"
+                              << std::endl;
+                    std::cout << "「" << data << "」" << std::endl;
+                }
+            }
+        }
+        cout << "----------以上为历史记录----------" << endl;
     }
 }
 void TcpClient::memberCheckMember(const json& message) {}

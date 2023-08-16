@@ -8,14 +8,19 @@ constexpr int REGISTER = 2;
 constexpr int QUIT = 3;
 
 // 客户端发送信息到服务器
-constexpr int LOGIN_MSG_TYPE = 1;
-constexpr int REG_MSG_TYPE = 2;
-constexpr int GET_INFO_TYPE = 3;
+// constexpr int LOGIN = 1;
+constexpr int REG = 2;
+constexpr int GET_INFO = 3;
 constexpr int FRIEND_GET_LIST = 4;
 constexpr int FRIEND_TYPE = 5;
 constexpr int GROUP_GET_LIST = 6;
 constexpr int GROUP_TYPE = 7;
 constexpr int GROUP_SET_CHAT_STATUS = 8;
+// 随机事件
+constexpr int GROUP_MSG = 9;
+constexpr int GROUP_CHAT_NOTICE = 10;
+constexpr int FRIEND_MSG = 11;
+constexpr int FRIEND_NOTICE = 12;
 // 好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -42,19 +47,18 @@ constexpr int OWNER_CHECK_HISTORY = 6;
 constexpr int OWNER_NOTICE = 7;
 constexpr int OWNER_CHANGE_NAME = 8;
 constexpr int OWNER_DISSOLVE = 9;
-// 客户端接受消息
-constexpr int LOGIN_MSG_ACK = 1;
-constexpr int REG_MSG_ACK = 2;
-constexpr int FRIEND_LIST_ACK = 3;
-constexpr int FRIEND_ACK = 4;
-constexpr int GET_INFO = 5;
-constexpr int FRIEND_MSG = 6;
-constexpr int FRIEND_NOTICE = 7;
-constexpr int GROUP_LIST_ACK = 8;
-constexpr int GROUP_ACK = 9;
-constexpr int GROUP_MSG = 10;
-constexpr int GROUP_CHAT_NOTICE = 11;
-constexpr int GROUP_SET_CHAT_ACK = 12;
+// 管理员
+constexpr int ADMIN_CHAT = 1;
+constexpr int ADMIN_KICK = 2;
+constexpr int ADMIN_CHECK_MEMBER = 3;
+constexpr int ADMIN_CHECK_HISTORY = 4;
+constexpr int ADMIN_NOTICE = 5;
+constexpr int ADMIN_EXIT = 6;
+// 成员
+constexpr int MEMBER_CHAT = 1;
+constexpr int MEMBER_CHECK_MEMBER = 2;
+constexpr int MEMBER_CHECK_HISTORY = 3;
+constexpr int MEMBER_EXIT = 4;
 // 存储用户账号信息
 constexpr int GET_INFO_SUCCESS = 0;
 // 在线状态
@@ -78,6 +82,7 @@ constexpr int SUCCESS_DELETE_FRIEND = 1;
 constexpr int SUCCESS_REQUIRY_FRIEND = 1;
 constexpr int SUCCESS_CHAT_FRIEND = 1;
 constexpr int SUCCESS_SEND_MSG = 1;
+constexpr int GET_FRIEND_HISTORY = 2;
 constexpr int FAIL_SEND_MSG = 0;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
@@ -99,18 +104,9 @@ constexpr int SUCCESS_REFUSE_MEMBER = 2;
 constexpr int FAIL_DEAL_MEMBER = 3;
 // set chatstaus
 constexpr int SUCCESS_SET_CHATSTATUS = 1;
-// 管理员
-constexpr int ADMIN_CHAT = 1;
-constexpr int ADMIN_KICK = 2;
-constexpr int ADMIN_CHECK_MEMBER = 3;
-constexpr int ADMIN_CHECK_HISTORY = 4;
-constexpr int ADMIN_NOTICE = 5;
-constexpr int ADMIN_EXIT = 6;
-// 成员
-constexpr int MEMBER_CHAT = 1;
-constexpr int MEMBER_CHECK_MEMBER = 2;
-constexpr int MEMBER_CHECK_HISTORY = 3;
-constexpr int MEMBER_EXIT = 4;
+// 解散群聊
+constexpr int DISSOLVE_FAIL = 0;
+constexpr int DISSOLVE_SUCCESS = 1;
 
 // 定义颜色宏
 #define RESET_COLOR "\033[0m"     // 恢复默认颜色

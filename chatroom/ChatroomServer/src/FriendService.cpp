@@ -63,12 +63,12 @@ void FriendService::handleGetList(json requestDataJson, json& responseJson) {
 
     responseJson["online_friends"] = m_onlineFriends;
     responseJson["offline_friends"] = m_offlineFriends;
-    responseJson["type"] = FRIEND_LIST_ACK;
+    responseJson["type"] = FRIEND_GET_LIST;
 }
 
 void FriendService::handleFriend(json requestDataJson, json& responseJson) {
     cout << "requestType == FRIEND_TYPE" << endl;
-    responseJson["type"] = FRIEND_ACK;
+    responseJson["type"] = FRIEND_TYPE;
     int friendType = requestDataJson["friendtype"].get<int>();
     cout << "friendType:" << friendType << endl;
     if (friendType == FRIEND_ADD) {
@@ -176,7 +176,7 @@ void FriendService::handleFriendBlock(json requestDataJson,
                                       json& responseJson) {
     cout << "blockfriend" << endl;
     responseJson["friendtype"] = FRIEND_BLOCK;
-    responseJson["type"] = FRIEND_ACK;
+    responseJson["type"] = FRIEND_TYPE;
     string key = m_account + "_Friend";
     string account = requestDataJson["account"];
     auto storedName = m_redis->hget(key, account);
@@ -195,7 +195,7 @@ void FriendService::handleFriendChat(json requestDataJson, json& responseJson) {
         // 自己来自好友的未读消息清零
         clearUnreadMsg(requestDataJson);
         responseJson["friendtype"] = FRIEND_CHAT;
-        responseJson["type"] = FRIEND_ACK;
+        responseJson["type"] = FRIEND_TYPE;
         responseJson["status"] = SUCCESS_SEND_MSG;
         string receiver = requestDataJson["account"];  // 发送给谁
         string key;
@@ -209,6 +209,13 @@ void FriendService::handleFriendChat(json requestDataJson, json& responseJson) {
         std::time_t timestamp = std::time(nullptr);
         if (data == ":q") {
             m_redis->hset(m_account, "chatstatus", "");
+            return;
+        }
+        if (data == ":h") {
+            std::vector<std::string> msg;
+            m_redis->lrange(key, 0, -1, std::back_inserter(msg));
+            responseJson["msg"] = msg;
+            responseJson["status"] = GET_FRIEND_HISTORY;
             return;
         }
         string chatstatus = m_redis->hget(receiver, "chatstatus").value();

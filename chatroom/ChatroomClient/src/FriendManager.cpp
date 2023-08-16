@@ -228,7 +228,7 @@ void FriendManager::chatWithFriend() {
             ss << std::put_time(&timeinfo, "%m-%d %H:%M");
             std::string formattedTime = ss.str();
             getline(cin, data);
-            if (data != ":q") {
+            if (data != ":q"&&data !=":h") {
                 cout << "\033[A"
                      << "\33[2K\r";
                 cout << YELLOW_COLOR << "我" << RESET_COLOR << formattedTime

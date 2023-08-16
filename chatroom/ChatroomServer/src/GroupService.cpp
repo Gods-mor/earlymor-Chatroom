@@ -16,7 +16,7 @@ void GroupService::handleGetList(json requestDataJson, json& responseJson) {
     // 计算在线好友。
     getList();
     // 构建好友列表响应json
-    responseJson["type"] = GROUP_LIST_ACK;
+    responseJson["type"] = GROUP_GET_LIST;
     responseJson["usergroups"] = m_userGroups;
 }
 
@@ -164,7 +164,7 @@ void GroupService::handleGroupEnter(json requestDataJson, json& responseJson) {
 
 void GroupService::handleGroup(json requestDataJson, json& responseJson) {
     cout << "requestType == GROUP_TYPE" << endl;
-    responseJson["type"] = GROUP_ACK;
+    responseJson["type"] = GROUP_TYPE;
     int groupType = requestDataJson["grouptype"].get<int>();
     responseJson["grouptype"] = groupType;
     cout << "groupType:" << groupType << endl;
@@ -255,7 +255,7 @@ void GroupService::ownerChat(json requestDataJson, json& responseJson) {
         resetGroupReadMsg();
         responseJson["entertype"] = OWNER_CHAT;
         responseJson["grouptype"] = GROUP_OWNER;
-        responseJson["type"] = GROUP_ACK;
+        responseJson["type"] = GROUP_TYPE;
         responseJson["status"] = SUCCESS_SEND_MSG;
 
         string set1 = m_groupid + "_Member";
@@ -265,6 +265,14 @@ void GroupService::ownerChat(json requestDataJson, json& responseJson) {
         std::time_t timestamp = std::time(nullptr);
         if (data == ":q") {
             m_redis->hset(m_account, "chatstatus", "");
+            return;
+        }
+        if (data == ":h") {
+            string key = m_groupid + "_Chat";
+            std::vector<std::string> msg;
+            m_redis->lrange(key, 0, -1, std::back_inserter(msg));
+            responseJson["msg"] = msg;
+            responseJson["status"] = GET_GROUP_HISTORY;
             return;
         }
         string online_users = "ONLINE_USERS";
@@ -411,7 +419,44 @@ void GroupService::ownerNotice(json requestDataJson, json& responseJson) {
     }
 }
 void GroupService::ownerChangeName(json requestDataJson, json& responseJson) {}
-void GroupService::ownerDissolve(json requestDataJson, json& responseJson) {}
+void GroupService::ownerDissolve(json requestDataJson, json& responseJson) {
+    unordered_set<string> groupMember;
+    m_redis->smembers(m_groupid + "_Member",
+                      std::inserter(groupMember, groupMember.begin()));
+
+    unordered_set<string> groupAdministrator;
+    m_redis->smembers(
+        m_groupid + "_Administrator",
+        std::inserter(groupAdministrator, groupAdministrator.begin()));
+    // 成员的group表（hash）account+"_Group" 将群聊id对应消息清除
+    for (const auto& entry : groupMember) {
+        string key = entry + "_Group";
+        m_redis->hdel(key, m_groupid);
+    }
+    // ​管理员的group表（hash）account+"_Group"
+    // 将群聊id对应消息清除
+    for (const auto& entry : groupAdministrator) {
+        string key = entry + "_Group";
+        m_redis->hdel(key, m_groupid);
+    }
+
+    // ​群组成员表(set)   id+"_Member"
+    m_redis->del(m_groupid + "_Member");
+    // ​群组管理员表(set) id+"_Administrator"
+    m_redis->del(m_groupid + "_Administrator");
+    // ​群组hash表(hash)  "Group_"+id
+    m_redis->del("Group_" + m_groupid);
+    // ​群组聊天表(list)  id+"_Chat"
+    m_redis->del(m_groupid + "_Chat");
+    // ​群组通知表(list)  id +"_Group_Notice"
+    m_redis->del(m_groupid + "_Group_Notice");
+    // ​群主的group表（hash）account+"_Group"
+    // 将群聊id对应消息清除
+    string key = m_account + "_Group";
+    m_redis->hdel(key, m_groupid);
+
+    responseJson["status"] = DISSOLVE_SUCCESS;
+}
 
 void GroupService::adminChat(json requestDataJson, json& responseJson) {
     try {
@@ -419,7 +464,7 @@ void GroupService::adminChat(json requestDataJson, json& responseJson) {
         resetGroupReadMsg();
         responseJson["entertype"] = ADMIN_CHAT;
         responseJson["grouptype"] = GROUP_ADMINISTRATOR;
-        responseJson["type"] = GROUP_ACK;
+        responseJson["type"] = GROUP_TYPE;
         responseJson["status"] = SUCCESS_SEND_MSG;
 
         string set1 = m_groupid + "_Member";
@@ -429,6 +474,14 @@ void GroupService::adminChat(json requestDataJson, json& responseJson) {
         std::time_t timestamp = std::time(nullptr);
         if (data == ":q") {
             m_redis->hset(m_account, "chatstatus", "");
+            return;
+        }
+        if (data == ":h") {
+            string key = m_groupid + "_Chat";
+            std::vector<std::string> msg;
+            m_redis->lrange(key, 0, -1, std::back_inserter(msg));
+            responseJson["msg"] = msg;
+            responseJson["status"] = GET_GROUP_HISTORY;
             return;
         }
         string online_users = "ONLINE_USERS";
@@ -508,7 +561,7 @@ void GroupService::memberChat(json requestDataJson, json& responseJson) {
         cout << "resetGroupReadMsg()" << endl;
         responseJson["entertype"] = MEMBER_CHAT;
         responseJson["grouptype"] = GROUP_MEMBER;
-        responseJson["type"] = GROUP_ACK;
+        responseJson["type"] = GROUP_TYPE;
         responseJson["status"] = SUCCESS_SEND_MSG;
 
         string set1 = m_groupid + "_Member";
@@ -518,6 +571,14 @@ void GroupService::memberChat(json requestDataJson, json& responseJson) {
         std::time_t timestamp = std::time(nullptr);
         if (data == ":q") {
             m_redis->hset(m_account, "chatstatus", "");
+            return;
+        }
+        if (data == ":h") {
+            string key = m_groupid + "_Chat";
+            std::vector<std::string> msg;
+            m_redis->lrange(key, 0, -1, std::back_inserter(msg));
+            responseJson["msg"] = msg;
+            responseJson["status"] = GET_GROUP_HISTORY;
             return;
         }
         string online_users = "ONLINE_USERS";
@@ -618,5 +679,5 @@ void GroupService::setChatStatus(json requestDataJson, json& responseJson) {
 
     m_redis->hset(m_account, "chatstatus", groupid);
     responseJson["status"] = SUCCESS_SET_CHATSTATUS;
-    responseJson["type"] = GROUP_SET_CHAT_ACK;
+    responseJson["type"] = GROUP_SET_CHAT_STATUS;
 }

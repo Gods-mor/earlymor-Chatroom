@@ -189,15 +189,15 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             cout << "Received heartbeat from client." << endl;
             // 更新上次收到心跳的时间
             responseJson["type"] = HEARTBEAT_RESPONSE;
-        } else if (requestType == LOGIN_MSG_TYPE) {
+        } else if (requestType == LOGIN) {
             handleLogin(requestDataJson, responseJson);
         }
         // “注册”
-        else if (requestType == REG_MSG_TYPE) {
+        else if (requestType == REG) {
             handleRegister(requestDataJson, responseJson);
         }
         // 登录初始化
-        else if (requestType == GET_INFO_TYPE) {
+        else if (requestType == GET_INFO) {
             handleGetInfo(requestDataJson, responseJson);
         }
         //
@@ -343,7 +343,7 @@ void TcpConnection::handleLogin(json requestDataJson, json& responseJson) {
     }
 
     // 构建登录响应JSON
-    responseJson["type"] = LOGIN_MSG_ACK;
+    responseJson["type"] = LOGIN;
     responseJson["loginstatus"] = loginstatus;
 }
 
@@ -360,7 +360,7 @@ void TcpConnection::handleRegister(json requestDataJson, json& responseJson) {
     cout << "get registerStatus:" << registerStatus << endl;
     // 构建注册响应JSON
 
-    responseJson["type"] = REG_MSG_ACK;
+    responseJson["type"] = REG;
     switch (registerStatus) {
         case REGISTER_SUCCESS:
             responseJson["status"] = REG_SUCCESS;
