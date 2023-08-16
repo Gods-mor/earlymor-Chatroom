@@ -80,8 +80,10 @@ class TcpClient {
 
     void handleSetChatAckResponse(const json& message);
     void getInfo(string account);
+    void handleGetListLenResponse(const json& message);
     inline string getPermisson() { return m_permission; }
     vector<string> m_groupnotice;
+    int len;
 
    private:
     int m_fd;

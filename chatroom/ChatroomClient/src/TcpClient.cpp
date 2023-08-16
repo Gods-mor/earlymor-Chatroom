@@ -1,7 +1,8 @@
 #include "TcpClient.h"
 #include <stdlib.h>
 #include <iostream>
-
+#include <unordered_set>
+#include <sys/fcntl.h>
 using namespace std;
 // client初始化，socket,sem
 TcpClient::TcpClient() {
@@ -11,6 +12,18 @@ TcpClient::TcpClient() {
         std::cerr << "socket create error" << std::endl;
         exit(-1);
     }
+    //  // 设置套接字为非阻塞模式
+    // int flags = fcntl(m_fd, F_GETFL, 0);
+    // if (flags == -1) {
+    //     perror("fcntl");
+    //     close(m_fd);
+    //     return ;
+    // }
+    // if (fcntl(m_fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+    //     perror("fcntl");
+    //     close(m_fd);
+    //     return ;
+    // }
     // 初始化信号量
     string emptystring;
     m_account = emptystring;
@@ -96,7 +109,7 @@ void TcpClient::readTaskHandler(int cfd) {
             sem_post(&m_rwsem);
             exit(-1);
         }
-        // cout << buffer << endl;
+        cout << buffer << endl;
         // 接收ChatServer转发的数据，反序列化生成json数据对象
         try {
             json js = json::parse(buffer);
@@ -185,6 +198,10 @@ void TcpClient::readTaskHandler(int cfd) {
                     break;
                 case GROUP_SET_CHAT_STATUS:
                     handleSetChatAckResponse(js);
+                    sem_post(&m_rwsem);
+                    break;
+                case GROUP_GET_LIST_LEN:
+                    handleGetListLenResponse(js);
                     sem_post(&m_rwsem);
                     break;
                 case GROUP_MSG:
@@ -282,7 +299,6 @@ void TcpClient::handleFriendDeleteResponse(const json& message) {
 // 处理好友聊天请求回应
 void TcpClient::handleFriendChatResponse(const json& message) {
     int status = message["status"].get<int>();
-
     if (status == NOT_FRIEND) {
         cout << "The person is not your friend" << endl;
     } else if (status == SUCCESS_CHAT_FRIEND) {
@@ -317,6 +333,10 @@ void TcpClient::handleFriendChatResponse(const json& message) {
             }
         }
         cout << "----------以上为历史记录----------" << endl;
+    } else if (status == ALREADY_TO_FILE) {
+        cout << "-----------waiting..." << endl;
+    } else if (status == SUCCESS_RECV_FILE) {
+        cout << "发送成功" << endl;
     }
 }
 
@@ -525,6 +545,7 @@ void TcpClient::handleGroupListResponse(const json& message) {
         m_groupmanager->userGroups.clear();
         cout << "----handleGroupListResponse" << endl;
         m_groupmanager->userGroups = message["usergroups"];
+
     } catch (const exception& e) {
         cout << "handleGroupListResponse error :" << e.what() << endl;
     }
@@ -668,7 +689,14 @@ void TcpClient::ownerChat(const json& message) {
         cout << "----------以上为历史记录----------" << endl;
     }
 }
-void TcpClient::ownerKick(const json& message) {}
+void TcpClient::ownerKick(const json& message) {
+    int status = message["status"];
+    if (status == SUCCESS_KICK) {
+        cout << "已踢出该成员" << endl;
+    } else if (status == FAIL_TO_KICK) {
+        cout << "不能踢出该成员" << endl;
+    }
+}
 // 回应 添加管理员
 void TcpClient::ownerAddAdministrator(const json& message) {
     int status = message["status"];
@@ -693,7 +721,20 @@ void TcpClient::ownerRevokeAdministrator(const json& message) {
         cout << "撤除该管理员失败" << endl;
     }
 }
-void TcpClient::ownerCheckMember(const json& message) {}
+void TcpClient::ownerCheckMember(const json& message) {
+    string owner = message["owner"];
+    unordered_set<string> admin;
+    unordered_set<string> member;
+    admin = message["administrator"];
+    member = message["member"];
+    cout << YELLOW_COLOR << "群主:" << owner << RESET_COLOR << endl;
+    for (const auto& entry : admin) {
+        cout << GREEN_COLOR << "管理员:" << entry << RESET_COLOR << endl;
+    }
+    for (const auto& entry : member) {
+        cout << "成员:" << entry << endl;
+    }
+}
 void TcpClient::ownerCheckHistory(const json& message) {}
 void TcpClient::ownerNotice(const json& message) {
     int status = message["status"];
@@ -708,9 +749,9 @@ void TcpClient::ownerNotice(const json& message) {
 void TcpClient::ownerChangeName(const json& message) {}
 void TcpClient::ownerDissolve(const json& message) {
     int status = message["status"].get<int>();
-    if(status == DISSOLVE_FAIL){
+    if (status == DISSOLVE_FAIL) {
         cout << "fail to dissolve" << endl;
-    }else{
+    } else {
         cout << "dissolve successfully" << endl;
     }
 }
@@ -776,11 +817,48 @@ void TcpClient::adminChat(const json& message) {
         cout << "----------以上为历史记录----------" << endl;
     }
 }
-void TcpClient::adminKick(const json& message) {}
-void TcpClient::adminCheckMember(const json& message) {}
+void TcpClient::adminKick(const json& message) {
+    int status = message["status"];
+    if (status == SUCCESS_KICK) {
+        cout << "已踢出该成员" << endl;
+    } else if (status == FAIL_TO_KICK) {
+        cout << "不能踢出该成员" << endl;
+    }
+}
+void TcpClient::adminCheckMember(const json& message) {
+    string owner = message["owner"];
+    unordered_set<string> admin;
+    unordered_set<string> member;
+    admin = message["administrator"];
+    member = message["member"];
+    cout << YELLOW_COLOR << "群主:" << owner << RESET_COLOR << endl;
+    for (const auto& entry : admin) {
+        cout << GREEN_COLOR << "管理员:" << entry << RESET_COLOR << endl;
+    }
+    for (const auto& entry : member) {
+        cout << "成员:" << entry << endl;
+    }
+}
 void TcpClient::adminCheckHistory(const json& message) {}
-void TcpClient::adminNotice(const json& message) {}
-void TcpClient::adminExit(const json& message) {}
+void TcpClient::adminNotice(const json& message) {
+    int status = message["status"];
+    if (status == SUCCESS_ACCEPT_MEMBER) {
+        cout << "您已成功接受该申请" << endl;
+    } else if (status == SUCCESS_REFUSE_MEMBER) {
+        cout << "您已成功拒接该申请" << endl;
+    } else {
+        cout << "处理该申请失败" << endl;
+    }
+}
+// 管理员退出
+void TcpClient::adminExit(const json& message) {
+    int status = message["status"];
+    if (status == FAIL_TO_EXIT) {
+        cout << "退出失败" << endl;
+    } else if (status == SUCCESS_EXIT) {
+        cout << "退出成功" << endl;
+    }
+}
 
 void TcpClient::memberChat(const json& message) {
     int status = message["status"].get<int>();
@@ -843,9 +921,30 @@ void TcpClient::memberChat(const json& message) {
         cout << "----------以上为历史记录----------" << endl;
     }
 }
-void TcpClient::memberCheckMember(const json& message) {}
+void TcpClient::memberCheckMember(const json& message) {
+    string owner = message["owner"];
+    unordered_set<string> admin;
+    unordered_set<string> member;
+    admin = message["administrator"];
+    member = message["member"];
+    cout << YELLOW_COLOR << "群主:" << owner << RESET_COLOR << endl;
+    for (const auto& entry : admin) {
+        cout << GREEN_COLOR << "管理员:" << entry << RESET_COLOR << endl;
+    }
+    for (const auto& entry : member) {
+        cout << "成员:" << entry << endl;
+    }
+}
 void TcpClient::memberCheckHistory(const json& message) {}
-void TcpClient::memberExit(const json& message) {}
+// 成员退出
+void TcpClient::memberExit(const json& message) {
+    int status = message["status"];
+    if (status == FAIL_TO_EXIT) {
+        cout << "退出失败" << endl;
+    } else if (status == SUCCESS_EXIT) {
+        cout << "退出成功" << endl;
+    }
+}
 
 void TcpClient::handleGroupGetNoticeResponse(const json& message) {
     m_groupnotice.clear();
@@ -937,4 +1036,7 @@ void TcpClient::handleSetChatAckResponse(const json& message) {
                 "输入“:h”显示历史消息"
              << endl;
     }
+}
+void TcpClient::handleGetListLenResponse(const json& message) {
+    len = message["len"].get<int>();
 }

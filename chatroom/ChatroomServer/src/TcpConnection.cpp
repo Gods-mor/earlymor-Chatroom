@@ -215,6 +215,8 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
 
         } else if (requestType == GROUP_SET_CHAT_STATUS) {
             m_groupservice->setChatStatus(requestDataJson, responseJson);
+        } else if (requestType == GROUP_GET_LIST_LEN) {
+            m_groupservice->getListLen(requestDataJson, responseJson);
         } else {
             // 未知的请求类型
             return false;  // 返回解析失败标志

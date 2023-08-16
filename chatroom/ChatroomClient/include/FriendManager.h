@@ -20,6 +20,7 @@ class FriendManager {
     void chatWithFriend();
     void blockFriend();
     void getFriendList();  // 获取好友列表
+    int sendFile(int cfd, int fd, off_t offset, int size);
     unordered_map<string, string> onlineFriends;   // 得到的在线列表
     unordered_map<string, string> offlineFriends;  // 得到的离线列表
     int m_onlineNumber;                            // 在线人数

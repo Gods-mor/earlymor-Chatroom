@@ -1,6 +1,9 @@
 #include "FriendManager.h"
 #include <stdlib.h>
+#include <sys/fcntl.h>
+#include <sys/sendfile.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <nlohmann/json.hpp>
 #include "../config/client_config.h"
@@ -228,24 +231,75 @@ void FriendManager::chatWithFriend() {
             ss << std::put_time(&timeinfo, "%m-%d %H:%M");
             std::string formattedTime = ss.str();
             getline(cin, data);
-            if (data != ":q"&&data !=":h") {
+            if (data != ":q" && data != ":h" && data != ":f") {
                 cout << "\033[A"
                      << "\33[2K\r";
                 cout << YELLOW_COLOR << "我" << RESET_COLOR << formattedTime
                      << ":" << endl;
                 cout << "「" << data << "」" << endl;
             }
-            js["data"] = data;
-            TcpClient::addDataLen(js);
-            string request = js.dump();
-            int len =
-                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
-            if (0 == len || -1 == len) {
-                cerr << "data send error:" << request << endl;
-            }
-            sem_wait(&m_rwsem);
-            if (data == ":q") {
-                break;
+            if (data == ":f") {
+                string filepath;
+                cout << "请输入文件的相对路径：" << endl;
+                cin >> filepath;
+                cin.get();
+                js["filepath"] = filepath;
+                js["data"] = data;
+
+                int fd = open(filepath.c_str(), O_RDONLY);
+                if (fd == -1) {
+                    perror("open");
+                    cout << "发送失败，返回聊天" << endl;
+                    return;
+                }
+                // 获取文件大小
+                struct stat file_stat;
+                if (fstat(fd, &file_stat) == -1) {
+                    perror("fstat");
+                    close(fd);
+                    cout << "发送失败，返回聊天" << endl;
+                    return;
+                }
+                js["filesize"] = file_stat.st_size;
+                TcpClient::addDataLen(js);
+                string request = js.dump();
+                int len =
+                    send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+                if (0 == len || -1 == len) {
+                    cerr << "data send error:" << request << endl;
+                }
+                sem_wait(&m_rwsem);
+
+                off_t offset = 0;  // 从文件开始位置开始发送
+                size_t remaining_bytes =
+                    file_stat.st_size;  // 剩余要发送的字节数
+                // 使用 sendfile 函数发送文件内容
+                ssize_t sent_bytes =
+                    sendFile(m_fd, fd, offset, remaining_bytes);
+
+                if (sent_bytes == -1) {
+                    perror("sendfile");
+                    close(fd);
+                    cout << "发送失败，返回聊天" << endl;
+                    return;
+                }
+                if (sent_bytes == file_stat.st_size) {
+                    cout << "发送成功" << endl;
+                }
+
+            } else {
+                js["data"] = data;
+                TcpClient::addDataLen(js);
+                string request = js.dump();
+                int len =
+                    send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+                if (0 == len || -1 == len) {
+                    cerr << "data send error:" << request << endl;
+                }
+                sem_wait(&m_rwsem);
+                if (data == ":q") {
+                    break;
+                }
             }
         }
     }
@@ -254,7 +308,7 @@ void FriendManager::chatWithFriend() {
 // 拉黑好友
 void FriendManager::blockFriend() {
     string account;
-    cout << "请输入要查找的好友账号：";
+    cout << "请输入要拉黑的好友账号：";
     cin >> account;
     cin.get();
     if (account.length() > 11) {
@@ -274,4 +328,21 @@ void FriendManager::blockFriend() {
         cerr << "queryFriend send error:" << request << endl;
     }
     sem_wait(&m_rwsem);
+}
+
+int FriendManager::sendFile(int cfd, int fd, off_t offset, int size) {
+    int count = 0;
+    while (offset < size) {
+        // 系统函数，发送文件，linux内核提供的sendfile 也能减少拷贝次数
+        //  sendfile发送文件效率高，而文件目录使用send
+        // 通信文件描述符，打开文件描述符，fd对应的文件偏移量一般为空，
+        // 单独单文件出现发送不全，offset会自动修改当前读取位置
+        int ret = (int)sendfile(cfd, fd, &offset, (size_t)(size - offset));
+        if (ret == -1 && errno == EAGAIN) {
+            printf("not data ....");
+            perror("sendfile");
+        }
+        count += (int)offset;
+    }
+    return count;
 }

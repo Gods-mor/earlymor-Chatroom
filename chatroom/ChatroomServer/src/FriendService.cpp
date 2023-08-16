@@ -1,5 +1,7 @@
 #include "FriendService.h"
 #include <sw/redis++/redis++.h>
+#include <sys/stat.h>
+#include <fstream>
 #include <iostream>
 #include "../config/server_config.h"
 #include "OnlineUsers.h"
@@ -216,6 +218,51 @@ void FriendService::handleFriendChat(json requestDataJson, json& responseJson) {
             m_redis->lrange(key, 0, -1, std::back_inserter(msg));
             responseJson["msg"] = msg;
             responseJson["status"] = GET_FRIEND_HISTORY;
+            return;
+        }
+        if (data == ":f") {
+            // 接受发文件的请求
+            string filepath = requestDataJson["filepath"];
+            size_t filesize = requestDataJson["filesize"];
+            // 使用 C++17 标准库的 filesystem 来获取文件名
+            std::filesystem::path path(filepath);
+            std::string filename = path.filename().string();
+            responseJson["status"] = ALREADY_TO_FILE;
+            string forwardMsg = responseJson.dump();
+            // 将响应JSON数据添加到m_writeBuf中
+            TcpConnection* connection =
+                m_onlineUsersPtr_->getOnlineConnection(m_account);
+            int n = send(connection->getfd(), forwardMsg.c_str(),
+                         strlen(forwardMsg.c_str()) + 1, 0);
+            // 创建特定文件夹（如果不存在）
+            if (access(key.c_str(), F_OK) == -1) {
+                mkdir(key.c_str(), 0777);
+            }
+            // 拼接文件路径
+            std::string file_path = key + "/" + filename;
+
+            // 创建文件来保存接收的数据
+            std::ofstream received_file(file_path, std::ios::binary);
+
+            // 接收文件数据并写入文件
+            char buffer[4096];
+            ssize_t bytes_received;
+            cout << "---------------recv----------" << connection->getfd()
+                 << endl;
+            size_t sum = 0;
+            while (sum<filesize) {
+                bytes_received =
+                    recv(connection->getfd(), buffer, sizeof(buffer), 0);
+                cout << "---------------recv----------" << bytes_received
+                     << endl;
+                received_file.write(buffer, bytes_received);
+                cout << "---------------once----------" << endl;
+                sum += bytes_received;
+            }
+            cout << "end" << endl;
+            responseJson["status"] = SUCCESS_RECV_FILE;
+            // 关闭套接字和文件
+            received_file.close();
             return;
         }
         string chatstatus = m_redis->hget(receiver, "chatstatus").value();

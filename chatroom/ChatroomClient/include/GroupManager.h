@@ -22,6 +22,7 @@ class GroupManager {
     void showGroupFunctionMenu();  // 群组
     void getNotice();
     void setChatStatus();
+    void getListLen(const string groupid);
 
     void addGroup();
     void createGroup();

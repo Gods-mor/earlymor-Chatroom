@@ -16,11 +16,12 @@ constexpr int FRIEND_TYPE = 5;
 constexpr int GROUP_GET_LIST = 6;
 constexpr int GROUP_TYPE = 7;
 constexpr int GROUP_SET_CHAT_STATUS = 8;
+constexpr int GROUP_GET_LIST_LEN = 9;
 // 随机事件
-constexpr int GROUP_MSG = 9;
-constexpr int GROUP_CHAT_NOTICE = 10;
-constexpr int FRIEND_MSG = 11;
-constexpr int FRIEND_NOTICE = 12;
+constexpr int GROUP_MSG = 10;
+constexpr int GROUP_CHAT_NOTICE = 11;
+constexpr int FRIEND_MSG = 12;
+constexpr int FRIEND_NOTICE = 13;
 // 好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -84,6 +85,8 @@ constexpr int SUCCESS_CHAT_FRIEND = 1;
 constexpr int SUCCESS_SEND_MSG = 1;
 constexpr int GET_FRIEND_HISTORY = 2;
 constexpr int FAIL_SEND_MSG = 0;
+constexpr int ALREADY_TO_FILE = 3;
+constexpr int SUCCESS_RECV_FILE = 4;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
 constexpr int SUCCESS_CREATE_GROUP = 1;
@@ -107,7 +110,13 @@ constexpr int SUCCESS_SET_CHATSTATUS = 1;
 // 解散群聊
 constexpr int DISSOLVE_FAIL = 0;
 constexpr int DISSOLVE_SUCCESS = 1;
-
+// 踢人
+constexpr int SUCCESS_KICK = 1;
+constexpr int FAIL_TO_KICK = 0;
+// 管理员
+// 退出群聊
+constexpr int FAIL_TO_EXIT = 0;
+constexpr int SUCCESS_EXIT = 1;
 // 定义颜色宏
 #define RESET_COLOR "\033[0m"     // 恢复默认颜色
 #define RED_COLOR "\033[31m"      // 红色

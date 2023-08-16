@@ -32,6 +32,7 @@ class TcpConnection {
     bool parseClientRequest(Buffer* m_readBuf);
     void getInfo();
     void setOnline();
+    int getfd() { return m_fd; }
     void addDataLen(json& js);
     void forwardMessageToUser(const std::string& message);
    private:
@@ -42,6 +43,7 @@ class TcpConnection {
     void handleLogin(json requestDataJson, json& responseJson);
     void handleRegister(json requestDataJson, json& responseJson);
     void handleGetInfo(json requestDataJson, json& responseJson);
+   
     int m_heartbeatTimerFd;  // 心跳定时器的文件描述符
     int m_fd;
     int m_epollFd;  // epoll的文件描述符

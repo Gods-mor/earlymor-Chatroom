@@ -11,15 +11,18 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earl
   /usr/include/asm-generic/bitsperlong.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/int-ll64.h \
   /usr/include/asm-generic/posix_types.h \
   /usr/include/asm-generic/socket.h \
   /usr/include/asm-generic/sockios.h \
+  /usr/include/asm-generic/types.h \
   /usr/include/asm/bitsperlong.h \
   /usr/include/asm/errno.h \
   /usr/include/asm/posix_types.h \
   /usr/include/asm/posix_types_64.h \
   /usr/include/asm/socket.h \
   /usr/include/asm/sockios.h \
+  /usr/include/asm/types.h \
   /usr/include/assert.h \
   /usr/include/bits/atomic_wide_counter.h \
   /usr/include/bits/byteswap.h \
@@ -29,6 +32,8 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earl
   /usr/include/bits/endianness.h \
   /usr/include/bits/environments.h \
   /usr/include/bits/errno.h \
+  /usr/include/bits/fcntl-linux.h \
+  /usr/include/bits/fcntl.h \
   /usr/include/bits/floatn-common.h \
   /usr/include/bits/floatn.h \
   /usr/include/bits/flt-eval-method.h \
@@ -57,12 +62,16 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earl
   /usr/include/bits/sockaddr.h \
   /usr/include/bits/socket.h \
   /usr/include/bits/socket_type.h \
+  /usr/include/bits/stat.h \
+  /usr/include/bits/statx-generic.h \
+  /usr/include/bits/statx.h \
   /usr/include/bits/stdint-intn.h \
   /usr/include/bits/stdint-uintn.h \
   /usr/include/bits/stdio_lim.h \
   /usr/include/bits/stdlib-float.h \
   /usr/include/bits/struct_mutex.h \
   /usr/include/bits/struct_rwlock.h \
+  /usr/include/bits/struct_stat.h \
   /usr/include/bits/thread-shared-types.h \
   /usr/include/bits/time.h \
   /usr/include/bits/time64.h \
@@ -89,6 +98,8 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earl
   /usr/include/bits/types/struct_itimerspec.h \
   /usr/include/bits/types/struct_osockaddr.h \
   /usr/include/bits/types/struct_sched_param.h \
+  /usr/include/bits/types/struct_statx.h \
+  /usr/include/bits/types/struct_statx_timestamp.h \
   /usr/include/bits/types/struct_timespec.h \
   /usr/include/bits/types/struct_timeval.h \
   /usr/include/bits/types/struct_tm.h \
@@ -316,6 +327,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earl
   /usr/include/ctype.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
+  /usr/include/fcntl.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
   /usr/include/gnu/stubs-64.h \
@@ -323,8 +335,11 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earl
   /usr/include/libintl.h \
   /usr/include/linux/close_range.h \
   /usr/include/linux/errno.h \
+  /usr/include/linux/falloc.h \
   /usr/include/linux/posix_types.h \
+  /usr/include/linux/stat.h \
   /usr/include/linux/stddef.h \
+  /usr/include/linux/types.h \
   /usr/include/locale.h \
   /usr/include/math.h \
   /usr/include/netinet/in.h \
@@ -382,9 +397,12 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: /home/earl
   /usr/include/string.h \
   /usr/include/strings.h \
   /usr/include/sys/cdefs.h \
+  /usr/include/sys/fcntl.h \
   /usr/include/sys/select.h \
+  /usr/include/sys/sendfile.h \
   /usr/include/sys/single_threaded.h \
   /usr/include/sys/socket.h \
+  /usr/include/sys/stat.h \
   /usr/include/sys/types.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
@@ -815,6 +833,8 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor
   /usr/include/bits/endianness.h \
   /usr/include/bits/environments.h \
   /usr/include/bits/errno.h \
+  /usr/include/bits/fcntl-linux.h \
+  /usr/include/bits/fcntl.h \
   /usr/include/bits/floatn-common.h \
   /usr/include/bits/floatn.h \
   /usr/include/bits/flt-eval-method.h \
@@ -843,12 +863,14 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor
   /usr/include/bits/sockaddr.h \
   /usr/include/bits/socket.h \
   /usr/include/bits/socket_type.h \
+  /usr/include/bits/stat.h \
   /usr/include/bits/stdint-intn.h \
   /usr/include/bits/stdint-uintn.h \
   /usr/include/bits/stdio_lim.h \
   /usr/include/bits/stdlib-float.h \
   /usr/include/bits/struct_mutex.h \
   /usr/include/bits/struct_rwlock.h \
+  /usr/include/bits/struct_stat.h \
   /usr/include/bits/thread-shared-types.h \
   /usr/include/bits/time.h \
   /usr/include/bits/time64.h \
@@ -1001,6 +1023,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor
   /usr/include/c++/13.2.1/bits/uniform_int_dist.h \
   /usr/include/c++/13.2.1/bits/unique_ptr.h \
   /usr/include/c++/13.2.1/bits/unordered_map.h \
+  /usr/include/c++/13.2.1/bits/unordered_set.h \
   /usr/include/c++/13.2.1/bits/uses_allocator.h \
   /usr/include/c++/13.2.1/bits/uses_allocator_args.h \
   /usr/include/c++/13.2.1/bits/utility.h \
@@ -1082,6 +1105,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor
   /usr/include/c++/13.2.1/type_traits \
   /usr/include/c++/13.2.1/typeinfo \
   /usr/include/c++/13.2.1/unordered_map \
+  /usr/include/c++/13.2.1/unordered_set \
   /usr/include/c++/13.2.1/utility \
   /usr/include/c++/13.2.1/valarray \
   /usr/include/c++/13.2.1/vector \
@@ -1102,6 +1126,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor
   /usr/include/ctype.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
+  /usr/include/fcntl.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
   /usr/include/gnu/stubs-64.h \
@@ -1109,6 +1134,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor
   /usr/include/libintl.h \
   /usr/include/linux/close_range.h \
   /usr/include/linux/errno.h \
+  /usr/include/linux/falloc.h \
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/locale.h \
@@ -1168,6 +1194,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o: /home/earlymor
   /usr/include/string.h \
   /usr/include/strings.h \
   /usr/include/sys/cdefs.h \
+  /usr/include/sys/fcntl.h \
   /usr/include/sys/select.h \
   /usr/include/sys/single_threaded.h \
   /usr/include/sys/socket.h \
@@ -1573,6 +1600,10 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
   /usr/lib/gcc/x86_64-pc-linux-gnu/13.2.1/include/stdint.h
 
 
+/usr/include/c++/13.2.1/unordered_set:
+
+/usr/include/c++/13.2.1/bits/unordered_set.h:
+
 /usr/lib/gcc/x86_64-pc-linux-gnu/13.2.1/include/stdint.h:
 
 /usr/lib/gcc/x86_64-pc-linux-gnu/13.2.1/include/stdarg.h:
@@ -1580,6 +1611,8 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 /usr/include/unistd.h:
 
 /usr/include/sys/single_threaded.h:
+
+/usr/include/sys/sendfile.h:
 
 /usr/include/sys/cdefs.h:
 
@@ -1596,8 +1629,6 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 /usr/include/nlohmann/json_fwd.hpp:
 
 /usr/include/nlohmann/json.hpp:
-
-/usr/include/nlohmann/detail/value_t.hpp:
 
 /usr/include/nlohmann/detail/string_escape.hpp:
 
@@ -1649,9 +1680,17 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/locale.h:
 
+/usr/include/nlohmann/detail/value_t.hpp:
+
+/usr/include/linux/types.h:
+
 /usr/include/linux/stddef.h:
 
+/usr/include/linux/stat.h:
+
 /usr/include/features-time64.h:
+
+/usr/include/fcntl.h:
 
 /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/time_members.h:
 
@@ -1743,23 +1782,21 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/limits:
 
-/usr/include/c++/13.2.1/bits/cxxabi_forced.h:
+/usr/include/c++/13.2.1/iterator:
 
-/usr/include/c++/13.2.1/bits/uses_allocator_args.h:
+/usr/include/c++/13.2.1/istream:
 
-/usr/include/c++/13.2.1/bits/chrono.h:
+/usr/include/c++/13.2.1/iomanip:
 
-/usr/include/c++/13.2.1/bits/stl_multiset.h:
+/usr/include/c++/13.2.1/initializer_list:
 
-/usr/include/c++/13.2.1/bits/char_traits.h:
+/usr/include/c++/13.2.1/functional:
 
-/usr/include/c++/13.2.1/bits/valarray_array.h:
+/usr/include/c++/13.2.1/forward_list:
 
-/usr/include/c++/13.2.1/bits/basic_string.tcc:
+/usr/include/c++/13.2.1/filesystem:
 
-/usr/include/nlohmann/detail/conversions/to_chars.hpp:
-
-/usr/include/bits/types/struct_tm.h:
+/usr/include/c++/13.2.1/ext/type_traits.h:
 
 /usr/include/c++/13.2.1/bits/atomic_lockfree_defines.h:
 
@@ -1771,19 +1808,9 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bit:
 
-/usr/include/c++/13.2.1/bits/basic_ios.h:
-
-/usr/include/c++/13.2.1/array:
-
-/usr/include/c++/13.2.1/forward_list:
-
 /usr/include/c++/13.2.1/bits/locale_facets_nonio.tcc:
 
 /usr/include/bits/wctype-wchar.h:
-
-/usr/include/c++/13.2.1/bits/concept_check.h:
-
-/usr/include/bits/byteswap.h:
 
 /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/messages_members.h:
 
@@ -1793,21 +1820,23 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/localefwd.h:
 
-/usr/include/c++/13.2.1/cstdlib:
-
-/usr/include/c++/13.2.1/bits/valarray_after.h:
-
-/usr/include/bits/types/wint_t.h:
-
-/usr/include/c++/13.2.1/tr1/special_function_util.h:
-
-/usr/include/asm-generic/bitsperlong.h:
+/usr/include/bits/fcntl-linux.h:
 
 /usr/include/c++/13.2.1/bits/predefined_ops.h:
 
 /usr/include/c++/13.2.1/string_view:
 
 /usr/include/c++/13.2.1/bits/sstream.tcc:
+
+/usr/include/nlohmann/detail/conversions/to_chars.hpp:
+
+/usr/include/bits/types/struct_tm.h:
+
+/usr/include/c++/13.2.1/array:
+
+/usr/include/c++/13.2.1/bits/basic_ios.h:
+
+/usr/include/bits/types/struct_statx_timestamp.h:
 
 /usr/include/bits/types/struct_itimerspec.h:
 
@@ -1821,21 +1850,15 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/asm-generic/sockios.h:
 
+/usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp:
+
+/usr/include/c++/13.2.1/iostream:
+
+/usr/include/bits/types/mbstate_t.h:
+
 /usr/include/bits/types/locale_t.h:
 
 /usr/include/c++/13.2.1/bits/allocator.h:
-
-/usr/include/bits/types/clock_t.h:
-
-/usr/include/nlohmann/adl_serializer.hpp:
-
-/usr/include/bits/types/__fpos_t.h:
-
-/usr/include/bits/mathcalls.h:
-
-/usr/include/c++/13.2.1/stdlib.h:
-
-/usr/include/c++/13.2.1/bits/unique_ptr.h:
 
 /usr/include/c++/13.2.1/bits/this_thread_sleep.h:
 
@@ -1859,33 +1882,33 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/bits/thread-shared-types.h:
 
+/usr/include/bits/types/time_t.h:
+
+/usr/include/nlohmann/detail/output/binary_writer.hpp:
+
+/usr/include/c++/13.2.1/bits/stl_numeric.h:
+
 /usr/include/bits/struct_mutex.h:
 
 /usr/include/c++/13.2.1/ext/alloc_traits.h:
 
-/usr/include/bits/floatn-common.h:
-
-/usr/include/c++/13.2.1/bits/slice_array.h:
-
-/usr/include/bits/types/__mbstate_t.h:
+/usr/include/bits/types/struct_timeval.h:
 
 /usr/include/bits/stdio_lim.h:
 
-/usr/include/bits/pthreadtypes-arch.h:
+/usr/include/bits/types/__mbstate_t.h:
 
-/usr/include/c++/13.2.1/bits/range_access.h:
+/usr/include/bits/types/error_t.h:
 
-/usr/include/c++/13.2.1/bits/stl_uninitialized.h:
+/usr/include/bits/types/clock_t.h:
 
-/usr/include/bits/atomic_wide_counter.h:
+/usr/include/bits/mathcalls.h:
 
-/usr/include/bits/posix_opt.h:
+/usr/include/nlohmann/adl_serializer.hpp:
 
-/usr/include/bits/locale.h:
+/usr/include/bits/types/__fpos_t.h:
 
-/usr/include/bits/types/struct_FILE.h:
-
-/usr/include/bits/environments.h:
+/usr/include/bits/statx-generic.h:
 
 /usr/include/c++/13.2.1/bits/allocated_ptr.h:
 
@@ -1903,15 +1926,55 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/memoryfwd.h:
 
+/usr/include/bits/byteswap.h:
+
+/usr/include/c++/13.2.1/bits/concept_check.h:
+
 /usr/lib/gcc/x86_64-pc-linux-gnu/13.2.1/include/stddef.h:
 
 /usr/include/assert.h:
+
+/usr/include/c++/13.2.1/stdlib.h:
+
+/usr/include/c++/13.2.1/bits/unique_ptr.h:
+
+/usr/include/bits/stat.h:
 
 /usr/include/wctype.h:
 
 /usr/include/sched.h:
 
 /usr/include/bits/fp-fast.h:
+
+/usr/include/c++/13.2.1/tr1/special_function_util.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/c++/13.2.1/backward/auto_ptr.h:
+
+/usr/include/c++/13.2.1/ostream:
+
+/usr/include/bits/types/__locale_t.h:
+
+/usr/include/c++/13.2.1/bits/utility.h:
+
+/usr/include/c++/13.2.1/codecvt:
+
+/usr/include/bits/types/struct_statx.h:
+
+/usr/include/nlohmann/detail/abi_macros.hpp:
+
+/usr/include/c++/13.2.1/bits/stl_construct.h:
+
+/usr/include/c++/13.2.1/bits/stream_iterator.h:
+
+/usr/include/asm/sockios.h:
+
+/usr/include/bits/pthread_stack_min-dynamic.h:
 
 /usr/include/nlohmann/detail/macro_unscope.hpp:
 
@@ -1923,16 +1986,6 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/bits/mathcalls-helper-functions.h:
 
-/usr/include/c++/13.2.1/ostream:
-
-/usr/include/bits/types/__locale_t.h:
-
-/usr/include/c++/13.2.1/backward/auto_ptr.h:
-
-/usr/include/c++/13.2.1/bits/utility.h:
-
-/usr/include/c++/13.2.1/codecvt:
-
 /home/earlymor/æ–‡æ¡£/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h:
 
 /usr/include/c++/13.2.1/bits/shared_ptr_base.h:
@@ -1941,7 +1994,17 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/bits/getopt_core.h:
 
-/usr/include/c++/13.2.1/ext/concurrence.h:
+/usr/include/bits/pthreadtypes-arch.h:
+
+/usr/include/c++/13.2.1/bits/range_access.h:
+
+/usr/include/c++/13.2.1/bits/stl_uninitialized.h:
+
+/usr/include/bits/atomic_wide_counter.h:
+
+/usr/include/bits/posix_opt.h:
+
+/usr/include/bits/locale.h:
 
 /usr/include/bits/sockaddr.h:
 
@@ -1977,6 +2040,20 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/clocale:
 
+/usr/include/asm/types.h:
+
+/usr/include/bits/types/__sigset_t.h:
+
+/usr/include/c++/13.2.1/cerrno:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/include/bits/fp-logb.h:
+
+/usr/include/c++/13.2.1/bits/hashtable_policy.h:
+
 /usr/include/nlohmann/detail/meta/std_fs.hpp:
 
 /usr/include/arpa/inet.h:
@@ -1985,21 +2062,17 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/bits/getopt_posix.h:
 
-/usr/include/bits/types/__sigset_t.h:
+/usr/include/bits/statx.h:
 
-/usr/include/c++/13.2.1/cerrno:
+/usr/include/c++/13.2.1/bits/istream.tcc:
 
-/usr/include/asm-generic/posix_types.h:
+/usr/include/c++/13.2.1/ext/concurrence.h:
 
-/usr/include/asm-generic/errno-base.h:
+/usr/include/asm-generic/int-ll64.h:
 
-/usr/include/asm-generic/errno.h:
+/usr/include/bits/in.h:
 
-/usr/include/bits/fp-logb.h:
-
-/usr/include/c++/13.2.1/bits/hashtable_policy.h:
-
-/usr/include/c++/13.2.1/bits/basic_string.h:
+/usr/include/c++/13.2.1/bits/shared_ptr_atomic.h:
 
 /usr/include/sys/select.h:
 
@@ -2009,6 +2082,14 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/asm/posix_types_64.h:
 
+/usr/include/c++/13.2.1/bits/hashtable.h:
+
+/usr/include/bits/stdint-intn.h:
+
+/usr/include/bits/types/clockid_t.h:
+
+/usr/include/c++/13.2.1/ext/numeric_traits.h:
+
 /usr/include/bits/time.h:
 
 /usr/include/asm/posix_types.h:
@@ -2017,13 +2098,25 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/exception_ptr.h:
 
-/usr/include/c++/13.2.1/bits/basic_ios.tcc:
+/usr/include/bits/fcntl.h:
 
-/usr/include/asm/sockios.h:
+/usr/include/bits/types/struct_FILE.h:
 
-/usr/include/bits/pthread_stack_min-dynamic.h:
+/usr/include/bits/environments.h:
+
+/usr/include/bits/types/wint_t.h:
+
+/usr/include/c++/13.2.1/bits/valarray_after.h:
+
+/usr/include/bits/floatn-common.h:
+
+/usr/include/c++/13.2.1/bits/slice_array.h:
 
 /usr/include/bits/floatn.h:
+
+/usr/include/string.h:
+
+/usr/include/bits/socket_type.h:
 
 /usr/include/bits/long-double.h:
 
@@ -2045,11 +2138,9 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/ptr_traits.h:
 
-/usr/include/bits/types/time_t.h:
+/usr/include/c++/13.2.1/bits/stl_vector.h:
 
-/usr/include/nlohmann/detail/output/binary_writer.hpp:
-
-/usr/include/c++/13.2.1/bits/stl_numeric.h:
+/usr/include/c++/13.2.1/cstddef:
 
 /usr/include/bits/types/timer_t.h:
 
@@ -2059,23 +2150,25 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/stl_multimap.h:
 
-/usr/include/c++/13.2.1/bits/charconv.h:
-
-/usr/include/bits/uintn-identity.h:
-
-/usr/include/c++/13.2.1/bits/stl_tree.h:
-
 /home/earlymor/æ–‡æ¡£/earlymor-Chatroom/chatroom/ChatroomClient/config/client_config.h:
 
 /usr/include/c++/13.2.1/bits/align.h:
 
 /usr/include/bits/pthreadtypes.h:
 
+/usr/include/bits/struct_stat.h:
+
 /usr/include/c++/13.2.1/bits/stl_raw_storage_iter.h:
 
 /usr/include/c++/13.2.1/bits/string_view.tcc:
 
 /usr/include/c++/13.2.1/debug/assertions.h:
+
+/usr/include/bits/types/cookie_io_functions_t.h:
+
+/usr/include/c++/13.2.1/debug/debug.h:
+
+/usr/include/c++/13.2.1/bits/node_handle.h:
 
 /usr/include/alloca.h:
 
@@ -2086,6 +2179,8 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 /usr/include/c++/13.2.1/bits/memory_resource.h:
 
 /usr/include/c++/13.2.1/cstdio:
+
+/usr/include/sys/fcntl.h:
 
 /usr/include/bits/waitstatus.h:
 
@@ -2103,6 +2198,8 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/exception.h:
 
+/usr/include/linux/falloc.h:
+
 /usr/include/bits/unistd_ext.h:
 
 /usr/include/c++/13.2.1/bits/stl_iterator_base_funcs.h:
@@ -2111,33 +2208,35 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/streambuf_iterator.h:
 
-/usr/include/string.h:
+/usr/include/c++/13.2.1/bits/basic_ios.tcc:
 
-/usr/include/bits/socket_type.h:
+/usr/include/c++/13.2.1/bits/basic_string.h:
 
-/usr/include/bits/types/error_t.h:
+/usr/include/c++/13.2.1/bits/basic_string.tcc:
 
-/usr/include/c++/13.2.1/istream:
+/usr/include/c++/13.2.1/bits/char_traits.h:
 
-/usr/include/c++/13.2.1/bits/hashtable.h:
+/usr/include/c++/13.2.1/bits/valarray_array.h:
 
-/usr/include/bits/types/clockid_t.h:
+/usr/include/bits/uintn-identity.h:
 
-/usr/include/c++/13.2.1/ext/numeric_traits.h:
+/usr/include/c++/13.2.1/bits/stl_tree.h:
 
-/usr/include/bits/stdint-intn.h:
+/usr/include/c++/13.2.1/bits/charconv.h:
 
-/usr/include/bits/types/cookie_io_functions_t.h:
+/usr/include/c++/13.2.1/bits/chrono.h:
 
-/usr/include/c++/13.2.1/debug/debug.h:
-
-/usr/include/c++/13.2.1/bits/codecvt.h:
+/usr/include/c++/13.2.1/bits/stl_multiset.h:
 
 /usr/include/bits/socket.h:
 
-/usr/include/c++/13.2.1/bits/node_handle.h:
+/usr/include/c++/13.2.1/bits/codecvt.h:
 
-/usr/include/bits/types/struct_timeval.h:
+/usr/include/c++/13.2.1/cstdlib:
+
+/usr/include/c++/13.2.1/bits/cxxabi_forced.h:
+
+/usr/include/c++/13.2.1/bits/uses_allocator_args.h:
 
 /usr/include/c++/13.2.1/any:
 
@@ -2207,8 +2306,6 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/invoke.h:
 
-/usr/include/c++/13.2.1/bits/istream.tcc:
-
 /usr/include/c++/13.2.1/bits/locale_conv.h:
 
 /usr/include/c++/13.2.1/bits/stl_tempbuf.h:
@@ -2230,6 +2327,12 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 /usr/include/c++/13.2.1/bits/uniform_int_dist.h:
 
 /usr/include/c++/13.2.1/bits/new_allocator.h:
+
+/usr/include/c++/13.2.1/ios:
+
+/usr/include/c++/13.2.1/bits/ostream.tcc:
+
+/usr/include/sys/stat.h:
 
 /home/earlymor/æ–‡æ¡£/earlymor-Chatroom/chatroom/ChatroomClient/include/TcpClient.h:
 
@@ -2253,12 +2356,6 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 
 /usr/include/c++/13.2.1/bits/refwrap.h:
 
-/usr/include/bits/in.h:
-
-/usr/include/c++/13.2.1/bits/shared_ptr_atomic.h:
-
-/usr/include/c++/13.2.1/ext/type_traits.h:
-
 /usr/include/c++/13.2.1/bits/specfun.h:
 
 /usr/include/wchar.h:
@@ -2274,18 +2371,6 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 /usr/include/bits/wordsize.h:
 
 /usr/include/c++/13.2.1/bits/stl_bvector.h:
-
-/usr/include/c++/13.2.1/functional:
-
-/usr/include/nlohmann/detail/abi_macros.hpp:
-
-/usr/include/c++/13.2.1/bits/stl_construct.h:
-
-/usr/include/c++/13.2.1/cstddef:
-
-/usr/include/c++/13.2.1/bits/stl_vector.h:
-
-/usr/include/c++/13.2.1/bits/stream_iterator.h:
 
 /usr/include/c++/13.2.1/bits/stl_function.h:
 
@@ -2344,21 +2429,3 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o: /home/earlymor/æ–‡æ
 /usr/include/c++/13.2.1/ext/aligned_buffer.h:
 
 /usr/include/c++/13.2.1/ext/string_conversions.h:
-
-/usr/include/c++/13.2.1/filesystem:
-
-/usr/include/c++/13.2.1/initializer_list:
-
-/usr/include/c++/13.2.1/iomanip:
-
-/usr/include/c++/13.2.1/bits/ostream.tcc:
-
-/usr/include/c++/13.2.1/ios:
-
-/usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp:
-
-/usr/include/bits/types/mbstate_t.h:
-
-/usr/include/c++/13.2.1/iostream:
-
-/usr/include/c++/13.2.1/iterator:

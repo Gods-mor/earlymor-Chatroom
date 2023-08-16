@@ -23,6 +23,7 @@ void GroupService::handleGetList(json requestDataJson, json& responseJson) {
 void GroupService::getList() {
     try {
         string key = m_account + "_Group";
+        m_userGroups.clear();
         m_redis->hgetall(
             key,
             std::inserter(
@@ -125,7 +126,7 @@ void GroupService::handleGroupCreate(json requestDataJson, json& responseJson) {
     string key2 = m_account + "_Group";
     json jsonmsg;
     jsonmsg["groupname"] = groupname;
-    jsonmsg["readmsg"] = "0";
+    jsonmsg["readmsg"] = 0;
     string groupmsg = jsonmsg.dump();
     m_redis->hset(key2, idstring, groupmsg);
     responseJson["groupid"] = idstring;
@@ -331,7 +332,26 @@ void GroupService::ownerChat(json requestDataJson, json& responseJson) {
     }
 }
 
-void GroupService::ownerKick(json requestDataJson, json& responseJson) {}
+void GroupService::ownerKick(json requestDataJson, json& responseJson) {
+    string account = requestDataJson["account"];
+    // 判断是否有该成员
+    bool exists = m_redis->sismember(m_groupid + "_Member", account);
+    responseJson["status"] = FAIL_TO_KICK;
+    if (exists) {
+        m_redis->hdel(account + "_Group", m_groupid);
+        m_redis->srem(m_groupid + "_Member", account);
+        responseJson["status"] = SUCCESS_KICK;
+    } else {
+        bool exists2 =
+            m_redis->sismember(m_groupid + "_Administrator", account);
+
+        if (exists2) {
+            m_redis->srem(m_groupid + "_Administrator", account);
+            m_redis->hdel(account + "_Group", m_groupid);
+            responseJson["status"] = SUCCESS_KICK;
+        }
+    }
+}
 // 添加管理员
 void GroupService::ownerAddAdministrator(json requestDataJson,
                                          json& responseJson) {
@@ -386,7 +406,23 @@ void GroupService::ownerRevokeAdministrator(json requestDataJson,
     }
 }
 
-void GroupService::ownerCheckMember(json requestDataJson, json& responseJson) {}
+void GroupService::ownerCheckMember(json requestDataJson, json& responseJson) {
+    responseJson["entertype"] = OWNER_CHECK_MEMBER;
+    responseJson["grouptype"] = GROUP_OWNER;
+    responseJson["type"] = GROUP_TYPE;
+    responseJson["status"] = FAIL_TO_CHECK;
+    string owner = m_redis->hget("Group_" + m_groupid, "owner").value();
+    responseJson["owner"] = owner;
+    unordered_set<string> admin;
+    m_redis->smembers(m_groupid + "_Administrator",
+                      std::inserter(admin, admin.begin()));
+    responseJson["administrator"] = admin;
+    unordered_set<string> member;
+    m_redis->smembers(m_groupid + "_Member",
+                      std::inserter(member, member.begin()));
+    responseJson["member"] = member;
+    responseJson["status"] = SUCCESS_CHECK;
+}
 void GroupService::ownerCheckHistory(json requestDataJson, json& responseJson) {
 }
 void GroupService::ownerNotice(json requestDataJson, json& responseJson) {
@@ -403,7 +439,7 @@ void GroupService::ownerNotice(json requestDataJson, json& responseJson) {
     string groupname = m_redis->hget("Group_" + m_groupid, "groupname").value();
     json memgroup;
     memgroup["groupname"] = groupname;
-    memgroup["readmsg"] = "0";
+    memgroup["readmsg"] = 0;
     string memgroupstr = memgroup.dump();
     string groupkey = m_groupid + "_Member";
     if (choice == "accept") {
@@ -547,12 +583,76 @@ void GroupService::adminChat(json requestDataJson, json& responseJson) {
         cout << "adminChat parse json error :" << e.what() << endl;
     }
 }
-void GroupService::adminKick(json requestDataJson, json& responseJson) {}
-void GroupService::adminCheckMember(json requestDataJson, json& responseJson) {}
+void GroupService::adminKick(json requestDataJson, json& responseJson) {
+    string account = requestDataJson["account"];
+    // 判断是否有该成员
+    bool exists = m_redis->sismember(m_groupid + "_Member", account);
+    responseJson["status"] = FAIL_TO_KICK;
+    if (exists) {
+        m_redis->hdel(account + "_Group", m_groupid);
+        m_redis->srem(m_groupid + "_Member", account);
+        responseJson["status"] = SUCCESS_KICK;
+    }
+}
+void GroupService::adminCheckMember(json requestDataJson, json& responseJson) {
+    responseJson["entertype"] = ADMIN_CHECK_MEMBER;
+    responseJson["grouptype"] = GROUP_ADMINISTRATOR;
+    responseJson["type"] = GROUP_TYPE;
+    responseJson["status"] = FAIL_TO_CHECK;
+    string owner = m_redis->hget("Group_" + m_groupid, "owner").value();
+    responseJson["owner"] = owner;
+    unordered_set<string> admin;
+    m_redis->smembers(m_groupid + "_Administrator",
+                      std::inserter(admin, admin.begin()));
+    responseJson["administrator"] = admin;
+    unordered_set<string> member;
+    m_redis->smembers(m_groupid + "_Member",
+                      std::inserter(member, member.begin()));
+    responseJson["member"] = member;
+    responseJson["status"] = SUCCESS_CHECK;
+}
 void GroupService::adminCheckHistory(json requestDataJson, json& responseJson) {
 }
-void GroupService::adminNotice(json requestDataJson, json& responseJson) {}
-void GroupService::adminExit(json requestDataJson, json& responseJson) {}
+void GroupService::adminNotice(json requestDataJson, json& responseJson) {
+    string key = m_groupid + "_Group_Notice";
+    int number = requestDataJson["number"].get<int>();
+    string msg = m_redis->lindex(key, number).value();
+    json info;
+    info = json::parse(msg);
+    string account = info["source"];
+    string choice = requestDataJson["choice"];
+    info["dealer"] = m_account;
+    info["result"] = choice;
+    string infostr = info.dump();
+    string groupname = m_redis->hget("Group_" + m_groupid, "groupname").value();
+    json memgroup;
+    memgroup["groupname"] = groupname;
+    memgroup["readmsg"] = 0;
+    string memgroupstr = memgroup.dump();
+    string groupkey = m_groupid + "_Member";
+    if (choice == "accept") {
+        m_redis->sadd(groupkey, account);
+        m_redis->lset(key, number, infostr);
+        m_redis->hset(account + "_Group", m_groupid, memgroupstr);
+        responseJson["status"] = SUCCESS_ACCEPT_MEMBER;
+    } else if (choice == "refuse") {
+        m_redis->lset(key, number, infostr);
+        responseJson["status"] = SUCCESS_REFUSE_MEMBER;
+    } else {
+        responseJson["status"] = FAIL_DEAL_MEMBER;
+    }
+}
+void GroupService::adminExit(json requestDataJson, json& responseJson) {
+    responseJson["entertype"] = ADMIN_EXIT;
+    responseJson["grouptype"] = GROUP_ADMINISTRATOR;
+    responseJson["type"] = GROUP_TYPE;
+    responseJson["status"] = FAIL_TO_EXIT;
+    // 成员的group表（hash）account+"_Group" 将群聊id对应消息清除
+    m_redis->hdel(m_account + "_Group", m_groupid);
+    // 群组成员表(set)      id+"_Member"
+    m_redis->srem(m_groupid + "_Administrator", m_account);
+    responseJson["status"] = SUCCESS_EXIT;
+}
 
 void GroupService::memberChat(json requestDataJson, json& responseJson) {
     try {
@@ -645,10 +745,35 @@ void GroupService::memberChat(json requestDataJson, json& responseJson) {
     }
 }
 void GroupService::memberCheckMember(json requestDataJson, json& responseJson) {
+    responseJson["entertype"] = MEMBER_CHECK_MEMBER;
+    responseJson["grouptype"] = GROUP_MEMBER;
+    responseJson["type"] = GROUP_TYPE;
+    responseJson["status"] = FAIL_TO_CHECK;
+    string owner = m_redis->hget("Group_" + m_groupid, "owner").value();
+    responseJson["owner"] = owner;
+    unordered_set<string> admin;
+    m_redis->smembers(m_groupid + "_Administrator",
+                      std::inserter(admin, admin.begin()));
+    responseJson["administrator"] = admin;
+    unordered_set<string> member;
+    m_redis->smembers(m_groupid + "_Member",
+                      std::inserter(member, member.begin()));
+    responseJson["member"] = member;
+    responseJson["status"] = SUCCESS_CHECK;
 }
 void GroupService::memberCheckHistory(json requestDataJson,
                                       json& responseJson) {}
-void GroupService::memberExit(json requestDataJson, json& responseJson) {}
+void GroupService::memberExit(json requestDataJson, json& responseJson) {
+    responseJson["entertype"] = MEMBER_EXIT;
+    responseJson["grouptype"] = GROUP_MEMBER;
+    responseJson["type"] = GROUP_TYPE;
+    responseJson["status"] = FAIL_TO_EXIT;
+    // 成员的group表（hash）account+"_Group" 将群聊id对应消息清除
+    m_redis->hdel(m_account + "_Group", m_groupid);
+    // 群组成员表(set)      id+"_Member"
+    m_redis->srem(m_groupid + "_Member", m_account);
+    responseJson["status"] = SUCCESS_EXIT;
+}
 void GroupService::handleGroupGetNotice(json requestDataJson,
                                         json& responseJson) {
     string id = requestDataJson["groupid"];
@@ -665,11 +790,8 @@ void GroupService::resetGroupReadMsg() {
     string field = m_groupid;
     string info = m_redis->hget(key, field).value();
     json infojs = json::parse(info);
-    string readmsg = infojs["readmsg"];
-    int readmsgcnt = std::stoi(readmsg);
-    readmsgcnt = m_redis->llen(m_groupid + "_Chat");
-    readmsg = std::to_string(readmsgcnt);
-    infojs["readmsg"] = readmsg;
+    int readmsgcnt = m_redis->llen(m_groupid + "_Chat");
+    infojs["readmsg"] = readmsgcnt;
     string msg = infojs.dump();
     m_redis->hset(key, field, msg);
 }
@@ -680,4 +802,11 @@ void GroupService::setChatStatus(json requestDataJson, json& responseJson) {
     m_redis->hset(m_account, "chatstatus", groupid);
     responseJson["status"] = SUCCESS_SET_CHATSTATUS;
     responseJson["type"] = GROUP_SET_CHAT_STATUS;
+}
+
+void GroupService::getListLen(json requestDataJson, json& responseJson) {
+    string groupid = requestDataJson["groupid"];
+    int len = m_redis->llen(groupid + "_Chat");
+    responseJson["type"] = GROUP_GET_LIST_LEN;
+    responseJson["len"] = len;
 }

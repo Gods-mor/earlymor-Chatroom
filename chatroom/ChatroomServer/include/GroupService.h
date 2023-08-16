@@ -59,6 +59,7 @@ class GroupService {
     void memberExit(json requestDataJson, json& responseJson);
 
     void handleGroupGetNotice(json requestDataJson, json& responseJson);
+     void getListLen(json requestDataJson, json& responseJson);
    private:
     string m_account;
     string m_username;
