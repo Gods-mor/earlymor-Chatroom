@@ -18,7 +18,8 @@ class FriendService {
     inline void getAccount(string account) { m_account = account; }
     inline void getName(string name) { m_username = name; };
     inline void addOnlineNumber() { m_onlineNumber++; }
-
+    string recvFile(json requestDataJson, json& responseJson, string key);
+    int sendFile(int cfd, int fd, off_t offset, int size);
     void clearUnreadMsg(json& js);
     void handleGetList(json requestDataJson, json& responseJson);
     void handleFriend(json requestDataJson, json& responseJson);
@@ -35,6 +36,11 @@ class FriendService {
         m_offlineFriends;  // 得到的离线列表
     std::unordered_map<std::string, std::string>
         m_userFriends;  // 用户的所有好友哈希表（account：name）
+    void announce(json requestDataJson, json& responseJson);
+    void announce(json requestDataJson, json& responseJson, string filename);
+    void infoRestore(string key, json requestDataJson);
+    void infoRestore(string key, string filename);
+
    private:
     string m_account;
     string m_username;
@@ -42,5 +48,4 @@ class FriendService {
     std::shared_ptr<sw::redis::Redis> m_redis;  // 使用shared_ptr来管理Redis实例
     std::shared_ptr<OnlineUsers>
         m_onlineUsersPtr_;  // 使用shared_ptr来管理onlineUsers实例
-    
 };

@@ -87,6 +87,12 @@ constexpr int GET_FRIEND_HISTORY = 2;
 constexpr int FAIL_SEND_MSG = 0;
 constexpr int ALREADY_TO_FILE = 3;
 constexpr int SUCCESS_RECV_FILE = 4;
+constexpr int NO_FILE = 5;
+constexpr int FILE_LIST = 6;
+constexpr int ACCESS_FILE_FAIL = 7;
+constexpr int GET_FILE_SIZE = 8;
+constexpr int ACCESS_FILE_SUCCESS = 9;
+constexpr int CLIENT_OK = 1;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
 constexpr int SUCCESS_CREATE_GROUP = 1;

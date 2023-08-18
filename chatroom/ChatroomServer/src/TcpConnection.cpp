@@ -4,6 +4,10 @@
 #include <chrono>
 #include <ctime>
 #include <iostream>
+#include <fstream>
+#include <sys/fcntl.h>
+#include <sys/file.h>
+#include <sys/stat.h>
 #include <nlohmann/json.hpp>
 #include "../config/server_config.h"
 #include "../include/ChatService.h"

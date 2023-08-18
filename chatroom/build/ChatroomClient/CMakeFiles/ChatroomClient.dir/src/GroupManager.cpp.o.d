@@ -148,30 +148,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.o: \
  /usr/include/c++/13.2.1/bits/node_handle.h \
  /usr/include/c++/13.2.1/bits/stl_set.h \
  /usr/include/c++/13.2.1/bits/stl_multiset.h \
- /usr/include/c++/13.2.1/bits/erase_if.h \
- /usr/include/c++/13.2.1/unordered_map \
- /usr/include/c++/13.2.1/bits/unordered_map.h \
- /usr/include/c++/13.2.1/bits/hashtable.h \
- /usr/include/c++/13.2.1/bits/hashtable_policy.h \
- /usr/include/c++/13.2.1/bits/enable_special_members.h \
- /usr/include/c++/13.2.1/vector \
- /usr/include/c++/13.2.1/bits/stl_uninitialized.h \
- /usr/include/c++/13.2.1/bits/stl_vector.h \
- /usr/include/c++/13.2.1/bits/stl_bvector.h \
- /usr/include/c++/13.2.1/bits/vector.tcc /usr/include/c++/13.2.1/stdlib.h \
- /usr/include/sys/socket.h /usr/include/bits/types/struct_iovec.h \
- /usr/include/bits/socket.h /usr/include/bits/socket_type.h \
- /usr/include/bits/sockaddr.h /usr/include/asm/socket.h \
- /usr/include/asm-generic/socket.h /usr/include/linux/posix_types.h \
- /usr/include/linux/stddef.h /usr/include/asm/posix_types.h \
- /usr/include/asm/posix_types_64.h /usr/include/asm-generic/posix_types.h \
- /usr/include/asm/bitsperlong.h /usr/include/asm-generic/bitsperlong.h \
- /usr/include/asm/sockios.h /usr/include/asm-generic/sockios.h \
- /usr/include/bits/types/struct_osockaddr.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
- /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
- /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/linux/close_range.h /usr/include/nlohmann/json.hpp \
+ /usr/include/c++/13.2.1/bits/erase_if.h /usr/include/nlohmann/json.hpp \
  /usr/include/c++/13.2.1/algorithm \
  /usr/include/c++/13.2.1/bits/stl_algo.h \
  /usr/include/c++/13.2.1/bits/algorithmfwd.h \
@@ -182,8 +159,17 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.o: \
  /usr/include/c++/13.2.1/pstl/execution_defs.h \
  /usr/include/c++/13.2.1/functional \
  /usr/include/c++/13.2.1/bits/std_function.h \
- /usr/include/c++/13.2.1/array /usr/include/c++/13.2.1/compare \
- /usr/include/c++/13.2.1/iterator \
+ /usr/include/c++/13.2.1/unordered_map \
+ /usr/include/c++/13.2.1/bits/unordered_map.h \
+ /usr/include/c++/13.2.1/bits/hashtable.h \
+ /usr/include/c++/13.2.1/bits/hashtable_policy.h \
+ /usr/include/c++/13.2.1/bits/enable_special_members.h \
+ /usr/include/c++/13.2.1/vector \
+ /usr/include/c++/13.2.1/bits/stl_uninitialized.h \
+ /usr/include/c++/13.2.1/bits/stl_vector.h \
+ /usr/include/c++/13.2.1/bits/stl_bvector.h \
+ /usr/include/c++/13.2.1/bits/vector.tcc /usr/include/c++/13.2.1/array \
+ /usr/include/c++/13.2.1/compare /usr/include/c++/13.2.1/iterator \
  /usr/include/c++/13.2.1/bits/stream_iterator.h \
  /usr/include/c++/13.2.1/memory \
  /usr/include/c++/13.2.1/bits/stl_raw_storage_iter.h \
@@ -297,10 +283,35 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.o: \
  /usr/include/nlohmann/ordered_map.hpp /usr/include/c++/13.2.1/any \
  /usr/include/nlohmann/detail/macro_unscope.hpp \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
+ /usr/include/c++/13.2.1/stdlib.h /usr/include/sys/fcntl.h \
+ /usr/include/fcntl.h /usr/include/bits/fcntl.h \
+ /usr/include/bits/fcntl-linux.h /usr/include/bits/types/struct_iovec.h \
+ /usr/include/linux/falloc.h /usr/include/bits/stat.h \
+ /usr/include/bits/struct_stat.h /usr/include/sys/sendfile.h \
+ /usr/include/sys/socket.h /usr/include/bits/socket.h \
+ /usr/include/bits/socket_type.h /usr/include/bits/sockaddr.h \
+ /usr/include/asm/socket.h /usr/include/asm-generic/socket.h \
+ /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
+ /usr/include/asm/posix_types.h /usr/include/asm/posix_types_64.h \
+ /usr/include/asm-generic/posix_types.h /usr/include/asm/bitsperlong.h \
+ /usr/include/asm-generic/bitsperlong.h /usr/include/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h \
+ /usr/include/bits/types/struct_osockaddr.h /usr/include/sys/stat.h \
+ /usr/include/bits/statx.h /usr/include/linux/stat.h \
+ /usr/include/linux/types.h /usr/include/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/bits/statx-generic.h \
+ /usr/include/bits/types/struct_statx_timestamp.h \
+ /usr/include/bits/types/struct_statx.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
+ /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/../config/client_config.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/MyInput.h \
+ /usr/include/c++/13.2.1/thread /usr/include/c++/13.2.1/bits/std_thread.h \
+ /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/TcpClient.h \
  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
- /usr/include/bits/in.h /usr/include/c++/13.2.1/thread \
- /usr/include/c++/13.2.1/bits/std_thread.h \
- /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
+ /usr/include/bits/in.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h

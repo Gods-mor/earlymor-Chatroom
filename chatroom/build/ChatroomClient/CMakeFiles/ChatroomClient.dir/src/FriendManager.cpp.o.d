@@ -181,7 +181,11 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
  /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/linux/close_range.h /usr/include/nlohmann/json.hpp \
+ /usr/include/linux/close_range.h /usr/include/c++/13.2.1/fstream \
+ /usr/include/c++/13.2.1/bits/codecvt.h \
+ /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/basic_file.h \
+ /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/c++io.h \
+ /usr/include/c++/13.2.1/bits/fstream.tcc /usr/include/nlohmann/json.hpp \
  /usr/include/c++/13.2.1/algorithm \
  /usr/include/c++/13.2.1/bits/stl_algo.h \
  /usr/include/c++/13.2.1/bits/algorithmfwd.h \
@@ -276,7 +280,7 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: \
  /usr/include/c++/13.2.1/bits/locale_facets_nonio.h \
  /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/time_members.h \
  /usr/include/c++/13.2.1/x86_64-pc-linux-gnu/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/13.2.1/bits/codecvt.h \
+ /usr/include/libintl.h \
  /usr/include/c++/13.2.1/bits/locale_facets_nonio.tcc \
  /usr/include/c++/13.2.1/bits/locale_conv.h \
  /usr/include/c++/13.2.1/iomanip \
@@ -313,4 +317,5 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: \
  /usr/include/bits/in.h /usr/include/c++/13.2.1/thread \
  /usr/include/c++/13.2.1/bits/std_thread.h \
  /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/MyInput.h

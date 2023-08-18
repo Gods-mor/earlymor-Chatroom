@@ -3,16 +3,21 @@
 #include <atomic>
 #include <iostream>
 #include <set>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
+class TcpClient;
 using namespace std;
 class FriendManager {
    public:
-    FriendManager(int fd, sem_t& rwsem,atomic_bool& isFriend,string& account);
+    FriendManager(int fd,
+                  sem_t& rwsem,
+                  atomic_bool& isFriend,
+                  string& account,
+                  TcpClient* tcpclient);
     ~FriendManager();
-    void fiendMenu();      // 好友功能主菜单
+    void fiendMenu();  // 好友功能主菜单
     void showFriendFunctionMenu();
     void addFriend();
     void deleteFriend();
@@ -30,4 +35,5 @@ class FriendManager {
     atomic_bool& is_Friend;
     string& m_account;
     vector<string> userFriends;  // 用户的所有好友列表
+    TcpClient* m_tcpclient;
 };

@@ -178,6 +178,54 @@ src/GroupManager.cpp.s:
 	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.s
 .PHONY : src/GroupManager.cpp.s
 
+src/MyInput.o: src/MyInput.cpp.o
+.PHONY : src/MyInput.o
+
+# target to build an object file
+src/MyInput.cpp.o:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/MyInput.cpp.o
+.PHONY : src/MyInput.cpp.o
+
+src/MyInput.i: src/MyInput.cpp.i
+.PHONY : src/MyInput.i
+
+# target to preprocess a source file
+src/MyInput.cpp.i:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/MyInput.cpp.i
+.PHONY : src/MyInput.cpp.i
+
+src/MyInput.s: src/MyInput.cpp.s
+.PHONY : src/MyInput.s
+
+# target to generate assembly for a file
+src/MyInput.cpp.s:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/MyInput.cpp.s
+.PHONY : src/MyInput.cpp.s
+
+src/RoleBase.o: src/RoleBase.cpp.o
+.PHONY : src/RoleBase.o
+
+# target to build an object file
+src/RoleBase.cpp.o:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/RoleBase.cpp.o
+.PHONY : src/RoleBase.cpp.o
+
+src/RoleBase.i: src/RoleBase.cpp.i
+.PHONY : src/RoleBase.i
+
+# target to preprocess a source file
+src/RoleBase.cpp.i:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/RoleBase.cpp.i
+.PHONY : src/RoleBase.cpp.i
+
+src/RoleBase.s: src/RoleBase.cpp.s
+.PHONY : src/RoleBase.s
+
+# target to generate assembly for a file
+src/RoleBase.cpp.s:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/RoleBase.cpp.s
+.PHONY : src/RoleBase.cpp.s
+
 src/TcpClient.o: src/TcpClient.cpp.o
 .PHONY : src/TcpClient.o
 
@@ -241,6 +289,12 @@ help:
 	@echo "... src/GroupManager.o"
 	@echo "... src/GroupManager.i"
 	@echo "... src/GroupManager.s"
+	@echo "... src/MyInput.o"
+	@echo "... src/MyInput.i"
+	@echo "... src/MyInput.s"
+	@echo "... src/RoleBase.o"
+	@echo "... src/RoleBase.i"
+	@echo "... src/RoleBase.s"
 	@echo "... src/TcpClient.o"
 	@echo "... src/TcpClient.i"
 	@echo "... src/TcpClient.s"

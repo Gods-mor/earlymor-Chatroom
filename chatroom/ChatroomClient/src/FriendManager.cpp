@@ -5,10 +5,11 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fstream>
 #include <nlohmann/json.hpp>
 #include "../config/client_config.h"
 #include "TcpClient.h"
-
+#include "MyInput.h"
 using namespace std;
 using json = nlohmann::json;
 
@@ -16,8 +17,13 @@ using json = nlohmann::json;
 FriendManager::FriendManager(int fd,
                              sem_t& rwsem,
                              atomic_bool& isFriend,
-                             string& account)
-    : m_fd(fd), m_rwsem(rwsem), is_Friend(isFriend), m_account(account) {
+                             string& account,
+                             TcpClient* tcpclient)
+    : m_fd(fd),
+      m_rwsem(rwsem),
+      is_Friend(isFriend),
+      m_account(account),
+      m_tcpclient(tcpclient) {
     // 对unordered_map进行初始化
     unordered_map<string, string> emptyMap;
     onlineFriends = emptyMap;  // 将emptyMap赋值给onlineFriends
@@ -35,7 +41,7 @@ FriendManager::~FriendManager() {
 void FriendManager::fiendMenu() {
     cout << "friendmenu" << endl;
     while (true) {
-        // system("clear");
+        system("clear");
         // 获取好友列表
         getFriendList();
         // 打印好友菜单
@@ -60,10 +66,12 @@ void FriendManager::fiendMenu() {
                  << "\t" << unreadmsg << endl;
         }
         showFriendFunctionMenu();
-        cout << "请输入：";
         int choice;
-        cin >> choice;
-        cin.get();
+        bool legal = false;
+        while (!legal) {
+            cout << "请输入：";
+            legal = dataInput(choice);
+        }
         switch (choice) {
             case 1:  // 添加好友
                 addFriend();
@@ -80,8 +88,11 @@ void FriendManager::fiendMenu() {
             case 5:  // 拉黑好友
                 blockFriend();
                 break;
-            default:  // 返回
+            case 6:  // 返回
                 choice = 0;
+                break;
+            default:  // 返回
+                std::cout << "输入无效。" << std::endl;
                 break;
         }
         if (choice == 0) {
@@ -120,9 +131,11 @@ void FriendManager::showFriendFunctionMenu() {
 // 添加好友，通过账号添加
 void FriendManager::addFriend() {
     string account;
-    cout << "请输入要添加的好友账号：";
-    cin >> account;
-    cin.get();
+    bool legal = false;
+    while (!legal) {
+        cout << "请输入要添加的好友账号：";
+        legal = dataInput(account);
+    }
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -145,9 +158,11 @@ void FriendManager::addFriend() {
 // 删除好友，通过账号删除
 void FriendManager::deleteFriend() {
     string account;
-    cout << "请输入要删除的好友账号：";
-    cin >> account;
-    cin.get();
+    bool legal = false;
+    while (!legal) {
+        cout << "请输入要删除的好友账号：";
+        legal = dataInput(account);
+    }
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -170,9 +185,13 @@ void FriendManager::deleteFriend() {
 // 查找好友，通过账号查找
 void FriendManager::queryFriend() {
     string account;
-    cout << "请输入查询好友账号：";
-    cin >> account;
-    cin.get();
+
+    bool legal = false;
+    while (!legal) {
+        // system("clear");
+        cout << "请输入查询好友账号：";
+        legal = dataInput(account);
+    }
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -195,9 +214,12 @@ void FriendManager::queryFriend() {
 // 和好友聊天
 void FriendManager::chatWithFriend() {
     string account;
-    cout << "请输入好友账号：";
-    cin >> account;
-    cin.get();
+    bool legal = false;
+    while (!legal) {
+        // system("clear");
+        cout << "请输入好友账号：";
+        legal = dataInput(account);
+    }
     if (account.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -231,7 +253,7 @@ void FriendManager::chatWithFriend() {
             ss << std::put_time(&timeinfo, "%m-%d %H:%M");
             std::string formattedTime = ss.str();
             getline(cin, data);
-            if (data != ":q" && data != ":h" && data != ":f") {
+            if (data != ":q" && data != ":h" && data != ":f" && data != ":r") {
                 cout << "\033[A"
                      << "\33[2K\r";
                 cout << YELLOW_COLOR << "我" << RESET_COLOR << formattedTime
@@ -240,9 +262,11 @@ void FriendManager::chatWithFriend() {
             }
             if (data == ":f") {
                 string filepath;
-                cout << "请输入文件的相对路径：" << endl;
-                cin >> filepath;
-                cin.get();
+                bool legal = false;
+                while (!legal) {
+                    cout << "请输入文件的相对路径：" << endl;
+                    legal = dataInput(filepath);
+                }
                 js["filepath"] = filepath;
                 js["data"] = data;
 
@@ -250,7 +274,7 @@ void FriendManager::chatWithFriend() {
                 if (fd == -1) {
                     perror("open");
                     cout << "发送失败，返回聊天" << endl;
-                    return;
+                    continue;
                 }
                 // 获取文件大小
                 struct stat file_stat;
@@ -258,7 +282,7 @@ void FriendManager::chatWithFriend() {
                     perror("fstat");
                     close(fd);
                     cout << "发送失败，返回聊天" << endl;
-                    return;
+                    continue;
                 }
                 js["filesize"] = file_stat.st_size;
                 TcpClient::addDataLen(js);
@@ -281,11 +305,36 @@ void FriendManager::chatWithFriend() {
                     perror("sendfile");
                     close(fd);
                     cout << "发送失败，返回聊天" << endl;
-                    return;
+                    continue;
                 }
                 if (sent_bytes == file_stat.st_size) {
-                    cout << "发送成功" << endl;
+                    cout << "发送中..." << endl;
                 }
+
+            } else if (data == ":r") {
+                // 获取文件列表
+                js["data"] = data;
+                TcpClient::addDataLen(js);
+                string request = js.dump();
+                int len =
+                    send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+                if (0 == len || -1 == len) {
+                    cerr << "data send error:" << request << endl;
+                }
+                sem_wait(&m_rwsem);
+                string filename;
+                cin >> filename;
+                cin.get();
+                js["filename"] = filename;
+                TcpClient::addDataLen(js);
+                request.clear();
+                request = js.dump();
+                len =
+                    send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+                if (0 == len || -1 == len) {
+                    cerr << "data send error:" << request << endl;
+                }
+                sem_wait(&m_rwsem);
 
             } else {
                 js["data"] = data;
@@ -346,3 +395,5 @@ int FriendManager::sendFile(int cfd, int fd, off_t offset, int size) {
     }
     return count;
 }
+
+

@@ -1,9 +1,13 @@
 #include "GroupManager.h"
 #include <stdlib.h>
+#include <sys/fcntl.h>
+#include <sys/sendfile.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <nlohmann/json.hpp>
 #include "../config/client_config.h"
+#include "MyInput.h"
 #include "TcpClient.h"
 
 using namespace std;
@@ -49,10 +53,12 @@ void GroupManager::groupMenu() {
                  << "          " << count << endl;
         }
         showGroupFunctionMenu();
-        cout << "请输入：";
         int choice;
-        cin >> choice;
-        cin.get();
+        bool legal = false;
+        while (!legal) {
+            cout << "请输入：";
+            legal = dataInput(choice);
+        }
         switch (choice) {
             case 1:  // 添加群组
                 addGroup();
@@ -98,9 +104,11 @@ void GroupManager::getGroupList() {
 }
 void GroupManager::addGroup() {
     string id;
-    cout << "请输入要添加的群组号码：";
-    cin >> id;
-    cin.get();
+    bool legal = false;
+    while (!legal) {
+        cout << "请输入要添加的群组号码：";
+        legal = dataInput(id);
+    }
     if (id.length() > 11) {
         std::cout << "Input exceeded the maximum allowed length. "
                      "Truncating..."
@@ -166,14 +174,14 @@ void GroupManager::enterGroup() {
         cerr << "enterGroup send error:" << request << endl;
     }
     sem_wait(&m_rwsem);
-    string permisson = m_tcpclient->getPermisson();
-    if (permisson == "owner") {
+    string permission = m_tcpclient->getPermission();
+    if (permission == "owner") {
         m_groupid = id;
         handleOwner();
-    } else if (permisson == "administrator") {
+    } else if (permission == "administrator") {
         m_groupid = id;
         handleAdmin();
-    } else if (permisson == "member") {
+    } else if (permission == "member") {
         m_groupid = id;
         handleMember();
     } else {
@@ -220,9 +228,11 @@ void GroupManager::handleOwner() {
     while (true) {
         ownerMenu();
         int choice;
-        cout << "请输入：";
-        cin >> choice;
-        cin.get();
+        bool legal = false;
+        while (!legal) {
+            cout << "请输入：";
+            legal = dataInput(choice);
+        }
         switch (choice) {
             case 1:
                 ownerChat();
@@ -266,9 +276,11 @@ void GroupManager::handleAdmin() {
     while (true) {
         administratorMenu();
         int choice;
-        cout << "请输入：";
-        cin >> choice;
-        cin.get();
+        bool legal = false;
+        while (!legal) {
+            cout << "请输入：";
+            legal = dataInput(choice);
+        }
         switch (choice) {
             case 1:
                 adminChat();
@@ -304,9 +316,11 @@ void GroupManager::handleMember() {
     while (true) {
         memberMenu();
         int choice;
-        cout << "请输入：";
-        cin >> choice;
-        cin.get();
+        bool legal = false;
+        while (!legal) {
+            cout << "请输入：";
+            legal = dataInput(choice);
+        }
         switch (choice) {
             case 1:
                 memberChat();
@@ -334,35 +348,48 @@ void GroupManager::ownerChat() {
     setChatStatus();
     while (true) {
         json js;
-        js["type"] = GROUP_TYPE;
-        js["grouptype"] = GROUP_OWNER;
-        js["entertype"] = OWNER_CHAT;
-        js["permisson"] = "owner";
+        chatRequest(js, "owner");
         string data;
-        std::time_t timestamp = std::time(nullptr);
-        std::tm timeinfo;
-        localtime_r(&timestamp, &timeinfo);
-        std::stringstream ss;
-        ss << std::put_time(&timeinfo, "%m-%d %H:%M");
-        std::string formattedTime = ss.str();
-        getline(cin, data);
-        if (data != ":q" && data != ":h") {
-            cout << "\033[A"
-                 << "\33[2K\r";
-            cout << YELLOW_COLOR << "[群主]"
-                 << "我 " << RESET_COLOR << formattedTime << ":" << endl;
-            cout << "「" << data << "」" << endl;
-        }
-        js["data"] = data;
-        TcpClient::addDataLen(js);
-        string request = js.dump();
-        int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
-        if (0 == len || -1 == len) {
-            cerr << "data send error:" << request << endl;
-        }
-        sem_wait(&m_rwsem);
-        if (data == ":q") {
-            break;
+        chatInput(data, "owner");
+        if (data == ":f") {
+            chooseFile(js);
+        } else if (data == ":r") {
+            // 获取文件列表
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+            string filename;
+            cin >> filename;
+            cin.get();
+            js["filename"] = filename;
+            TcpClient::addDataLen(js);
+            request.clear();
+            request = js.dump();
+            len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+
+        } else {
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+            if (data == ":q") {
+                break;
+            }
         }
     }
 }
@@ -465,10 +492,12 @@ void GroupManager::ownerNotice() {
         js["type"] = GROUP_TYPE;
         js["grouptype"] = GROUP_OWNER;
         js["entertype"] = OWNER_NOTICE;
-        cout << "你想要处理哪个事件(-1表示退出):" << endl;
         int number;
-        cin >> number;
-        cin.get();
+        bool legal = false;
+        while (!legal) {
+            cout << "你想要处理哪个事件(-1表示退出):" << endl;
+            legal = dataInput(number);
+        }
         if (number == -1) {
             break;
         }
@@ -491,10 +520,13 @@ void GroupManager::ownerNotice() {
                 continue;
             }
             js["number"] = number;
-            cout << "1、接受 2、拒绝" << endl;
+
             int choice;
-            cin >> choice;
-            cin.get();
+            bool legal = false;
+            while (!legal) {
+                cout << "1、接受 2、拒绝" << endl;
+                legal = dataInput(choice);
+            }
             if (choice != 1 && choice != 2) {
                 cout << "不合法的输入" << endl;
                 continue;
@@ -521,10 +553,12 @@ void GroupManager::ownerNotice() {
 
 void GroupManager::ownerChangeName() {}
 void GroupManager::ownerDissolve() {
-    cout << "1、确认解散 2、返回" << endl;
     int choice;
-    cin >> choice;
-    cin.get();
+    bool legal = false;
+    while (!legal) {
+        cout << "1、确认解散 2、返回" << endl;
+        legal = dataInput(choice);
+    }
     if (choice == 1) {
         json js;
         js["type"] = GROUP_TYPE;
@@ -548,35 +582,48 @@ void GroupManager::adminChat() {
     setChatStatus();
     while (true) {
         json js;
-        js["type"] = GROUP_TYPE;
-        js["grouptype"] = GROUP_ADMINISTRATOR;
-        js["entertype"] = ADMIN_CHAT;
-        js["permisson"] = "administrator";
+        chatRequest(js, "administrator");
         string data;
-        std::time_t timestamp = std::time(nullptr);
-        std::tm timeinfo;
-        localtime_r(&timestamp, &timeinfo);
-        std::stringstream ss;
-        ss << std::put_time(&timeinfo, "%m-%d %H:%M");
-        std::string formattedTime = ss.str();
-        getline(cin, data);
-        if (data != ":q" && data != ":h") {
-            cout << "\033[A"
-                 << "\33[2K\r";
-            cout << GREEN_COLOR << "[管理员]"
-                 << "我 " << RESET_COLOR << formattedTime << ":" << endl;
-            cout << "「" << data << "」" << endl;
-        }
-        js["data"] = data;
-        TcpClient::addDataLen(js);
-        string request = js.dump();
-        int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
-        if (0 == len || -1 == len) {
-            cerr << "data send error:" << request << endl;
-        }
-        sem_wait(&m_rwsem);
-        if (data == ":q") {
-            break;
+        chatInput(data, "administrator");
+        if (data == ":f") {
+            chooseFile(js);
+        } else if (data == ":r") {
+            // 获取文件列表
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+            string filename;
+            cin >> filename;
+            cin.get();
+            js["filename"] = filename;
+            TcpClient::addDataLen(js);
+            request.clear();
+            request = js.dump();
+            len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+
+        } else {
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+            if (data == ":q") {
+                break;
+            }
         }
     }
 }
@@ -625,10 +672,12 @@ void GroupManager::adminNotice() {
         js["type"] = GROUP_TYPE;
         js["grouptype"] = GROUP_ADMINISTRATOR;
         js["entertype"] = ADMIN_NOTICE;
-        cout << "你想要处理哪个事件(-1表示退出):" << endl;
         int number;
-        cin >> number;
-        cin.get();
+        bool legal = false;
+        while (!legal) {
+            cout << "你想要处理哪个事件(-1表示退出):" << endl;
+            legal = dataInput(number);
+        }
         if (number == -1) {
             break;
         }
@@ -651,10 +700,13 @@ void GroupManager::adminNotice() {
                 continue;
             }
             js["number"] = number;
-            cout << "1、接受 2、拒绝" << endl;
+
             int choice;
-            cin >> choice;
-            cin.get();
+            bool legal = false;
+            while (!legal) {
+                cout << "1、接受 2、拒绝" << endl;
+                legal = dataInput(choice);
+            }
             if (choice != 1 && choice != 2) {
                 cout << "不合法的输入" << endl;
                 continue;
@@ -679,10 +731,12 @@ void GroupManager::adminNotice() {
     }
 }
 void GroupManager::adminExit() {
-    cout << "1、确认退出 2、返回" << endl;
     int choice;
-    cin >> choice;
-    cin.get();
+    bool legal = false;
+    while (!legal) {
+        cout << "1、确认退出 2、返回" << endl;
+        legal = dataInput(choice);
+    }
     if (choice == 1) {
         json js;
         js["type"] = GROUP_TYPE;
@@ -706,36 +760,48 @@ void GroupManager::memberChat() {
     setChatStatus();
     while (true) {
         json js;
-        js["type"] = GROUP_TYPE;
-        js["grouptype"] = GROUP_MEMBER;
-        js["entertype"] = MEMBER_CHAT;
-        js["permisson"] = "member";
+        chatRequest(js, "member");
         string data;
-        std::time_t timestamp = std::time(nullptr);
-        std::tm timeinfo;
-        localtime_r(&timestamp, &timeinfo);
-        std::stringstream ss;
-        ss << std::put_time(&timeinfo, "%m-%d %H:%M");
-        std::string formattedTime = ss.str();
-        getline(cin, data);
-        if (data != ":q" && data != ":h") {
-            cout << "\033[A"
-                 << "\33[2K\r";
-            cout << "[成员]"
-                 << "我 " << formattedTime << ":" << endl;
-            cout << "「" << data << "」" << endl;
-        }
+        chatInput(data, "member");
+        if (data == ":f") {
+            chooseFile(js);
+        } else if (data == ":r") {
+            // 获取文件列表
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+            string filename;
+            cin >> filename;
+            cin.get();
+            js["filename"] = filename;
+            TcpClient::addDataLen(js);
+            request.clear();
+            request = js.dump();
+            len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
 
-        js["data"] = data;
-        TcpClient::addDataLen(js);
-        string request = js.dump();
-        int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
-        if (0 == len || -1 == len) {
-            cerr << "data send error:" << request << endl;
-        }
-        sem_wait(&m_rwsem);
-        if (data == ":q") {
-            break;
+        } else {
+            js["data"] = data;
+            TcpClient::addDataLen(js);
+            string request = js.dump();
+            int len =
+                send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+            if (0 == len || -1 == len) {
+                cerr << "data send error:" << request << endl;
+            }
+            sem_wait(&m_rwsem);
+            if (data == ":q") {
+                break;
+            }
         }
     }
 }
@@ -754,10 +820,12 @@ void GroupManager::memberCheckMember() {
 }
 void GroupManager::memberCheckHistory() {}
 void GroupManager::memberExit() {
-    cout << "1、确认退出 2、返回" << endl;
     int choice;
-    cin >> choice;
-    cin.get();
+    bool legal = false;
+    while (!legal) {
+        cout << "1、确认退出 2、返回" << endl;
+        legal = dataInput(choice);
+    }
     if (choice == 1) {
         json js;
         js["type"] = GROUP_TYPE;
@@ -813,4 +881,114 @@ void GroupManager::getListLen(const string groupid) {
         cerr << "getListLen send error:" << request << endl;
     }
     sem_wait(&m_rwsem);
+}
+int GroupManager::sendFile(int cfd, int fd, off_t offset, int size) {
+    int count = 0;
+    while (offset < size) {
+        // 系统函数，发送文件，linux内核提供的sendfile 也能减少拷贝次数
+        //  sendfile发送文件效率高，而文件目录使用send
+        // 通信文件描述符，打开文件描述符，fd对应的文件偏移量一般为空，
+        // 单独单文件出现发送不全，offset会自动修改当前读取位置
+        int ret = (int)sendfile(cfd, fd, &offset, (size_t)(size - offset));
+        if (ret == -1 && errno == EAGAIN) {
+            printf("not data ....");
+            perror("sendfile");
+        }
+        count += (int)offset;
+    }
+    return count;
+}
+void GroupManager::chatRequest(json& js, string permission) {
+    js["type"] = GROUP_TYPE;
+    js["permission"] = permission;
+    if (permission == "owner") {
+        js["grouptype"] = GROUP_OWNER;
+        js["entertype"] = OWNER_CHAT;
+
+    } else if (permission == "administrator") {
+        js["grouptype"] = GROUP_ADMINISTRATOR;
+        js["entertype"] = ADMIN_CHAT;
+
+    } else if (permission == "member") {
+        js["grouptype"] = GROUP_MEMBER;
+        js["entertype"] = MEMBER_CHAT;
+    }
+}
+
+void GroupManager::chatInput(string& data, string permission) {
+    std::time_t timestamp = std::time(nullptr);
+    std::tm timeinfo;
+    localtime_r(&timestamp, &timeinfo);
+    std::stringstream ss;
+    ss << std::put_time(&timeinfo, "%m-%d %H:%M");
+    std::string formattedTime = ss.str();
+    getline(cin, data);
+    if (data != ":q" && data != ":h" && data != ":f" && data != ":r") {
+        if (permission == "owner") {
+            cout << "\033[A"
+                 << "\33[2K\r";
+            cout << YELLOW_COLOR << "[群主]"
+                 << "我 " << RESET_COLOR << formattedTime << ":" << endl;
+            cout << "「" << data << "」" << endl;
+        } else if (permission == "administrator") {
+            cout << "\033[A"
+                 << "\33[2K\r";
+            cout << GREEN_COLOR << "[管理员]"
+                 << "我 " << RESET_COLOR << formattedTime << ":" << endl;
+            cout << "「" << data << "」" << endl;
+
+        } else if (permission == "member") {
+            cout << "\033[A"
+                 << "\33[2K\r";
+            cout << "[成员]"
+                 << "我 " << formattedTime << ":" << endl;
+            cout << "「" << data << "」" << endl;
+        }
+    }
+}
+void GroupManager::chooseFile(json& js) {
+    string filepath;
+    cout << "请输入文件的相对路径：" << endl;
+    cin >> filepath;
+    cin.get();
+    js["filepath"] = filepath;
+    js["data"] = ":f";
+
+    int fd = open(filepath.c_str(), O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        cout << "发送失败，返回聊天" << endl;
+        return;
+    }
+    // 获取文件大小
+    struct stat file_stat;
+    if (fstat(fd, &file_stat) == -1) {
+        perror("fstat");
+        close(fd);
+        cout << "发送失败，返回聊天" << endl;
+        return;
+    }
+    js["filesize"] = file_stat.st_size;
+    TcpClient::addDataLen(js);
+    string request = js.dump();
+    int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);
+    if (0 == len || -1 == len) {
+        cerr << "data send error:" << request << endl;
+    }
+    sem_wait(&m_rwsem);
+
+    off_t offset = 0;  // 从文件开始位置开始发送
+    size_t remaining_bytes = file_stat.st_size;  // 剩余要发送的字节数
+    // 使用 sendfile 函数发送文件内容
+    ssize_t sent_bytes = sendFile(m_fd, fd, offset, remaining_bytes);
+
+    if (sent_bytes == -1) {
+        perror("sendfile");
+        close(fd);
+        cout << "发送失败，返回聊天" << endl;
+        return;
+    }
+    if (sent_bytes == file_stat.st_size) {
+        cout << "发送中..." << endl;
+    }
 }

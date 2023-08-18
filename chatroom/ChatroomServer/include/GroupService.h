@@ -36,7 +36,7 @@ class GroupService {
 
     void setChatStatus(json requestDataJson, json& responseJson);
 
-    void ownerChat(json requestDataJson, json& responseJson);
+    void chat(json requestDataJson, json& responseJson, string permission);
     void ownerKick(json requestDataJson, json& responseJson);
     void ownerAddAdministrator(json requestDataJson, json& responseJson);
     void ownerRevokeAdministrator(json requestDataJson, json& responseJson);
@@ -46,20 +46,29 @@ class GroupService {
     void ownerChangeName(json requestDataJson, json& responseJson);
     void ownerDissolve(json requestDataJson, json& responseJson);
 
-    void adminChat(json requestDataJson, json& responseJson);
     void adminKick(json requestDataJson, json& responseJson);
     void adminCheckMember(json requestDataJson, json& responseJson);
     void adminCheckHistory(json requestDataJson, json& responseJson);
     void adminNotice(json requestDataJson, json& responseJson);
     void adminExit(json requestDataJson, json& responseJson);
 
-    void memberChat(json requestDataJson, json& responseJson);
     void memberCheckMember(json requestDataJson, json& responseJson);
     void memberCheckHistory(json requestDataJson, json& responseJson);
     void memberExit(json requestDataJson, json& responseJson);
 
     void handleGroupGetNotice(json requestDataJson, json& responseJson);
-     void getListLen(json requestDataJson, json& responseJson);
+    void getListLen(json requestDataJson, json& responseJson);
+    int sendFile(int cfd, int fd, off_t offset, int size);
+    string recvFile(json requestDataJson, json& responseJson, string key);
+    void announce(json requestDataJson, json& responseJson, string permission);
+    void announce(json requestDataJson,
+                  json& responseJson,
+                  string permission,
+                  string filename);
+    void infoRestore(json requestDataJson, string key, string permission);
+    void infoRestore(string key, string permission, string filename);
+    void chatResponse(json& responseJson, string permission);
+
    private:
     string m_account;
     string m_username;

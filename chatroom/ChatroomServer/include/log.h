@@ -3,7 +3,7 @@
 #include <stdio.h>
 // 0为删除日志退出
 // 1启动日志输出
-#define  DEBUG   1
+#define  DEBUG   0
 #if DEBUG
 /*
 *  如果不加 do ... while(0) 在进行条件判断的时候(只有一句话), 省略了{}, 就会出现语法错误

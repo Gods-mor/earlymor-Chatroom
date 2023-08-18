@@ -4,11 +4,13 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <nlohmann/json.hpp>
 #include <unordered_map>
 #include <vector>
 
 class TcpClient;
 using namespace std;
+using json = nlohmann::json;
 class GroupManager {
    public:
     GroupManager(int fd,
@@ -23,7 +25,8 @@ class GroupManager {
     void getNotice();
     void setChatStatus();
     void getListLen(const string groupid);
-
+    int sendFile(int cfd, int fd, off_t offset, int size);
+    void chatRequest(json& js, string permission);
     void addGroup();
     void createGroup();
     void enterGroup();
@@ -46,7 +49,7 @@ class GroupManager {
     void ownerNotice();
     void ownerChangeName();
     void ownerDissolve();
-    
+
     void adminChat();
     void adminKick();
     void adminCheckMember();
@@ -58,6 +61,9 @@ class GroupManager {
     void memberCheckMember();
     void memberCheckHistory();
     void memberExit();
+    void chatInput(string& data,string permission);
+    void chooseFile(json& js);
+
     unordered_map<string, string> userGroups;  // 得到的群组列表 id+name
    private:
     string m_groupid;

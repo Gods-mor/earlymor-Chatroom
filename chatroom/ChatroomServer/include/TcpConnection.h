@@ -34,6 +34,7 @@ class TcpConnection {
     void setOnline();
     int getfd() { return m_fd; }
     void addDataLen(json& js);
+    void static recvFile(json requestDataJson, json& responseJson, string key);
     void forwardMessageToUser(const std::string& message);
    private:
     void startHeartbeat();

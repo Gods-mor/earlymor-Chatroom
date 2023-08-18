@@ -80,14 +80,18 @@ class TcpClient {
 
     void handleSetChatAckResponse(const json& message);
     void getInfo(string account);
+
     void handleGetListLenResponse(const json& message);
-    inline string getPermisson() { return m_permission; }
+    inline string getPermission() { return m_permission; }
+    size_t getFileSize() { return filesize; }
     vector<string> m_groupnotice;
     int len;
+    void chatResponse(const json& message);
 
    private:
     int m_fd;
     string m_permission;
+    size_t filesize;
     sem_t m_rwsem;  // 用于读写线程间的通信
     atomic_bool is_LoginSuccess{
         false};  // 原子类型，不需要加锁，用于记录登录状态
