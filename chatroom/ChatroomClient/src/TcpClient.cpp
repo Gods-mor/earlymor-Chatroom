@@ -31,10 +31,13 @@ TcpClient::TcpClient() {
     m_account = emptystring;
     vector<string> emptynotice;
     m_groupnotice = emptynotice;
+    vector<string> emptyusernotice;
+    m_usernotice = emptyusernotice;
     sem_init(&m_rwsem, 0, 0);
     m_friendmanager =
         new FriendManager(m_fd, m_rwsem, is_Friend, m_account, this);
     m_groupmanager = new GroupManager(m_fd, m_rwsem, is_Group, m_account, this);
+    m_usermanager = new UserManager(m_fd, m_rwsem, m_account, this);
 }
 
 // 析构回收资源
@@ -218,6 +221,17 @@ void TcpClient::readTaskHandler(int cfd) {
                     break;
                 case FRIEND_NOTICE:
                     handleFriendNoticeResponse(js);
+                    break;
+                case FRIEND_APPLY:
+                    handleFriendApplyResponse(js);
+                    break;
+                case USER_GET_NOTICE:
+                    handleUserGetNotice(js);
+                    sem_post(&m_rwsem);
+                    break;
+                case USER_DEAL_NOTICE:
+                    handleUserDealNotice(js);
+                    sem_post(&m_rwsem);
                     break;
                 default:
                     cerr << "Invalid message type received: " << type << endl;
@@ -463,7 +477,8 @@ void TcpClient::mainMenu() {
     cout << "                           1.好友" << endl;
     cout << "                           2.群" << endl;
     cout << "                           3.个人信息 " << endl;
-    cout << "                           4.退出" << endl;
+    cout << "                           4.用户通知处理 " << endl;
+    cout << "                           5.退出" << endl;
     cout << "               #####################################" << endl;
 }
 
@@ -524,9 +539,11 @@ void TcpClient::handleMainMenu() {
             case 2:
                 m_groupmanager->groupMenu();
                 break;
-            case 3:
+            case 3:  // 个人信息
+                m_usermanager->showUserInfo();
                 break;
-            case 4:
+            case 4:  // 通知
+                m_usermanager->dealNotice();
                 break;
             case 5:
                 // 返回到上一层菜单
@@ -1002,5 +1019,52 @@ void TcpClient::chatResponse(const json& message) {
 
     } else if (status == ACCESS_FILE_SUCCESS) {
         cout << "接收成功" << endl;
+    }
+}
+void TcpClient::handleFriendApplyResponse(const json& message) {
+    string account = message["account"];
+    string username = message["username"];
+    cout << endl;
+    cout << "您收到一条好友申请来自" << username << "(" << account << ")"
+         << std::flush;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    cout << "\33[2K\r" << std::flush;
+}
+
+void TcpClient::handleUserGetNotice(const json& message) {
+    m_usernotice.clear();
+    m_usernotice = message["notice"];
+    for (size_t i = 0; i < m_usernotice.size(); ++i) {
+        json info = json::parse(m_usernotice[i]);
+        string type = info["type"];
+        if (type == "friendadd") {
+            string source = info["src"];
+            string msg = info["msg"];
+            cout << i << "、"
+                 << "用户：" << source << "给你发送了一条好友申请" << endl;
+            cout << "对方留言：" << msg << endl;
+            if (info.contains("dealer")) {
+                string dealer = info["dealer"];
+                string result = info["result"];
+                cout << "处理人：" << dealer << " 处理结果：" << result << endl;
+            }else{
+
+            }
+
+        } else if (type == "kick") {
+            ;
+        }
+        cout << "---------------------------------------------------" << endl;
+    }
+}
+
+void TcpClient::handleUserDealNotice(const json& message) {
+    int status = message["status"];
+    if (status == SUCCESS_ACCEPT_FRIEND) {
+        cout << "成功接受该申请" << endl;
+    } else if (status == SUCCESS_REFUSE_FRIEND) {
+        cout << "成功拒绝该申请" << endl;
+    } else if (status == FAIL_DEAL_FRIEND) {
+        cout << "失败处理该申请" << endl;
     }
 }

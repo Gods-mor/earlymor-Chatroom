@@ -1,11 +1,16 @@
-#include "../include/UserService.h"
+#include "UserService.h"
 #include <sw/redis++/redis++.h>
+#include <string>
 #include "../config/server_config.h"
 #include "log.h"
 
+using namespace std;
+
 UserService::UserService(std::shared_ptr<sw::redis::Redis> redis)
     : m_redis(redis) {}
+
 UserService::~UserService() {}
+
 int UserService::checkLogin(string account, string password) {
     try {
         Debug("loginUser");
@@ -50,7 +55,7 @@ int UserService::registerUser(string account,
     try {
         Debug("registerUser");
         std::string storedPassword;
-        auto storedPasswordOpt = m_redis->hget(account,"password");
+        auto storedPasswordOpt = m_redis->hget(account, "password");
         Debug("getpassword");
         if (storedPasswordOpt) {  // 帐号已注册
             Debug("ACCOUNT_EXIST");
@@ -79,5 +84,55 @@ int UserService::registerUser(string account,
         // 注册失败
         Debug("REGISTER_FAILED");
         return REGISTER_FAILED;
+    }
+}
+
+void UserService::getNotice(json requestDataJson, json& responseJson) {
+    string key = m_account + "_Notice";
+    vector<string> userNotice;
+    m_redis->lrange(key, 0, -1, std::back_inserter(userNotice));
+    responseJson["notice"] = userNotice;
+    responseJson["type"] = USER_GET_NOTICE;
+}
+
+void UserService::dealNotice(json requestDataJson, json& responseJson) {
+    string notice = m_account + "_Notice";
+    responseJson["type"] = USER_DEAL_NOTICE;
+    int number = requestDataJson["number"].get<int>();
+    cout << "get number" << number << endl;
+    string msg = m_redis->lindex(notice, number).value();
+    json info;
+    info = json::parse(msg);
+    cout << "get info" << info << endl;
+    string account = info["src"];
+    cout << "get account" << account << endl;
+    string choice = requestDataJson["choice"];
+    cout << "get choice" << choice << endl;
+    info["dealer"] = m_account;
+    info["result"] = choice;
+    string infostr = info.dump();
+    if (choice == "accept") {
+        string name = m_redis->hget(account, "username").value();
+        int num = 0;
+        json jsonvalue;
+        string key = m_account + "_Friend";
+        string key2 = account + "_Friend";
+        jsonvalue["username"] = name;
+        jsonvalue["unreadmsg"] = num;
+        string value = jsonvalue.dump();
+
+        json jsonvalue2;
+        jsonvalue2["username"] = m_username;
+        jsonvalue2["unreadmsg"] = num;
+        string value2 = jsonvalue2.dump();
+        m_redis->hset(key, account, value);
+        m_redis->hset(key2, m_account, value2);
+        m_redis->lset(notice, number, infostr);
+        responseJson["status"] = SUCCESS_ACCEPT_FRIEND;
+    } else if (choice == "refuse") {
+        m_redis->lset(notice, number, infostr);
+        responseJson["status"] = SUCCESS_REFUSE_FRIEND;
+    } else {
+        responseJson["status"] = FAIL_DEAL_FRIEND;
     }
 }

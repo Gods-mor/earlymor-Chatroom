@@ -142,10 +142,14 @@ void FriendManager::addFriend() {
                   << std::endl;
         account = account.substr(0, 11);  // Truncate the input to 10 characters
     }
+    string msg;
+    cout << "请输入留言:" << endl;
+    getline(cin, msg);
     json js;
     js["type"] = FRIEND_TYPE;
     js["friendtype"] = FRIEND_ADD;
     js["account"] = account;
+    js["msg"] = msg;
     TcpClient::addDataLen(js);
     string request = js.dump();
     int len = send(m_fd, request.c_str(), strlen(request.c_str()) + 1, 0);

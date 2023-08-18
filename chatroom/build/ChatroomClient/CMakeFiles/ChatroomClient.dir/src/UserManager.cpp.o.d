@@ -1,7 +1,7 @@
-ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/FriendManager.cpp \
+ChatroomClient/CMakeFiles/ChatroomClient.dir/src/UserManager.cpp.o: \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/UserManager.cpp \
  /usr/include/stdc-predef.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/UserManager.h \
  /usr/include/semaphore.h /usr/include/features.h \
  /usr/include/features-time64.h /usr/include/bits/wordsize.h \
  /usr/include/bits/timesize.h /usr/include/sys/cdefs.h \
@@ -312,11 +312,11 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/FriendManager.cpp.o: \
  /usr/include/nlohmann/detail/macro_unscope.hpp \
  /usr/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/../config/client_config.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/MyInput.h \
+ /usr/include/c++/13.2.1/thread /usr/include/c++/13.2.1/bits/std_thread.h \
+ /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/TcpClient.h \
  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
- /usr/include/bits/in.h /usr/include/c++/13.2.1/thread \
- /usr/include/c++/13.2.1/bits/std_thread.h \
- /usr/include/c++/13.2.1/bits/this_thread_sleep.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/UserManager.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/MyInput.h
+ /usr/include/bits/in.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/GroupManager.h

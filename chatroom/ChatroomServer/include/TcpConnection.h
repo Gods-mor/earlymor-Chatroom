@@ -12,6 +12,7 @@
 class OnlineUsers;
 class FriendService;
 class GroupService;
+class UserService;
 using json = nlohmann::json;
 // 区分两者不同发送方式，
 // 1,全部放到缓存区再发送，2，变放边发送

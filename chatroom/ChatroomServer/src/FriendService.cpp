@@ -113,18 +113,8 @@ void FriendService::handleFriendAdd(json requestDataJson, json& responseJson) {
         json jsonvalue;
         int num = 0;
         string name = storedName.value();
-        string key = m_account + "_Friend";
-        string key2 = account + "_Friend";
-        jsonvalue["username"] = name;
-        jsonvalue["unreadmsg"] = num;
-        string value = jsonvalue.dump();
-        json jsonvalue2;
-        jsonvalue2["username"] = m_username;
-        jsonvalue2["unreadmsg"] = num;
-
-        string value2 = jsonvalue2.dump();
-        m_redis->hset(key, account, value);
-        m_redis->hset(key2, m_account, value2);
+        string msg = requestDataJson["msg"];
+        announce(account, name,msg);
         responseJson["status"] = SUCCESS_ADD_FRIEND;
     }
 }
@@ -430,7 +420,7 @@ void FriendService::announce(json requestDataJson,
                              json& responseJson,
                              string filename) {
     string receiver = requestDataJson["account"];
-    string data =  "->" + m_account + "发送了文件" + filename+"<-";
+    string data = "->" + m_account + "发送了文件" + filename + "<-";
     std::time_t timestamp = std::time(nullptr);
     string chatstatus = m_redis->hget(receiver, "chatstatus").value();
     string status = m_redis->hget(receiver, "status").value();
@@ -474,18 +464,42 @@ void FriendService::announce(json requestDataJson,
         }
     }
 }
-
-void FriendService::infoRestore(string key,string filename){
+void FriendService::announce(string receiver, string name,string msg) {
+    std::time_t timestamp = std::time(nullptr);
+    string status = m_redis->hget(receiver, "status").value();
+    try {
+        // 塞进好友通知消息中
+        string key = receiver + "_Notice";
+        json notice;
+        notice["src"] = m_account;
+        notice["msg"] = msg;
+        notice["type"] = "friendadd";
+        string noticestr = notice.dump();
+        m_redis->rpush(key, noticestr);
+    } catch (const exception& e) {
+        cout << "chatstatus != m_account error:" << e.what() << endl;
+    }
+    if (status == "online") {
+        auto connection = m_onlineUsersPtr_->getOnlineConnection(receiver);
+        json sendToFriend;
+        sendToFriend["type"] = FRIEND_APPLY;
+        sendToFriend["account"] = m_account;
+        sendToFriend["username"] = m_username;
+        string forwardMsg = sendToFriend.dump();
+        connection->forwardMessageToUser(forwardMsg);
+    }
+}
+void FriendService::infoRestore(string key, string filename) {
     std::time_t timestamp = std::time(nullptr);
     json chatinfo;
-    string data = "->" + m_account + "发送了文件" + filename+"<-";
+    string data = "->" + m_account + "发送了文件" + filename + "<-";
     chatinfo["account"] = m_account;  // 发送者是自己
     chatinfo["timestamp"] = timestamp;
     chatinfo["data"] = data;
     string chatmsg = chatinfo.dump();
     m_redis->rpush(key, chatmsg);
 }
-void FriendService::infoRestore(string key,json requestDataJson){
+void FriendService::infoRestore(string key, json requestDataJson) {
     json chatinfo;
     std::time_t timestamp = std::time(nullptr);
     string data = requestDataJson["data"];

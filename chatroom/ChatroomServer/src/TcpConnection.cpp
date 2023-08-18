@@ -1,13 +1,13 @@
 #include "TcpConnection.h"
 #include <sys/epoll.h>
-#include <sys/timerfd.h>
-#include <chrono>
-#include <ctime>
-#include <iostream>
-#include <fstream>
 #include <sys/fcntl.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <sys/timerfd.h>
+#include <chrono>
+#include <ctime>
+#include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include "../config/server_config.h"
 #include "../include/ChatService.h"
@@ -184,6 +184,7 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
         // }
         m_readBuf->readPosIncrease(len + 1);
         int requestType = requestDataJson["type"].get<int>();
+        cout << "requestType" << requestType << endl;
         Debug("requestType:%d", requestType);
         // 根据请求类型执行不同的操作
         json responseJson;
@@ -221,6 +222,10 @@ bool TcpConnection::parseClientRequest(Buffer* m_readBuf) {
             m_groupservice->setChatStatus(requestDataJson, responseJson);
         } else if (requestType == GROUP_GET_LIST_LEN) {
             m_groupservice->getListLen(requestDataJson, responseJson);
+        } else if (requestType == USER_GET_NOTICE) {
+            m_userservice->getNotice(requestDataJson, responseJson);
+        } else if (requestType == USER_DEAL_NOTICE) {
+            m_userservice->dealNotice(requestDataJson, responseJson);
         } else {
             // 未知的请求类型
             return false;  // 返回解析失败标志
@@ -251,6 +256,8 @@ void TcpConnection::getInfo() {
         m_friendservice->getName(m_username);
         m_groupservice->getAccount(m_account);
         m_groupservice->getName(m_username);
+        m_userservice->getAccount(m_account);
+        m_userservice->getName(m_username);
     } catch (const exception& e) {
         cout << "getinfo error" << e.what() << endl;
     }

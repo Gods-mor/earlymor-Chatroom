@@ -17,11 +17,16 @@ constexpr int GROUP_GET_LIST = 6;
 constexpr int GROUP_TYPE = 7;
 constexpr int GROUP_SET_CHAT_STATUS = 8;
 constexpr int GROUP_GET_LIST_LEN = 9;
+constexpr int USER_GET_NOTICE = 15;
+constexpr int USER_DEAL_NOTICE = 16;
 // 随机事件
 constexpr int GROUP_MSG = 10;
 constexpr int GROUP_CHAT_NOTICE = 11;
 constexpr int FRIEND_MSG = 12;
 constexpr int FRIEND_NOTICE = 13;
+constexpr int FRIEND_APPLY = 14;
+
+
 // 好友功能请求
 constexpr int FRIEND_ADD = 1;
 constexpr int FRIEND_DELETE = 2;
@@ -93,6 +98,9 @@ constexpr int ACCESS_FILE_FAIL = 7;
 constexpr int GET_FILE_SIZE = 8;
 constexpr int ACCESS_FILE_SUCCESS = 9;
 constexpr int CLIENT_OK = 1;
+constexpr int SUCCESS_ACCEPT_FRIEND = 0;
+constexpr int SUCCESS_REFUSE_FRIEND = 1;
+constexpr int FAIL_DEAL_FRIEND = 2;
 // 群组功能回应
 constexpr int FAIL_CREATE_GROUP = 0;
 constexpr int SUCCESS_CREATE_GROUP = 1;

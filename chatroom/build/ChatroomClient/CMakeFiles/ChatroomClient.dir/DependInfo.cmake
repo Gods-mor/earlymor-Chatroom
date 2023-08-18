@@ -13,6 +13,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/MyInput.cpp" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/MyInput.cpp.o" "gcc" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/MyInput.cpp.o.d"
   "/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/RoleBase.cpp" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/RoleBase.cpp.o" "gcc" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/RoleBase.cpp.o.d"
   "/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/TcpClient.cpp" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o" "gcc" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.o.d"
+  "/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/UserManager.cpp" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/UserManager.cpp.o" "gcc" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/UserManager.cpp.o.d"
   "/home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/src/main.cpp" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o" "gcc" "ChatroomClient/CMakeFiles/ChatroomClient.dir/src/main.cpp.o.d"
   )
 

@@ -38,6 +38,7 @@ class FriendService {
         m_userFriends;  // 用户的所有好友哈希表（account：name）
     void announce(json requestDataJson, json& responseJson);
     void announce(json requestDataJson, json& responseJson, string filename);
+    void announce(string receiver, string name, string msg);
     void infoRestore(string key, json requestDataJson);
     void infoRestore(string key, string filename);
 

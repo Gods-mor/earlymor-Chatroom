@@ -12,6 +12,7 @@
 #include "../config/client_config.h"
 #include "FriendManager.h"
 #include "GroupManager.h"
+#include "UserManager.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -28,7 +29,8 @@ class TcpClient {
     void handleLogin();
     void handleMainMenu();
     void handleRegister();
-
+    void handleUserGetNotice(const json& message);
+    void handleUserDealNotice(const json& message);
     void readTaskHandler(int cfd);  // 子线程用于读数据
     void handleFriendAddResponse(const json& message);
     void handleFriendDeleteResponse(const json& message);
@@ -85,8 +87,10 @@ class TcpClient {
     inline string getPermission() { return m_permission; }
     size_t getFileSize() { return filesize; }
     vector<string> m_groupnotice;
+    vector<string> m_usernotice;
     int len;
     void chatResponse(const json& message);
+    void handleFriendApplyResponse(const json& message);
 
    private:
     int m_fd;
@@ -104,4 +108,5 @@ class TcpClient {
     thread* m_readTask;
     FriendManager* m_friendmanager;
     GroupManager* m_groupmanager;
+    UserManager* m_usermanager;
 };

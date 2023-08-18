@@ -314,4 +314,5 @@ ChatroomClient/CMakeFiles/ChatroomClient.dir/src/GroupManager.cpp.o: \
  /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/TcpClient.h \
  /usr/include/arpa/inet.h /usr/include/netinet/in.h \
  /usr/include/bits/in.h \
- /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/FriendManager.h \
+ /home/earlymor/文档/earlymor-Chatroom/chatroom/ChatroomClient/include/UserManager.h

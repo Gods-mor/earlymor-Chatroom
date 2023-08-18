@@ -250,6 +250,30 @@ src/TcpClient.cpp.s:
 	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/TcpClient.cpp.s
 .PHONY : src/TcpClient.cpp.s
 
+src/UserManager.o: src/UserManager.cpp.o
+.PHONY : src/UserManager.o
+
+# target to build an object file
+src/UserManager.cpp.o:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/UserManager.cpp.o
+.PHONY : src/UserManager.cpp.o
+
+src/UserManager.i: src/UserManager.cpp.i
+.PHONY : src/UserManager.i
+
+# target to preprocess a source file
+src/UserManager.cpp.i:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/UserManager.cpp.i
+.PHONY : src/UserManager.cpp.i
+
+src/UserManager.s: src/UserManager.cpp.s
+.PHONY : src/UserManager.s
+
+# target to generate assembly for a file
+src/UserManager.cpp.s:
+	cd /home/earlymor/文档/earlymor-Chatroom/chatroom/build && $(MAKE) $(MAKESILENT) -f ChatroomClient/CMakeFiles/ChatroomClient.dir/build.make ChatroomClient/CMakeFiles/ChatroomClient.dir/src/UserManager.cpp.s
+.PHONY : src/UserManager.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -298,6 +322,9 @@ help:
 	@echo "... src/TcpClient.o"
 	@echo "... src/TcpClient.i"
 	@echo "... src/TcpClient.s"
+	@echo "... src/UserManager.o"
+	@echo "... src/UserManager.i"
+	@echo "... src/UserManager.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
